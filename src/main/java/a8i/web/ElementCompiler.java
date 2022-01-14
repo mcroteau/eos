@@ -13,10 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Thank you Mr. Walter
- * https://gist.github.com/JensWalter/0f19780d131d903879a2
- */
+
 public class ElementCompiler {
 
     A8i a8i;
