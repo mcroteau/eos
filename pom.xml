@@ -3,7 +3,7 @@
 	<groupId>dev.j3ee</groupId>
 	<artifactId>a8i</artifactId>
 	<packaging>jar</packaging>
-	<version>0.90</version>
+	<version>0.91-SNAPSHOT</version>
 	<name>A8i</name>
 	<description>A8i is a Full Fledged Java Application Server with built in Dependency Injection,
     Request Mapping and Data Management support. A8i boasts its own custom view tag library and
