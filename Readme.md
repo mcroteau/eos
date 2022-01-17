@@ -10,7 +10,7 @@ A8i projects can run as exploded jars or as a single fat uber jar!
 ### Running the Server
 ```
 public static void main(String[] arguments){
-    A8i.Server server = new A8i.ServerBuilder().withPort(3001).spawn(1390).make();
+    A8i.Server server = new A8i.ServerBuilder().withPort(3001).spawn(150).make();
     server.registerPointcut(new GuestPointcut());
     server.registerPointcut(new AuthenticatedPointcut());
     server.registerPointcut(new UsernamePointcut());
