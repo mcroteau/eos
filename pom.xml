@@ -3,7 +3,7 @@
 	<groupId>dev.j3ee</groupId>
 	<artifactId>a8i</artifactId>
 	<packaging>jar</packaging>
-	<version>0.91-SNAPSHOT</version>
+	<version>0.91</version>
 	<name>A8i</name>
 	<description>A8i is a Full Fledged Java Application Server with built in Dependency Injection,
     Request Mapping and Data Management support. A8i boasts its own custom view tag library and
@@ -150,7 +150,7 @@
         <connection>scm:git:git://github.com/mcroteau/A8i.git</connection>
         <developerConnection>scm:git:git@github.com:mcroteau/A8i.git</developerConnection>
         <url>https://github.com/mcroteau/A8i</url>
-        <tag>v0.90</tag>
+        <tag>v0.91</tag>
     </scm>
 
     <distributionManagement>
