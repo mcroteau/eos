@@ -19,7 +19,7 @@ public static void main(String[] arguments){
 }
 ```
 
-# What is a pointcut?
+### What is a pointcut?
 
 ### Built-in view tag library
 The tag library is really a work in progress! Just the bare minimum 
