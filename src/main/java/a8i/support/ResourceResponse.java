@@ -41,6 +41,36 @@ public class ResourceResponse {
 
         if(a8i.isJar()){
 
+            if(requestUri.startsWith("/"))requestUri = requestUri.replaceFirst("/","");
+            String resourcePath = "/webapp/" + requestUri;
+
+            InputStream ris = this.getClass().getResourceAsStream(resourcePath);
+
+            if(ris != null) {
+                ByteArrayOutputStream unebaos = new ByteArrayOutputStream();
+                byte[] bytes = new byte[1024 * 13];
+                int unelength;
+                while ((unelength = ris.read(bytes)) != -1) {
+                    unebaos.write(bytes, 0, unelength);
+                }
+
+                MimeGetter mimeGetter = new MimeGetter(requestUri);
+                String mimeType = mimeGetter.resolve();
+
+                httpExchange.getResponseHeaders().set(this.CONTENTTYPE, mimeType);
+
+                if (httpVerb.equals(GET)) {
+                    httpExchange.sendResponseHeaders(200, unebaos.size());
+                    OutputStream os = httpExchange.getResponseBody();
+                    os.write(unebaos.toByteArray());
+                    os.close();
+                    os.flush();
+                } else {
+                    httpExchange.sendResponseHeaders(200, -1);
+                }
+                ris.close();
+            }
+
         }else{
             String webPath = Paths.get(this.WEBAPP).toString();
             String filePath = webPath.concat(requestUri);
@@ -53,25 +83,27 @@ public class ResourceResponse {
                 return;
             }
 
-            MimeGetter mimeGetter = new MimeGetter(filePath);
-            String mimeType = mimeGetter.resolve();
+            if(fis != null) {
+                MimeGetter mimeGetter = new MimeGetter(filePath);
+                String mimeType = mimeGetter.resolve();
 
-            httpExchange.getResponseHeaders().set(this.CONTENTTYPE, mimeType);
-            if (httpVerb.equals(GET)) {
-                httpExchange.sendResponseHeaders(200, file.length());
-                OutputStream os = httpExchange.getResponseBody();
-                copyStream(fis, os);
-                os.close();
-                os.flush();
-            } else {
-                httpExchange.sendResponseHeaders(200, -1);
+                httpExchange.getResponseHeaders().set(this.CONTENTTYPE, mimeType);
+                if (httpVerb.equals(GET)) {
+                    httpExchange.sendResponseHeaders(200, file.length());
+                    OutputStream os = httpExchange.getResponseBody();
+                    copyStream(fis, os);
+                    os.close();
+                    os.flush();
+                } else {
+                    httpExchange.sendResponseHeaders(200, -1);
+                }
+                fis.close();
             }
-            fis.close();
         }
     }
 
     private void outputAlert(HttpExchange httpExchange, int errorCode) throws IOException {
-        String message = "a4 resource missing! " + errorCode;
+        String message = "A8i/ resource missing! " + errorCode;
         byte[] messageBytes = message.getBytes("utf-8");
 
         httpExchange.getResponseHeaders().set("Content-Type", "text/plain; charset=utf-8");

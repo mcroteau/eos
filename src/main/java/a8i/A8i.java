@@ -187,8 +187,8 @@ public class A8i {
             object = cls.getConstructor().newInstance();
             Field[] fields = cls.getDeclaredFields();
             for(Field field : fields){
-
-                String value = request.value(field.getName());
+                String name = field.getName();
+                String value = request.value(name);
                 if(value != null &&
                         !value.equals("")){
 
@@ -473,6 +473,7 @@ public class A8i {
         Map<String, Interceptor> interceptors;
 
         public Injector(){}
+
         public Injector setNoAction(boolean noAction){
             this.noAction = noAction;
             return this;
@@ -618,8 +619,8 @@ public class A8i {
             String line = "";
             do{
                 line = scanner.nextLine();
-                if(line.contains("Soldiers-Class")){
-                    line = line.replace("Soldiers-Class", "");
+                if(line.contains("Main-Class")){
+                    line = line.replace("Main-Class", "");
                     break;
                 }
             }

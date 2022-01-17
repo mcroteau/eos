@@ -56,6 +56,7 @@ public class HttpTransmission implements HttpHandler {
 
             UriTranslator transformer = new UriTranslator(a8i, httpExchange);
             String requestUri = transformer.translate();
+            httpRequest.setValues(transformer.getParameters());
 
             String httpVerb = httpExchange.getRequestMethod().toLowerCase();
             if(ResourceResponse.isResource(requestUri, a8i)){
@@ -85,7 +86,7 @@ public class HttpTransmission implements HttpHandler {
             EndpointMapping endpointMapping = getHttpMapping(httpVerb, requestUri);
             if(endpointMapping == null){
                 try {
-                    String message = "A8i/ 404 not found.";
+                    String message = "404 not found.";
                     httpExchange.sendResponseHeaders(200, message.length());
                     outputStream.write(message.getBytes());
                     outputStream.flush();
@@ -255,8 +256,9 @@ public class HttpTransmission implements HttpHandler {
                             }
                         }
 
-                        httpExchange.sendResponseHeaders(200, designOutput.length());
-                        outputStream.write(designOutput.getBytes());
+                        byte[] bs = designOutput.getBytes("utf-8");
+                        httpExchange.sendResponseHeaders(200, bs.length);
+                        outputStream.write(bs);
 
                     }else {
 
@@ -365,8 +367,9 @@ public class HttpTransmission implements HttpHandler {
                             }
                         }
 
-                        httpExchange.sendResponseHeaders(200, designOutput.length());
-                        outputStream.write(designOutput.getBytes());
+                        byte[] bs = designOutput.getBytes("utf-8");
+                        httpExchange.sendResponseHeaders(200, bs.length);
+                        outputStream.write(bs);
 
                     }else{
 

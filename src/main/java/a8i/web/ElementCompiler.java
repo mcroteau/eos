@@ -13,7 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * Thank you Mr. Walter
+ * https://gist.github.com/JensWalter/0f19780d131d903879a2
+ */
 public class ElementCompiler {
 
     A8i a8i;
@@ -63,17 +66,20 @@ public class ElementCompiler {
                     ex.printStackTrace();
                 }
 
-                for (String param : query.split("&")) {
+                for (String entry : query.split("&")) {
                     FormElement element = new FormElement();
-                    String[] entry = param.split("=");
-                    if (entry.length > 1) {
-                        element.setName(entry[0]);
-                        element.setValue(entry[1]);
+                    String[] keyValue = entry.split("=", 2);
+                    String key = keyValue[0];
+                    String value = keyValue[1];
+                    value = value.replaceAll("/[\\r\\n]+/gm", "");
+                    if (keyValue.length > 1) {
+                        element.setName(key);
+                        element.setValue(value);
                     }else{
-                        element.setName(entry[0]);
+                        element.setName(key);
                         element.setValue("");
                     }
-                    httpRequest.data().put(entry[0], element);
+                    httpRequest.data().put(key, element);
                 }
 
             }

@@ -14,7 +14,9 @@ public class UriTranslator {
     }
 
     public String translate(){
-        String uri = httpExchange.getRequestURI().toString();
+        String uriPre = httpExchange.getRequestURI().toString();
+        String[] parts = uriPre.split("\\?");
+        String uri = parts[0];
 
         if(uri.equals("")) {
             uri = "/";
@@ -24,5 +26,14 @@ public class UriTranslator {
             uri = a8i.removeLast(uri);
         }
         return uri;
+    }
+
+    public String getParameters() {
+        String uriPre = httpExchange.getRequestURI().toString();
+        String[] parts = uriPre.split("\\?");
+        if(parts.length > 1){
+            return parts[1];
+        }
+        return "";
     }
 }

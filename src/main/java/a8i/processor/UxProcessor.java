@@ -29,8 +29,8 @@ public class UxProcessor {
 
         for(int a6 = 0; a6 < entries.size(); a6++) {
             String entryBase = entries.get(a6);
-            if(entryBase.contains("<a:if condition=")){
-                evaluateCondition(a6, entryBase, httpResponse, entries);
+            if(entryBase.contains("<a:set")){
+                setVariable(entryBase, httpResponse);
             }
 
             if(entryBase.contains(this.FOREACH)) {
@@ -40,10 +40,19 @@ public class UxProcessor {
 
                 for(int a7 = 0; a7 < iterable.getPojos().size(); a7++) {
                     Object obj = iterable.getPojos().get(a7);
+                    List<Integer> ignore = new ArrayList<>();
+
                     for (int a8 = iterable.getStart(); a8 < iterable.getStop(); a8++) {
                         String entry = entries.get(a8);
+                        if(entry.contains("<a:if condition=")){
+                            ignore = evaluateEachCondition(a8, entry, obj, httpResponse, entries);
+                        }
+                        if(ignore.contains(a8))continue;
                         if(entry.contains(this.FOREACH))continue;
                         entry = evaluateEntry(0, 0, iterable.getField(), entry, httpResponse);
+                        if(entry.contains("<a:set")){
+                            setEachVariable(entry, httpResponse, obj);
+                        }
                         evaluateEachEntry(entry, eachOut, obj, iterable.getField());
                     }
                 }
@@ -54,6 +63,11 @@ public class UxProcessor {
                     entries.set(a7, "");
                 }
             }else {
+
+                if(entryBase.contains("<a:if condition=")){
+                    evaluateCondition(a6, entryBase, httpResponse, entries);
+                }
+
                 entryBase = evaluateEntry(0, 0, "", entryBase, httpResponse);
                 entries.set(a6, entryBase);
             }
@@ -68,6 +82,121 @@ public class UxProcessor {
         return finalOut.toString();
     }
 
+    private List<Integer> evaluateEachCondition(int a8, String entry, Object obj, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException {
+        List<Integer> ignore = new ArrayList<>();
+
+        int stop = getEachConditionStop(a8, entries);
+        int startIf = entry.indexOf("<a:if condition=");
+
+        int startExpression = entry.indexOf("${", startIf);
+        int endExpression = entry.indexOf("}", startExpression);
+
+        String expressionNite = entry.substring(startExpression, endExpression +1);
+        String expression = entry.substring(startExpression + 2, endExpression);
+
+        String condition = getCondition(expression);
+        String[] bits = expression.split(condition);
+
+        String subjectPre = bits[0].trim();
+        String predicatePre = bits[1].trim();
+
+
+        //<a:if condition="${town.id == organization.townId}">
+
+        //todo:?2 levels
+        //todo: switch
+        if(subjectPre.contains(".")) {
+
+            int startSubject = subjectPre.indexOf(".");
+            String subjectKey = subjectPre.substring(startSubject + 1).trim();
+
+            Object subjectObj = getValueRecursive(0, subjectKey, obj);
+            String subject = String.valueOf(subjectObj);
+
+            String[] predicateKeys = predicatePre.split("\\.");
+            String key = predicateKeys[0];
+            String field = predicateKeys[1];
+
+            Object keyObj = httpResponse.get(key);
+            Field fieldObj = keyObj.getClass().getDeclaredField(field);
+            fieldObj.setAccessible(true);
+            String predicate = String.valueOf(fieldObj.get(keyObj));
+
+            if(predicate.equals(subject) && condition.equals("!=")){
+                ignore = getIgnoreEntries(a8, stop);
+            }
+            if(!predicate.equals(subject) && condition.equals("==")){
+                ignore = getIgnoreEntries(a8, stop);
+            }
+
+        }else{
+            //todo: one key
+        }
+        String a = entries.get(a8);
+        String b = entries.get(stop);
+        return ignore;
+    }
+
+    private void setVariable(String entry, HttpResponse httpResponse) throws NoSuchFieldException, IllegalAccessException {
+        int startVariable = entry.indexOf("variable=\"");
+        int endVariable = entry.indexOf("\"", startVariable + 10);
+        //music.
+        String variableKey = entry.substring(startVariable + 10, endVariable);
+
+        int startValue = entry.indexOf("value=\"");
+        int endValue = entry.indexOf("\"", startValue + 7);
+
+        String valueKey;
+        if(entry.contains("value=\"${")){
+            valueKey = entry.substring(startValue + 9, endValue);
+        }else{
+            valueKey = entry.substring(startValue + 7, endValue);
+        }
+
+        if(valueKey.contains(".")){
+            valueKey = valueKey.replace("}", "");
+            String[] keys = valueKey.split("\\.");
+            String key = keys[0];
+            if(httpResponse.data().containsKey(key)) {
+                Object obj = httpResponse.get(key);
+                String field = keys[1];
+                Field fieldObj = obj.getClass().getDeclaredField(field);
+                fieldObj.setAccessible(true);
+                Object valueObj = fieldObj.get(obj);
+                String value = String.valueOf(valueObj);
+                httpResponse.set(variableKey, value);
+            }
+        }else{
+            httpResponse.set(variableKey, valueKey);
+        }
+
+    }
+
+
+    private void setEachVariable(String entry, HttpResponse httpResponse, Object obj) throws NoSuchFieldException, IllegalAccessException {
+        int startVariable = entry.indexOf("variable=\"");
+        int endVariable = entry.indexOf("\"", startVariable + 10);
+
+        String variableKey = entry.substring(startVariable + 10, endVariable);
+
+        int startValue = entry.indexOf("value=\"");
+        int endValue = entry.indexOf("\"", startValue + 7);
+
+        String valueKey;
+        if(entry.contains("value=\"${")){
+            valueKey = entry.substring(startValue + 9, endValue);
+        }else{
+            valueKey = entry.substring(startValue + 7, endValue);
+        }
+
+        if(valueKey.contains(".")){
+            Object value = getValueRecursive(0, valueKey, obj);
+            httpResponse.set(variableKey, String.valueOf(value));
+        }else{
+            httpResponse.set(variableKey, valueKey);
+        }
+
+    }
 
     private void evaluatePointcuts(HttpRequest request, HttpExchange exchange, List<String> entries, Map<String, Pointcut> pointcuts) {
 
@@ -81,8 +210,8 @@ public class UxProcessor {
             for(int a6 = 0; a6 < entries.size(); a6++) {
                 String entryBase = entries.get(a6);
 
-                if(entryBase.startsWith("<!--"))entries.set(a6, "");
-                if(entryBase.startsWith("<%--"))entries.set(a6, "");
+                if(entryBase.trim().startsWith("<!--"))entries.set(a6, "");
+                if(entryBase.trim().startsWith("<%--"))entries.set(a6, "");
 
                 if(entryBase.contains(rabbleDos) &&
                         !pointcut.isEvaluation()){
@@ -161,23 +290,72 @@ public class UxProcessor {
                     String field = keys[1].trim();
 
                     if (httpResponse.data().containsKey(objName)) {
-                        Object obj = httpResponse.get(objName);
-                        Field fieldObj = obj.getClass().getDeclaredField(field);
-                        if(!field.equals("")) {
+
+                        if(predicate != null && predicate.equals("")) {
+
+                            Object obj = httpResponse.get(objName);
+                            Field fieldObj = obj.getClass().getDeclaredField(field);
+
                             fieldObj.setAccessible(true);
                             Object valueObj = fieldObj.get(obj);
-
+                            Type type = fieldObj.getType();
                             String value = String.valueOf(valueObj);
-                            if (value.equals(predicate) && condition.equals("!=")) {
-                                clearUxPartial(a6, stop, entries);
-                            }
-                            if (!value.equals(predicate) && condition.equals("==")) {
-                                clearUxPartial(a6, stop, entries);
+
+                            //todo: test the following
+                            switch (type.getTypeName()) {
+                                case "java.lang.String":
+
+                                    if (value.equals(predicate) && condition.equals("!=")) {
+                                        clearUxPartial(a6, stop, entries);
+                                    }
+                                    if (!value.equals(predicate) && condition.equals("==")) {
+                                        clearUxPartial(a6, stop, entries);
+                                    }
+                                    break;
+
+                                case "java.lang.Integer":
+
+                                    Integer valueInt = Integer.valueOf(value);
+                                    Integer predicateInt = Integer.valueOf(predicate);
+                                    if (valueInt.equals(predicateInt) && condition.equals("!=")) {
+                                        clearUxPartial(a6, stop, entries);
+                                    }
+                                    if (!valueInt.equals(predicateInt) && condition.equals("==")) {
+                                        clearUxPartial(a6, stop, entries);
+                                    }
+                                    break;
+
+                                case "java.lang.Boolean":
+
+                                    Boolean valueBool = Boolean.valueOf(value);
+                                    Boolean predicateBool = Boolean.valueOf(predicate);
+                                    if (valueBool.equals(predicateBool) && condition.equals("!=")) {
+                                        clearUxPartial(a6, stop, entries);
+                                    }
+                                    if (!valueBool.equals(predicateBool) && condition.equals("==")) {
+                                        clearUxPartial(a6, stop, entries);
+                                    }
+                                    break;
+
+
+                                case "java.math.BigDecimal":
+
+                                    BigDecimal valueBd = new BigDecimal(value);
+                                    BigDecimal predicateBd = new BigDecimal(predicate);
+                                    if (valueBd.equals(predicateBd) && condition.equals("!=")) {
+                                        clearUxPartial(a6, stop, entries);
+                                    }
+                                    if (!valueBd.equals(predicateBd) && condition.equals("==")) {
+                                        clearUxPartial(a6, stop, entries);
+                                    }
+                                    break;
+                                default:
+                                    break;
+
                             }
 
-                        }else{
-                            clearUxPartial(a6, stop, entries);
                         }
+
                     }else{
                         clearUxPartial(a6, stop, entries);
                     }
@@ -229,32 +407,69 @@ public class UxProcessor {
             }
         }else{
             boolean notTrueExists = false;
-            String subject = parts[0].trim();
-            if (subject.startsWith("!")) {
+            String subjectPre = parts[0].trim();
+            if (subjectPre.startsWith("!")) {
                 notTrueExists = true;
-                subject = subject.replace("!", "");
+                subjectPre = subjectPre.replace("!", "");
             }
 
-            if (httpResponse.data().containsKey(subject)) {
-                Object obj = httpResponse.get(subject);
-                Boolean isTrue = Boolean.valueOf(String.valueOf(obj));
-                if (isTrue == true && notTrueExists == true) {
-                    clearUxPartial(a6, stop, entries);
+            //todo : resolve
+            if(subjectPre.contains(".")) {
+                String[] keys = subjectPre.split("\\.");
+                String subject = keys[0];
+                int startField = subjectPre.indexOf(".");
+                String field = subjectPre.substring(startField + 1);
+                if (httpResponse.data().containsKey(subject)) {
+                    Object obj = httpResponse.get(subject);
+                    Field fieldObj = obj.getClass().getDeclaredField(field);
+                    fieldObj.setAccessible(true);
+                    Object valueObj = fieldObj.get(obj);
+
+                    Boolean isTrue = Boolean.valueOf(String.valueOf(valueObj));
+                    if (isTrue == true && notTrueExists == true) {
+                        clearUxPartial(a6, stop, entries);
+                    }
+                    if (isTrue == false && notTrueExists == false) {
+                        clearUxPartial(a6, stop, entries);
+                    }
+                } else {
+                    if (!notTrueExists) {
+                        clearUxPartial(a6, stop, entries);
+                    }
                 }
-                if(isTrue == false && notTrueExists == false){
-                    clearUxPartial(a6, stop, entries);
-                }
+
+
             }else{
-                if(!notTrueExists){
-                    clearUxPartial(a6, stop, entries);
+                if (httpResponse.data().containsKey(subjectPre)) {
+                    Object obj = httpResponse.get(subjectPre);
+                    Boolean isTrue = Boolean.valueOf(String.valueOf(obj));
+                    if (isTrue == true && notTrueExists == true) {
+                        clearUxPartial(a6, stop, entries);
+                    }
+                    if (isTrue == false && notTrueExists == false) {
+                        clearUxPartial(a6, stop, entries);
+                    }
+                } else {
+                    if (!notTrueExists) {
+                        clearUxPartial(a6, stop, entries);
+                    }
                 }
             }
+
         }
 
         entries.set(a6, "");
         entries.set(stop, "");
         entry.replace(expressionNite, "condition issue : '" + expression + "'");
 
+    }
+
+    private List<Integer> getIgnoreEntries(int a6, int stop) {
+        List<Integer> ignore = new ArrayList<>();
+        for (int a4 = a6; a4 < stop; a4++) {
+            ignore.add(a4);
+        }
+        return ignore;
     }
 
     private void clearUxPartial(int a6, int stop, List<String> entries) {
@@ -291,6 +506,13 @@ public class UxProcessor {
         return false;
     }
 
+    private int getEachConditionStop(int a6, List<String> entries){
+        for(int a5 = a6 + 1; a5 < entries.size(); a5++){
+            if(entries.get(a5).contains("</a:if>"))return a5;
+        }
+        return a6;
+    }
+
     private int getConditionStop(int a6, List<String> entries) {
         int startCount = 1;
         int endCount = 0;
@@ -319,7 +541,7 @@ public class UxProcessor {
         return "";
     }
 
-    private void iterateEvaluate(Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException, A8iException {
+    private void iterateEvaluate(Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException, A8iException, NoSuchMethodException, InvocationTargetException {
         for(int a6 = iterable.getStart(); a6 < iterable.getStop(); a6++){
             String entryBase = entries.get(a6);
             String entry = evaluateEntry(0, 0, iterable.getField(), entryBase, httpResponse);
@@ -344,7 +566,7 @@ public class UxProcessor {
         }
     }
 
-    private void resolveIterable(StringBuilder eachOut, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException, A8iException {
+    private void resolveIterable(StringBuilder eachOut, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException, A8iException, NoSuchMethodException, InvocationTargetException {
         for(int a7 = 0; a7 < iterable.getPojos().size(); a7++){
             Object obj = iterable.getPojos().get(a7);
             for(int a8 = iterable.getStart(); a8 < iterable.getStop(); a8++){
@@ -358,6 +580,7 @@ public class UxProcessor {
     private void evaluateEachEntry(String entry, StringBuilder output, Object obj, String activeKey) throws NoSuchFieldException, IllegalAccessException {
         if(entry.contains("<a:each"))return;
         if(entry.contains("</a:each>"))return;
+        if(entry.contains("<a:if condition"))return;
 
         if(entry.contains("${")) {
 
@@ -558,10 +781,11 @@ public class UxProcessor {
         return null;
     }
 
-    private String evaluateEntry(int idx, int start, String activeField, String entry, HttpResponse httpResponse) throws NoSuchFieldException, IllegalAccessException, A8iException {
+    private String evaluateEntry(int idx, int start, String activeField, String entry, HttpResponse httpResponse) throws NoSuchFieldException, IllegalAccessException, A8iException, NoSuchMethodException, InvocationTargetException {
 
         if(entry.contains("${") &&
-                !entry.contains("<a:each")) {
+                !entry.contains("<a:each") &&
+                    !entry.contains("<a:if")) {
 
             int startExpression = entry.indexOf("${", start);
             if(startExpression == -1)return entry;
@@ -582,12 +806,25 @@ public class UxProcessor {
 
                         int startField = fieldBase.indexOf(".");
                         String passiton = fieldBase.substring(startField + 1);
-                        Object value = getValueRecursive(0, passiton, obj);
-                        if(value != null) {
-                            entry = entry.replace(expression, String.valueOf(value));
-                        }else if(activeField.equals("")){
-                            //make empty!
-                            entry = entry.replace(expression, "");
+
+                        //todo: allow for parameters?
+                        if(passiton.contains("()")){
+                            String method = passiton.replace("(", "")
+                                    .replace(")", "");
+                            try {
+                                Method methodObj = obj.getClass().getDeclaredMethod(method);
+                                Object valueObj = methodObj.invoke(obj);
+                                String value = String.valueOf(valueObj);
+                                entry = entry.replace(expression, value);
+                            }catch(Exception ex){}
+                        }else {
+                            Object value = getValueRecursive(0, passiton, obj);
+                            if (value != null) {
+                                entry = entry.replace(expression, String.valueOf(value));
+                            } else if (activeField.equals("")) {
+                                //make empty!
+                                entry = entry.replace(expression, "");
+                            }
                         }
 
                     }else if(activeField.equals("")){

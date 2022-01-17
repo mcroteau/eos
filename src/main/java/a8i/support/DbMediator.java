@@ -13,7 +13,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import static a8i.A8i.DATASOURCE;
-import static a8i.A8i.command;
 
 public class DbMediator {
 
@@ -47,14 +46,13 @@ public class DbMediator {
             DataSource datasource = (DataSource) a8i.getElement(DATASOURCE);
 
             if (datasource == null) {
-                command("\n");
                 throw new Exception("\n\n           " +
-                        "You have a8i.dev set to true in a8i.props.\n           " +
+                        "You have a8i.env set to create or create,drop in a8i.props.\n           " +
                         "In addition you need to configure a datasource. \n           " +
                         "Feel free to use a8i.jdbc.BasicDataSource to " +
                         "get started.\n" +
                         "           " +
-                        "You can also checkout HikariCP, it is awesome!" +
+                        "You can also checkout HikariCP, it is great!" +
                         "\n\n" +
                         "           https://github.com/brettwooldridge/HikariCP\n\n\n");
             }

@@ -126,4 +126,18 @@ public class HttpRequest {
         return null;
     }
 
+    public void setValues(String parameters) {
+        String[] keyValues = parameters.split("&");
+        for(String keyValue : keyValues){
+            String[] parts = keyValue.split("=");
+            if(parts.length > 1){
+                String key = parts[0];
+                String value = parts[1];
+                FormElement formElement = new FormElement();
+                formElement.setName(key);
+                formElement.setValue(value);
+                elements.put(key, formElement);
+            }
+        }
+    }
 }

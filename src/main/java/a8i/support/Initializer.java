@@ -9,7 +9,6 @@ import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Map;
 
 import static a8i.A8i.DBMEDIATOR;
 import static a8i.A8i.command;
@@ -27,30 +26,19 @@ public class Initializer {
             return this;
         }
         private void setAttributes(){
-            A8i a8icopy = createMethodOnlyVersion(a8i);
             Element element = new Element();
-            element.setElement(a8icopy);
+            element.setElement(a8i);
             a8i.getElementStorage().getElements().put(A8i.A8i, element);
             if(a8i.getResources() == null) a8i.setResources(new ArrayList<>());
             if(a8i.getPropertiesFiles() == null) a8i.setPropertiesFiles(new ArrayList<>());
         }
 
-        private A8i createMethodOnlyVersion(A8i a8i) {
-            A8i a8icopy = a8i;
-            for(Map.Entry<String, Element> entry: a8i.getElements().entrySet()){
-                a8icopy.getElements().remove(entry.getKey());
-            }
-            return a8icopy;
-        }
-
         private void initDatabase() throws Exception{
-            if (a8i.createDb){
-                DbMediator mediator = new DbMediator(a8i);
-                Element element = new Element();
-                element.setElement(mediator);
-                a8i.getElementStorage().getElements().put(DBMEDIATOR, element);
-                mediator.createDb();
-            }
+            DbMediator mediator = new DbMediator(a8i);
+            Element element = new Element();
+            element.setElement(mediator);
+            a8i.getElementStorage().getElements().put(DBMEDIATOR, element);
+            mediator.createDb();
         }
 
         private void validateDatasource() throws Exception {
