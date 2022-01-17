@@ -1,7 +1,6 @@
 # A8i/
 
-A8i is an Open Source Java Web Server built on 
-the com.sun.net.httpserver.HttpExchange. 
+A8i is an Open Source Java Web Server.
 An alternative to Tomcat & Jetty with built in 
 dependency injection, request routing and data management. 
 Also, if you are tired of deploying war files, 
@@ -20,6 +19,7 @@ public static void main(String[] arguments){
 ```
 
 ### What is a pointcut?
+
 
 ### Built-in view tag library
 The tag library is really a work in progress! Just the bare minimum 
