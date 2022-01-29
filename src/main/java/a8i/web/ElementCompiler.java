@@ -70,9 +70,8 @@ public class ElementCompiler {
                     FormElement element = new FormElement();
                     String[] keyValue = entry.split("=", 2);
                     String key = keyValue[0];
-                    String value = keyValue[1];
-                    value = value.replaceAll("/[\\r\\n]+/gm", "");
-                    if (keyValue.length > 1) {
+                    if(keyValue.length > 1){
+                        String value = keyValue[1];
                         element.setName(key);
                         element.setValue(value);
                     }else{

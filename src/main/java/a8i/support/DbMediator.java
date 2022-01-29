@@ -1,6 +1,7 @@
 package a8i.support;
 
 import a8i.A8i;
+import a8i.model.Element;
 import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
@@ -9,10 +10,12 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.sql.Connection;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import static a8i.A8i.DATASOURCE;
+import static a8i.A8i.command;
 
 public class DbMediator {
 

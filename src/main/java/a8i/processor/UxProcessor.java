@@ -12,10 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class UxProcessor {
 
@@ -113,20 +110,31 @@ public class UxProcessor {
             Object subjectObj = getValueRecursive(0, subjectKey, obj);
             String subject = String.valueOf(subjectObj);
 
-            String[] predicateKeys = predicatePre.split("\\.");
-            String key = predicateKeys[0];
-            String field = predicateKeys[1];
+            if(predicatePre.equals("null")){
 
-            Object keyObj = httpResponse.get(key);
-            Field fieldObj = keyObj.getClass().getDeclaredField(field);
-            fieldObj.setAccessible(true);
-            String predicate = String.valueOf(fieldObj.get(keyObj));
+                if(subjectObj == null && condition.equals("!=")){
+                    ignore = getIgnoreEntries(a8, stop);
+                }
+                if(subjectObj != null && condition.equals("==")){
+                    ignore = getIgnoreEntries(a8, stop);
+                }
 
-            if(predicate.equals(subject) && condition.equals("!=")){
-                ignore = getIgnoreEntries(a8, stop);
-            }
-            if(!predicate.equals(subject) && condition.equals("==")){
-                ignore = getIgnoreEntries(a8, stop);
+            }else {
+                String[] predicateKeys = predicatePre.split("\\.");
+                String key = predicateKeys[0];
+                String field = predicateKeys[1];
+
+                Object keyObj = httpResponse.get(key);
+                Field fieldObj = keyObj.getClass().getDeclaredField(field);
+                fieldObj.setAccessible(true);
+                String predicate = String.valueOf(fieldObj.get(keyObj));
+
+                if (predicate.equals(subject) && condition.equals("!=")) {
+                    ignore = getIgnoreEntries(a8, stop);
+                }
+                if (!predicate.equals(subject) && condition.equals("==")) {
+                    ignore = getIgnoreEntries(a8, stop);
+                }
             }
 
         }else{
