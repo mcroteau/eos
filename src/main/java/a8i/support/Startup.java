@@ -31,6 +31,11 @@ public class Startup {
         repoElement.setElement(repo);
         cache.getElementStorage().getElements().put(A8i.REPO, repoElement);
 
+        Element utilElement = new Element();
+        A8i.Util util = new A8i.Util();
+        utilElement.setElement(util);
+        cache.getElementStorage().getElements().put(A8i.UTIL, utilElement);
+
         if(cache.getResources() == null) cache.setResources(new ArrayList<>());
         if(cache.getPropertiesFiles() == null) cache.setPropertiesFiles(new ArrayList<>());
     }

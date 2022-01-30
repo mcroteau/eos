@@ -1,0 +1,41 @@
+<html>
+<head>
+    <title>Todos</title>
+</head>
+<body>
+
+    <h1>Todos</h1>
+
+    <c:if test="${message != ''}">
+        <p id="notify">${message}</p>
+    </c:if>
+
+    <a href="/todos/create">New Todo</a>
+
+    <a:if condition="${todos.size() > 0}">
+        <table>
+            <a:each items="${todos}" var="todo">
+                <tr>
+                    <td>${todo.id}</td>
+                    <td>
+                        <a href="/todos/edit/${todo.id}" id="todo-${todo.id}">${todo.title}</a>
+                    </td>
+                    <td>
+                        <form action="/todos/delete/${todo.id}" method="post">
+                            <input type="submit" value="Delete" id="delete-${todo.id}"/>
+                        </form>
+                    </td>
+                </tr>
+            </a:each>
+        </table>
+
+        <p>Count: <span id="count">${todos.size()}</span></p>
+    </a:if>
+
+
+    <a:if condition="${todos.size() == 0}">
+        <p>No todos created yet...</p>
+    </a:if>
+
+</body>
+</html>

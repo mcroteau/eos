@@ -1,0 +1,20 @@
+<html>
+<head>
+    <title>Edit Todo</title>
+</head>
+<body>
+    <h1>Edit Todo</h1>
+
+    <c:if test="${message != ''}">
+        <p id="notify">${message}</p>
+    </c:if>
+
+    <p><a href="/todos">Back to Todos</a></p>
+
+    <form action="/todos/update/${todo.id}" method="post">
+        <input type="text" name="title" value="${todo.title}" id="title"/>
+        <input type="submit" value="Update" id="update"/>
+    </form>
+
+</body>
+</html>

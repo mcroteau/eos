@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 public class A8i {
 
     public static final String REPO         = "repo";
+    public static final String UTIL         = "util";
     public static final String SECURITYTAG  = "a8i.sessions";
     public static final String DBMEDIATOR   = "dbmediator";
     public static final String DATASOURCE   = "datasource";
@@ -229,11 +230,11 @@ public class A8i {
             this.dataSource = dataSource;
         }
 
-        public Object getEntity(String preSql, Object[] params, Class<?> cls) {
+        public Object get(String sqlPre, Object[] params, Class<?> cls) {
             Object result = null;
             String sql = "";
             try {
-                sql = hydrateSql(preSql, params);
+                sql = hydrateSql(sqlPre, params);
                 Connection connection = dataSource.getConnection();
                 Statement stmt = connection.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
@@ -258,11 +259,11 @@ public class A8i {
             return result;
         }
 
-        public Integer getInteger(String preSql, Object[] params) {
+        public Integer getInteger(String sqlPre, Object[] params) {
             Integer result = null;
             String sql = "";
             try {
-                sql = hydrateSql(preSql, params);
+                sql = hydrateSql(sqlPre, params);
                 Connection connection = dataSource.getConnection();
                 Statement stmt = connection.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
@@ -288,11 +289,11 @@ public class A8i {
             return result;
         }
 
-        public Long getLong(String preSql, Object[] params) {
+        public Long getLong(String sqlPre, Object[] params) {
             Long result = null;
             String sql = "";
             try {
-                sql = hydrateSql(preSql, params);
+                sql = hydrateSql(sqlPre, params);
                 Connection connection = dataSource.getConnection();
                 Statement stmt = connection.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
@@ -317,9 +318,9 @@ public class A8i {
             return result;
         }
 
-        public boolean saveEntity(String preSql, Object[] params) {
+        public boolean save(String sqlPre, Object[] params) {
             try {
-                String sql = hydrateSql(preSql, params);
+                String sql = hydrateSql(sqlPre, params);
                 Connection connection = dataSource.getConnection();
                 Statement stmt = connection.createStatement();
                 stmt.execute(sql);
@@ -332,10 +333,10 @@ public class A8i {
             return true;
         }
 
-        public List<Object> getList(String preSql, Object[] params, Class cls) {
+        public List<Object> getList(String sqlPre, Object[] params, Class cls) {
             List<Object> results = new ArrayList<>();
             try {
-                String sql = hydrateSql(preSql, params);
+                String sql = hydrateSql(sqlPre, params);
                 Connection connection = dataSource.getConnection();
                 Statement stmt = connection.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
@@ -357,9 +358,9 @@ public class A8i {
             return results;
         }
 
-        public boolean updateEntity(String preSql, Object[] params) {
+        public boolean update(String sqlPre, Object[] params) {
             try {
-                String sql = hydrateSql(preSql, params);
+                String sql = hydrateSql(sqlPre, params);
                 Connection connection = dataSource.getConnection();
                 Statement stmt = connection.createStatement();
                 Boolean rs = stmt.execute(sql);
@@ -372,9 +373,9 @@ public class A8i {
             return true;
         }
 
-        public boolean deleteEntity(String preSql, Object[] params) {
+        public boolean delete(String sqlPre, Object[] params) {
             try {
-                String sql = hydrateSql(preSql, params);
+                String sql = hydrateSql(sqlPre, params);
 
                 Connection connection = dataSource.getConnection();
                 Statement stmt = connection.createStatement();
