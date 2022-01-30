@@ -16,11 +16,13 @@ import java.util.Map;
 public class AnnotationProcessor {
 
     A8i.Cache cache;
+    A8i.Util util;
     Map<String, ObjectDetails> processed;
     List<ObjectDetails> annotations;
 
-    public AnnotationProcessor(A8i.Cache cache){
+    public AnnotationProcessor(A8i.Cache cache, A8i.Util util){
         this.cache = cache;
+        this.util = util;
         this.processed = new HashMap<>();
         this.annotations = new ArrayList<>();
         map();
@@ -77,7 +79,7 @@ public class AnnotationProcessor {
                     processedFieldsCount){
                 processAnnotations( z + 1);
             }else{
-                String key = A8i.Assets.getName(objectDetails.getName());
+                String key = util.getName(objectDetails.getName());
                 processed.put(key, objectDetails);
             }
         }

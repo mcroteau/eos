@@ -28,7 +28,7 @@ public class DbMediator {
 
     public Boolean createDb() throws Exception {
 
-        String artifactPath = A8i.Assets.getResourceUri();
+        String artifactPath = A8i.Util.getResourceUri();
 
         A8i.Conditionals conditionals = cache.getConditionals();
         if(!conditionals.isNoAction() &&
@@ -36,14 +36,14 @@ public class DbMediator {
 
             StringBuilder createSql;
             if (cache.isFat()) {
-                JarFile jarFile = A8i.Assets.getJarFile();
+                JarFile jarFile = A8i.Util.getJarFile();
                 JarEntry jarEntry = jarFile.getJarEntry(CREATEDB_URI);
                 InputStream in = jarFile.getInputStream(jarEntry);
-                createSql = A8i.Assets.convert(in);
+                createSql = A8i.Util.convert(in);
             } else {
                 File createFile = new File(artifactPath + File.separator + "create-db.sql");
                 InputStream in = new FileInputStream(createFile);
-                createSql = A8i.Assets.convert(in);
+                createSql = A8i.Util.convert(in);
             }
 
             DataSource datasource = (DataSource) cache.getElement(DATASOURCE);

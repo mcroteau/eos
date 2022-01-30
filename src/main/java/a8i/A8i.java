@@ -68,7 +68,7 @@ public class A8i {
         }
 
         public void setup() {
-            this.isFat = A8i.Assets.isFat();
+            this.isFat = A8i.Util.isFat();
             this.dataSource = (DataSource) this.getElement("datasource");
         }
 
@@ -187,13 +187,13 @@ public class A8i {
         }
 
         public boolean registerPointcut(Pointcut pointcut){
-            String key = A8i.Assets.getName(pointcut.getClass().getName());
+            String key = A8i.Util.getName(pointcut.getClass().getName());
             this.pointcuts.put(key, pointcut);
             return true;
         }
 
         public boolean registerInterceptor(Interceptor interceptor){
-            String key = A8i.Assets.getName(interceptor.getClass().getName());
+            String key = A8i.Util.getName(interceptor.getClass().getName());
             this.interceptors.put(key, interceptor);
             return true;
         }
@@ -460,7 +460,7 @@ public class A8i {
     }
 
 
-    public static class Assets {
+    public static class Util {
 
         public static String SESSION_GUID(int z) {
             String CHARS = ".01234567890";
@@ -476,7 +476,7 @@ public class A8i {
 
         public static String getProject() {
             if(isFat()) {
-                JarFile jarFile = A8i.Assets.getJarFile();
+                JarFile jarFile = A8i.Util.getJarFile();
                 String path = jarFile.getName();
                 String[] bits = path.split("/");
                 if(bits.length == 0){
@@ -490,7 +490,7 @@ public class A8i {
 
         public static String getMain(){
             try {
-                JarFile jarFile = A8i.Assets.getJarFile();
+                JarFile jarFile = A8i.Util.getJarFile();
                 JarEntry jarEntry = jarFile.getJarEntry("META-INF/MANIFEST.MF");
                 InputStream in = jarFile.getInputStream(jarEntry);
                 Scanner scanner = new Scanner(in);
@@ -583,7 +583,7 @@ public class A8i {
         }
 
         public static Enumeration getJarEntries(){
-            JarFile jarFile = A8i.Assets.getJarFile();
+            JarFile jarFile = A8i.Util.getJarFile();
             return jarFile.entries();
         }
 
@@ -602,7 +602,7 @@ public class A8i {
         public static boolean isFat(){
             String uri = null;
             try {
-                uri = A8i.Assets.getUri();
+                uri = A8i.Util.getUri();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -620,7 +620,7 @@ public class A8i {
                 return classesUri;
             }
 
-            classesUri = A8i.Assets.class.getResource("").toURI().toString();
+            classesUri = A8i.Util.class.getResource("").toURI().toString();
             if(classesUri == null){
                 throw new Exception("A8i : unable to locate class uri");
             }

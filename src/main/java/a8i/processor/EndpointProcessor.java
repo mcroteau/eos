@@ -30,7 +30,7 @@ public class EndpointProcessor {
     EndpointMappings endpointMappings;
 
     public EndpointProcessor(A8i.Cache cache){
-        this.storage = storage;
+        this.cache = cache;
         this.processed = new HashMap<>();
         this.endpointMappings = new EndpointMappings();
     }
@@ -43,11 +43,11 @@ public class EndpointProcessor {
     }
 
     private boolean allAnnotationsProcessed(){
-        return this.processed.size() == storage.getElementProcessor().getHttpClasses().size();
+        return this.processed.size() == cache.getElementProcessor().getHttpClasses().size();
     }
 
     private void processWebAnnotations() throws Exception{
-        for(Map.Entry<String, ObjectDetails> entry : storage.getElementProcessor().getHttpClasses().entrySet()){
+        for(Map.Entry<String, ObjectDetails> entry : cache.getElementProcessor().getHttpClasses().entrySet()){
             Class clazz = entry.getValue().getClazz();
             Method[] methods = clazz.getDeclaredMethods();
             for(Method method: methods){

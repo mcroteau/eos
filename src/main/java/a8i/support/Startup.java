@@ -11,12 +11,14 @@ import java.util.ArrayList;
 
 public class Startup {
 
-    final String PROJECT_NAME = A8i.Assets.getProject();
+    final String PROJECT_NAME = A8i.Util.getProject();
 
     A8i.Cache cache;
+    A8i.Util util;
 
-    public Startup(A8i.Cache cache){
+    public Startup(A8i.Cache cache, A8i.Util util){
         this.cache = cache;
+        this.util = util;
     }
 
     private void setAttributes(){
@@ -41,7 +43,6 @@ public class Startup {
         mediator.createDb();
     }
 
-
     private void dispatchEvent() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         if(cache.getEvents() != null) {
             Method setupComplete = cache.getEvents().getClass().getDeclaredMethod("setupComplete", A8i.class);
@@ -60,12 +61,12 @@ public class Startup {
     private void runConfigProcessor() throws Exception {
         if(cache.getElementProcessor().getConfigs() != null &&
                 cache.getElementProcessor().getConfigs().size() > 0){
-            new ConfigurationProcessor(cache).run();
+            new ConfigurationProcessor(cache, util).run();
         }
     }
 
     private void runAnnotationProcessor() throws Exception {
-        new AnnotationProcessor(cache).run();
+        new AnnotationProcessor(cache, util).run();
     }
 
     private void runEndpointProcessor() throws Exception {
@@ -76,12 +77,12 @@ public class Startup {
 
     private void runPropertiesProcessor() throws Exception {
         if(!cache.getPropertiesFiles().isEmpty()) {
-            new PropertiesProcessor(cache).run();
+            new PropertiesProcessor(cache, util).run();
         }
     }
 
     private void runInstanceProcessor() throws Exception {
-        new InstanceProcessor(cache).run();
+        new InstanceProcessor(cache, util).run();
     }
 
     private void runProcessors() throws Exception {

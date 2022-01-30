@@ -12,9 +12,11 @@ import java.util.Properties;
 public class PropertiesProcessor {
 
     A8i.Cache cache;
+    A8i.Util util;
 
-    public PropertiesProcessor(A8i.Cache cache){
+    public PropertiesProcessor(A8i.Cache cache, A8i.Util util){
         this.cache = cache;
+        this.util = util;
     }
 
     protected InputStream getPropertiesFile(String propertyFile) throws Exception{
@@ -22,7 +24,7 @@ public class PropertiesProcessor {
         InputStream is = this.getClass().getResourceAsStream(A8i.RESOURCES + propertyFile);
 
         if(is == null) {
-            String resourceUri = A8i.Assets.getResourceUri();
+            String resourceUri = util.getResourceUri();
             File file = new File(resourceUri + File.separator + propertyFile);
             if(!file.exists()) {
                 throw new Exception(propertyFile + " properties file cannot be located...");

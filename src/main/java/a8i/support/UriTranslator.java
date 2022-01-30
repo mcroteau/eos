@@ -21,7 +21,7 @@ public class UriTranslator {
         }
         if(uri.endsWith("/") &&
                 !uri.equals("/")){
-            uri = A8i.Assets.removeLast(uri);
+            uri = util.removeLast(uri);
         }
         return uri;
     }

@@ -15,6 +15,7 @@ import java.util.*;
 public class ConfigurationProcessor {
 
     A8i.Cache cache;
+    A8i.Util util;
 
     Map<String, MethodFeature> methods;
     List<MethodFeature> iterableMethods;
@@ -22,8 +23,9 @@ public class ConfigurationProcessor {
 
     Map<String, Integer> issues;
 
-    public ConfigurationProcessor(A8i.Cache cache) throws Exception{
+    public ConfigurationProcessor(A8i.Cache cache, A8i.Util util) throws Exception{
         this.cache = cache;
+        this.util = util;
         this.methods = new HashMap<>();
         this.processedMethods = new HashSet();
         this.iterableMethods = new ArrayList<>();
@@ -47,13 +49,13 @@ public class ConfigurationProcessor {
         for(Integer z = idx; z < iterableMethods.size(); z++){
             MethodFeature methodFeature = iterableMethods.get(z);
             Method method = methodFeature.getMethod();
-            String methodName = A8i.Assets.getName(method.getName());
+            String methodName = util.getName(method.getName());
             Object object = methodFeature.getObject();
 
             try {
 
                 Object dependency = method.invoke(object);
-                String clsName = A8i.Assets.getName(dependency.getClass().getName());
+                String clsName = util.getName(dependency.getClass().getName());
 
                 if(cache.getObjects().get(clsName) != null){
                     cache.getObjects().get(clsName).setObject(dependency);
@@ -107,7 +109,7 @@ public class ConfigurationProcessor {
     protected void createAddElement(Method method, Object object){
         Element element = new Element();
         element.setElement(object);
-        String classKey = A8i.Assets.getName(method.getName());
+        String classKey = util.getName(method.getName());
         cache.getElementStorage().getElements().put(classKey, element);
     }
 

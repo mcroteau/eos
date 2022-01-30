@@ -33,7 +33,7 @@ public class ExchangeStartup {
 
         if(is == null) {
             try {
-                String uri = A8i.Assets.getResourceUri() + File.separator + "a8i.properties";
+                String uri = A8i.Util.getResourceUri() + File.separator + "a8i.properties";
                 is = new FileInputStream(uri);
             } catch (FileNotFoundException fe) {}
         }
@@ -127,8 +127,8 @@ public class ExchangeStartup {
         cache.setPointcuts(pointcuts);
         cache.setup();
 
-
-        Startup startup = new Startup(cache);
+        A8i.Util util = new A8i.Util();
+        Startup startup = new Startup(cache, util);
         startup.start();
     }
 

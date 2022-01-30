@@ -40,11 +40,11 @@ public class HttpTransmission implements HttpHandler {
         try {
 
             InputStream is = httpExchange.getRequestBody();
-            byte[] payloadBytes = A8i.Assets.getPayloadBytes(is);
+            byte[] payloadBytes = A8i.Util.getPayloadBytes(is);
 
             ElementCompiler requestCompiler = new ElementCompiler(payloadBytes, sessions, httpExchange);
             HttpRequest httpRequest = requestCompiler.compile();
-            String payload = A8i.Assets.getPayload(payloadBytes);
+            String payload = A8i.Util.getPayload(payloadBytes);
             httpRequest.setRequestBody(payload);
 
 

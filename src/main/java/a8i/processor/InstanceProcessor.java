@@ -14,12 +14,15 @@ import java.util.jar.JarFile;
 public class InstanceProcessor {
 
     A8i.Cache cache;
+    A8i.Util util;
+
     ClassLoader cl;
     List<String> jarDeps;
     Map<String, ObjectDetails> objects;
 
-    public InstanceProcessor(A8i.Cache cache){
+    public InstanceProcessor(A8i.Cache cache, A8i.Util util){
         this.cache = cache;
+        this.util = util;
         this.objects = new HashMap<>();
         this.cl = Thread.currentThread().getContextClassLoader();
     }
@@ -31,7 +34,7 @@ public class InstanceProcessor {
         }else{
             String uri = null;
             try {
-                uri = A8i.Assets.getUri();
+                uri = util.getUri();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -44,7 +47,7 @@ public class InstanceProcessor {
     private List<String> setJarDeps(){
         jarDeps = new ArrayList<>();
 
-        Enumeration<JarEntry> entries = A8i.Assets.getJarEntries();
+        Enumeration<JarEntry> entries = util.getJarEntries();
 
         do{
 
@@ -77,7 +80,7 @@ public class InstanceProcessor {
     }
 
     protected Boolean isWithinRunningProgram(String jarEntry){
-        String main = A8i.Assets.getMain();
+        String main = util.getMain();
         String path = main.substring(0, getLastIndxOf(1, ".", main) + 1);
         String jarPath = getPath(jarEntry);
         return jarPath.contains(path) ? true : false;
@@ -210,7 +213,7 @@ public class InstanceProcessor {
     protected ObjectDetails getObjectDetails(Class cls) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         ObjectDetails objectDetails = new ObjectDetails();
         objectDetails.setClazz(cls);
-        objectDetails.setName(A8i.Assets.getName(cls.getName()));
+        objectDetails.setName(util.getName(cls.getName()));
         Object object = getObject(cls);
         objectDetails.setObject(object);
         return objectDetails;
@@ -225,21 +228,6 @@ public class InstanceProcessor {
         } catch (InvocationTargetException e) {
         } catch (NoSuchMethodException e) {
         }
-//        Constructor constructor = null;
-//        Constructor[] constructors = cls.getDeclaredConstructors();
-//        for(Constructor activeConstructor : constructors){
-//            if(activeConstructor.getParameterCount() == 0){
-//                activeConstructor;
-//                break;
-//            }
-//        }
-//        constructor.setAccessible(true);
-//        try {
-//            object = constructor.newInstance();
-//        } catch (InstantiationException e) {
-//        } catch (IllegalAccessException e) {
-//        } catch (InvocationTargetException e) {
-//        }
         return object;
     }
 
