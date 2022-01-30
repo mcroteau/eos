@@ -15,38 +15,38 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import static a8i.A8i.DATASOURCE;
-import static a8i.A8i.command;
 
 public class DbMediator {
 
-    A8i a8i;
+    A8i.Cache cache;
 
     final String CREATEDB_URI = "src/main/resources/create-db.sql";
 
-    public DbMediator(A8i a8i){
-        this.a8i = a8i;
+    public DbMediator(A8i.Cache cache){
+        this.cache = cache;
     }
 
     public Boolean createDb() throws Exception {
 
-        String artifactPath = A8i.getResourceUri(a8i.getContextPath());
+        String artifactPath = A8i.Assets.getResourceUri();
 
-        if(!a8i.noAction &&
-                a8i.createDb) {
+        A8i.Conditionals conditionals = cache.getConditionals();
+        if(!conditionals.isNoAction() &&
+                conditionals.isCreateDb()) {
 
             StringBuilder createSql;
-            if (a8i.isJar()) {
-                JarFile jarFile = a8i.getJarFile();
+            if (cache.isFat()) {
+                JarFile jarFile = A8i.Assets.getJarFile();
                 JarEntry jarEntry = jarFile.getJarEntry(CREATEDB_URI);
                 InputStream in = jarFile.getInputStream(jarEntry);
-                createSql = a8i.convert(in);
+                createSql = A8i.Assets.convert(in);
             } else {
-                File createFile = new File(artifactPath + File.separator + a8i.getDbScript());
+                File createFile = new File(artifactPath + File.separator + "create-db.sql");
                 InputStream in = new FileInputStream(createFile);
-                createSql = a8i.convert(in);
+                createSql = A8i.Assets.convert(in);
             }
 
-            DataSource datasource = (DataSource) a8i.getElement(DATASOURCE);
+            DataSource datasource = (DataSource) cache.getElement(DATASOURCE);
 
             if (datasource == null) {
                 throw new Exception("\n\n           " +
@@ -61,7 +61,7 @@ public class DbMediator {
             }
             Connection conn = datasource.getConnection();
 
-            if(a8i.dropDb) {
+            if(conditionals.isDropDb()) {
                 RunScript.execute(conn, new StringReader("drop all objects;"));
             }
 
@@ -75,20 +75,20 @@ public class DbMediator {
 
     public Boolean dropDb() {
 
-        if(!a8i.noAction &&
-                a8i.dropDb) {
+        A8i.Conditionals conditionals = cache.getConditionals();
+        if(!conditionals.isNoAction() &&
+                conditionals.isCreateDb()) {
 
             try {
 
-                DataSource datasource = (DataSource) a8i.getElement(DATASOURCE);
+                DataSource datasource = (DataSource) cache.getElement(DATASOURCE);
                 Connection conn = datasource.getConnection();
 
                 RunScript.execute(conn, new StringReader("drop all objects;"));
                 conn.commit();
                 conn.close();
 
-            } catch (Exception e) {
-            }
+            } catch (Exception e) {}
 
         }
 

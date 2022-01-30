@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class ElementProcessor {
 
-    A8i a8i;
+    A8i.Cache cache;
     Integer jdbcCount;
     Integer serviceCount;
     Integer elementCount;
@@ -21,8 +21,8 @@ public class ElementProcessor {
     Map<String, ObjectDetails> httpClasses;
     Map<String, ObjectDetails> annotatedClasses;
 
-    public ElementProcessor(A8i a8i){
-        this.a8i = a8i;
+    public ElementProcessor(A8i.Cache cache){
+        this.cache = cache;
         jdbcCount = 0;
         serviceCount = 0;
         elementCount = 0;
@@ -32,13 +32,13 @@ public class ElementProcessor {
     }
 
     public ElementProcessor run() {
-        for (Map.Entry<String, ObjectDetails> entry : a8i.getObjects().entrySet()) {
+        for (Map.Entry<String, ObjectDetails> entry : cache.getObjects().entrySet()) {
             Class cls = entry.getValue().getClazz();
             if (cls.isAnnotationPresent(Config.class)) {
                 configs.add(cls);
             }
         }
-        for (Map.Entry<String, ObjectDetails> entry : a8i.getObjects().entrySet()) {
+        for (Map.Entry<String, ObjectDetails> entry : cache.getObjects().entrySet()) {
             Class cls = entry.getValue().getClazz();
 
             if (cls.isAnnotationPresent(a8i.annotate.Element.class)) {
@@ -59,7 +59,7 @@ public class ElementProcessor {
 
             Field[] fields = cls.getDeclaredFields();
             for (Field field : fields) {
-                if (field.isAnnotationPresent(Inject.class)) {
+                if (field.isAnnotationPresent(Bind.class)) {
                     annotatedClasses.put(entry.getKey(), entry.getValue());
                 }
                 if (field.isAnnotationPresent(Property.class)) {
@@ -87,6 +87,6 @@ public class ElementProcessor {
         String key = entry.getKey();
         Object object = entry.getValue().getObject();
         element.setElement(object);
-        a8i.getElementStorage().getElements().put(key, element);
+        cache.getElementStorage().getElements().put(key, element);
     }
 }

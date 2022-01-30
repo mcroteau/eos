@@ -7,6 +7,5 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Inject {
-    public boolean required() default true;
+public @interface Bind {
 }

@@ -17,6 +17,8 @@ public class ExchangeStartup {
     Map<String, Pointcut> pointcuts;
     Map<String, Interceptor> interceptors;
 
+    A8i.Cache cache;
+
     public ExchangeStartup(Map<String, Pointcut> pointcuts,
                            Map<String, Interceptor> interceptors,
                            UxProcessor uxProcessor){
@@ -25,19 +27,19 @@ public class ExchangeStartup {
         this.interceptors = interceptors;
     }
 
-    public A8i start() throws Exception {
+    public void start() throws Exception {
 
-        InputStream is = this.getClass().getResourceAsStream("/src/main/resources/a8i.props");
+        InputStream is = this.getClass().getResourceAsStream("/src/main/resources/a8i.properties");
 
         if(is == null) {
             try {
-                String uri = A8i.getResourceUri("/") + File.separator + "a8i.props";
+                String uri = A8i.Assets.getResourceUri() + File.separator + "a8i.properties";
                 is = new FileInputStream(uri);
             } catch (FileNotFoundException fe) {}
         }
 
         if (is == null) {
-            throw new Exception("A8i : a8i.props not found in src/main/resources/");
+            throw new Exception("A8i : a8i.properties not found in src/main/resources/");
         }
 
         Properties props = new Properties();
@@ -101,28 +103,36 @@ public class ExchangeStartup {
             }
         }
 
-        List<String> properties = new ArrayList<>();
+        List<String> propertiesFiles = new ArrayList<>();
         if(!propertiesPre.isEmpty()){
             for(String property : propertiesPre){
                 property = property.replaceAll("\\s+","");
                 if(property.equals("this")){
-                    property = "a8i.props";
+                    property = "a8i.properties";
                 }
-                properties.add(property);
+                propertiesFiles.add(property);
             }
         }
 
-        return new A8i.Injector()
-                .setNoAction(noAction)
-                .setCreateDb(createDb)
-                .setDropDb(dropDb)
-                .withContextPath("/")
-                .withPointcuts(pointcuts)
-                .withInterceptors(interceptors)
-                .withWebResources(resources)
-                .withPropertyFiles(properties)
-                .withViewProcessor(uxProcessor)
-                .inject();
+
+
+        A8i.Conditionals conditionals = new A8i.Conditionals(noAction, createDb, dropDb);
+
+        this.cache = new A8i.Cache();
+        cache.setConditionals(conditionals);
+        cache.setUxProcessor(uxProcessor);
+        cache.setPropertiesFiles(propertiesFiles);
+        cache.setResources(resources);
+        cache.setInterceptors(interceptors);
+        cache.setPointcuts(pointcuts);
+        cache.setup();
+
+
+        Startup startup = new Startup(cache);
+        startup.start();
     }
 
+    public A8i.Cache getCache(){
+        return this.cache;
+    }
 }

@@ -38,7 +38,7 @@ public class HttpRequest {
     }
 
     public void setSession(){
-        String id = A8i.getCookie(A8i.SECURITYTAG, httpExchange.getRequestHeaders());
+        String id = A8i.Assets.getCookie(A8i.SECURITYTAG, httpExchange.getRequestHeaders());
         if(this.sessions.containsKey(id)) {
             setSession(this.sessions.get(id));
         }
@@ -49,7 +49,7 @@ public class HttpRequest {
     }
 
     public HttpSession getSession(boolean newitup){
-        String id = A8i.getCookie(A8i.SECURITYTAG, httpExchange.getRequestHeaders());
+        String id = A8i.Assets.getCookie(A8i.SECURITYTAG, httpExchange.getRequestHeaders());
         if(!newitup){
             if(this.sessions.containsKey(id)){
                 setSession(this.sessions.get(id));
@@ -58,7 +58,7 @@ public class HttpRequest {
         }else if(newitup){
             return getHttpSession();
         }
-        return null;//not good. how?
+        return null;
     }
 
     private HttpSession getHttpSession(){

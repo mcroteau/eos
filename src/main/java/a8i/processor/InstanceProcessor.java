@@ -13,25 +13,25 @@ import java.util.jar.JarFile;
 
 public class InstanceProcessor {
 
-    A8i a8i;
+    A8i.Cache cache;
     ClassLoader cl;
     List<String> jarDeps;
     Map<String, ObjectDetails> objects;
 
-    public InstanceProcessor(A8i a8i){
-        this.a8i = a8i;
+    public InstanceProcessor(A8i.Cache cache){
+        this.cache = cache;
         this.objects = new HashMap<>();
         this.cl = Thread.currentThread().getContextClassLoader();
     }
 
     public InstanceProcessor run() {
-        if (a8i.isJar()) {
+        if (cache.isFat()) {
             setJarDeps();
             getClassesJar();
         }else{
             String uri = null;
             try {
-                uri = a8i.getClassesUri();
+                uri = A8i.Assets.getUri();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -44,7 +44,7 @@ public class InstanceProcessor {
     private List<String> setJarDeps(){
         jarDeps = new ArrayList<>();
 
-        Enumeration<JarEntry> entries = a8i.getJarEntries();
+        Enumeration<JarEntry> entries = A8i.Assets.getJarEntries();
 
         do{
 
@@ -77,18 +77,18 @@ public class InstanceProcessor {
     }
 
     protected Boolean isWithinRunningProgram(String jarEntry){
-        String main = a8i.getMain();
+        String main = A8i.Assets.getMain();
         String path = main.substring(0, getLastIndxOf(1, ".", main) + 1);
         String jarPath = getPath(jarEntry);
         return jarPath.contains(path) ? true : false;
     }
 
     protected Boolean isDirt(String jarEntry){
-        if(a8i.isJar() &&
+        if(cache.isFat() &&
                 !isWithinRunningProgram(jarEntry) &&
                     isDep(jarEntry))return true;
 
-        if(a8i.isJar() && !jarEntry.endsWith(".class"))return true;
+        if(cache.isFat() && !jarEntry.endsWith(".class"))return true;
         if(jarEntry.contains("org/h2"))return true;
         if(jarEntry.contains("javax/servlet/http"))return true;
         if(jarEntry.contains("package-info"))return true;
@@ -135,11 +135,11 @@ public class InstanceProcessor {
                 }
 
                 if(cls.isAnnotationPresent(Events.class)){
-                    a8i.setEvents(getObject(cls));
+                    cache.setEvents(getObject(cls));
                 }
 
                 ObjectDetails objectDetails = getObjectDetails(cls);
-                a8i.getObjects().put(objectDetails.getName(), objectDetails);
+                cache.getObjects().put(objectDetails.getName(), objectDetails);
             }
         }catch (Exception ex){ex.printStackTrace();}
     }
@@ -177,11 +177,11 @@ public class InstanceProcessor {
                 }
 
                 if(cls.isAnnotationPresent(Events.class)){
-                    a8i.setEvents(getObject(cls));
+                    cache.setEvents(getObject(cls));
                 }
 
                 ObjectDetails objectDetails = getObjectDetails(cls);
-                a8i.getObjects().put(objectDetails.getName(), objectDetails);
+                cache.getObjects().put(objectDetails.getName(), objectDetails);
 
             }catch (Exception ex){
                 ex.printStackTrace();
@@ -210,7 +210,7 @@ public class InstanceProcessor {
     protected ObjectDetails getObjectDetails(Class cls) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         ObjectDetails objectDetails = new ObjectDetails();
         objectDetails.setClazz(cls);
-        objectDetails.setName(A8i.getName(cls.getName()));
+        objectDetails.setName(A8i.Assets.getName(cls.getName()));
         Object object = getObject(cls);
         objectDetails.setObject(object);
         return objectDetails;

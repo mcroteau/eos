@@ -4,9 +4,7 @@ import a8i.A8i;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.util.List;
 
 public class ResourceResponse {
 
@@ -14,25 +12,25 @@ public class ResourceResponse {
     final String WEBAPP = "webapp";
     final String CONTENTTYPE = "Content-Type";
 
-    A8i a8i;
+    A8i.Cache cache;
     String requestUri;
     String httpVerb;
     HttpExchange httpExchange;
 
     public ResourceResponse(Builder builder){
-        this.a8i = builder.a8i;
+        this.cache = builder.cache;
         this.requestUri = builder.requestUri;
         this.httpVerb = builder.httpVerb;
         this.httpExchange = builder.httpExchange;
     }
 
-    public static Boolean isResource(String requestUri, A8i a8i){
-        if(a8i.getResources() == null) return false;
+    public static Boolean isResource(String requestUri, A8i.Cache cache){
+        if(cache.getResources() == null) return false;
 
         String[] bits = requestUri.split("/");
         if(bits.length > 1) {
             String resource = bits[1];
-            if (a8i.getResources().contains(resource)) return true;
+            if (cache.getResources().contains(resource)) return true;
         }
         return false;
     }
@@ -40,7 +38,7 @@ public class ResourceResponse {
     public void serve() throws IOException {
         InputStream fis;
 
-        if(a8i.isJar()){
+        if(cache.isFat()){
 
             if(requestUri.startsWith("/"))requestUri = requestUri.replaceFirst("/","");
             String resourcePath = "/webapp/" + requestUri;
@@ -123,26 +121,21 @@ public class ResourceResponse {
     }
 
     public static class Builder {
-        A8i a8i;
+        A8i.Cache cache;
         String requestUri;
         String httpVerb;
-        List<String> resources;
         HttpExchange httpExchange;
 
+        public Builder withCache(A8i.Cache cache){
+            this.cache = cache;
+            return this;
+        }
         public Builder withRequestUri(String requestUri){
             this.requestUri = requestUri;
             return this;
         }
         public Builder withHttpVerb(String httpVerb){
             this.httpVerb = httpVerb;
-            return this;
-        }
-        public Builder withA8i(A8i a8i){
-            this.a8i = a8i;
-            return this;
-        }
-        public Builder withResources(List<String> resources){
-            this.resources = resources;
             return this;
         }
         public Builder withHttpExchange(HttpExchange httpExchange){
