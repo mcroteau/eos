@@ -7,7 +7,7 @@ import a8i.jdbc.Persistence;
 public class EntityRepo {
 
     @Bind
-    A8i.Persistence persistence;
+    A8i.Repo repo;
 
     public void saveEntity(Entity entity){
         String sql = "insert into entities (description, active) values ('[+]',[+])";

@@ -26,10 +26,10 @@ public class Startup {
         element.setElement(cache);
         cache.getElementStorage().getElements().put("cache", element);
 
-        Element persistenceEl = new Element();
-        A8i.Persistence persistence = new A8i.Persistence(cache.getDataSource());
-        persistenceEl.setElement(persistence);
-        cache.getElementStorage().getElements().put(A8i.PERSISTENCE, persistenceEl);
+        Element repoElement = new Element();
+        A8i.Repo repo = new A8i.Repo(cache.getDataSource());
+        repoElement.setElement(repo);
+        cache.getElementStorage().getElements().put(A8i.REPO, repoElement);
 
         if(cache.getResources() == null) cache.setResources(new ArrayList<>());
         if(cache.getPropertiesFiles() == null) cache.setPropertiesFiles(new ArrayList<>());

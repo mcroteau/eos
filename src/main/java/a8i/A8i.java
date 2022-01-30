@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 public class A8i {
 
-    public static final String PERSISTENCE  = "persistence";
+    public static final String REPO         = "repo";
     public static final String SECURITYTAG  = "a8i.sessions";
     public static final String DBMEDIATOR   = "dbmediator";
     public static final String DATASOURCE   = "datasource";
@@ -221,11 +221,11 @@ public class A8i {
     }
 
 
-    public static class Persistence {
+    public static class Repo {
 
         public DataSource dataSource;
 
-        public Persistence(DataSource dataSource){
+        public Repo(DataSource dataSource){
             this.dataSource = dataSource;
         }
 
