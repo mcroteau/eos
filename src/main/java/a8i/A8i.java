@@ -128,7 +128,7 @@ public class A8i {
             this.uxProcessor = uxProcessor;
         }
         public EndpointMappings getEndpointMappings() {
-            return this.getEndpointMappings();
+            return this.endpointMappings;
         }
         public Map<String, ObjectDetails> getObjects() {
             return this.objects;
@@ -198,7 +198,6 @@ public class A8i {
             this.interceptors.put(key, interceptor);
             return true;
         }
-
 
         public static class Builder{
             Integer port;

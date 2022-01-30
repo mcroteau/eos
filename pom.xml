@@ -73,7 +73,35 @@
         <defaultGoal>package</defaultGoal>
         <sourceDirectory>src/main/java</sourceDirectory>
 		<finalName>${project.artifactId}-${project.version}</finalName>
+
+        <resources>
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>webapp/**/*.*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>src/main/resources/**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
+
+
 		<plugins>
+            <!--//// can delete ///? -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <executable>maven</executable>
+                    <mainClass>test.Main</mainClass>
+                    <workingDirectory>tmp</workingDirectory>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
