@@ -14,7 +14,7 @@
 
     <a:if condition="${todos.size() > 0}">
         <table>
-            <a:each items="${todos}" var="todo">
+            <a:each in="${todos}" item="todo">
                 <tr>
                     <td>${todo.id}</td>
                     <td>

@@ -11,29 +11,29 @@ import java.util.List;
 public class TodoRepo {
 
     @Bind
-    A8i.Repo repo;
+    A8i a8i;
 
     public Long getCount() {
         String sql = "select count(*) from todos";
-        Long count = repo.getLong(sql, new Object[]{});
+        Long count = a8i.getLong(sql, new Object[]{});
         return count;
     }
 
     public Todo getById(long id){
         String sql = "select * from todos where id = [+]";
-        Todo todo = (Todo) repo.get(sql, new Object[]{ id }, Todo.class);
+        Todo todo = (Todo) a8i.get(sql, new Object[]{ id }, Todo.class);
         return todo;
     }
 
     public List<Todo> getList(){
         String sql = "select * from todos";
-        List<Todo> todos = (ArrayList) repo.getList(sql, new Object[]{}, Todo.class);
+        List<Todo> todos = (ArrayList) a8i.getList(sql, new Object[]{}, Todo.class);
         return todos;
     }
 
     public boolean save(Todo todo){
         String sql = "insert into todos (title) values ('[+]')";
-        repo.save(sql, new Object[] {
+        a8i.save(sql, new Object[] {
                 todo.getTitle()
         });
         return true;
@@ -41,7 +41,7 @@ public class TodoRepo {
 
     public boolean update(Todo todo) {
         String sql = "update todos set title = '[+]' where id = [+]";
-        repo.update(sql, new Object[] {
+        a8i.update(sql, new Object[] {
                 todo.getTitle(),
                 todo.getId()
         });
@@ -50,7 +50,7 @@ public class TodoRepo {
 
     public boolean delete(long id){
         String sql = "delete from todos where id = [+]";
-        repo.delete(sql, new Object[] { id });
+        a8i.delete(sql, new Object[] { id });
         return true;
     }
 

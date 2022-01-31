@@ -13,28 +13,25 @@ import java.util.jar.JarFile;
 
 public class InstanceProcessor {
 
-    A8i.Cache cache;
-    A8i.Util util;
-
+    A8i a8i;
     ClassLoader cl;
     List<String> jarDeps;
     Map<String, ObjectDetails> objects;
 
-    public InstanceProcessor(A8i.Cache cache, A8i.Util util){
-        this.cache = cache;
-        this.util = util;
+    public InstanceProcessor(A8i a8i){
+        this.a8i = a8i;
         this.objects = new HashMap<>();
         this.cl = Thread.currentThread().getContextClassLoader();
     }
 
     public InstanceProcessor run() {
-        if (cache.isFat()) {
+        if (a8i.isJar()) {
             setJarDeps();
             getClassesJar();
         }else{
             String uri = null;
             try {
-                uri = util.getUri();
+                uri = a8i.getClassesUri();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -47,7 +44,7 @@ public class InstanceProcessor {
     private List<String> setJarDeps(){
         jarDeps = new ArrayList<>();
 
-        Enumeration<JarEntry> entries = util.getJarEntries();
+        Enumeration<JarEntry> entries = a8i.getJarEntries();
 
         do{
 
@@ -80,18 +77,18 @@ public class InstanceProcessor {
     }
 
     protected Boolean isWithinRunningProgram(String jarEntry){
-        String main = util.getMain();
+        String main = a8i.getMain();
         String path = main.substring(0, getLastIndxOf(1, ".", main) + 1);
         String jarPath = getPath(jarEntry);
         return jarPath.contains(path) ? true : false;
     }
 
     protected Boolean isDirt(String jarEntry){
-        if(cache.isFat() &&
+        if(a8i.isJar() &&
                 !isWithinRunningProgram(jarEntry) &&
                     isDep(jarEntry))return true;
 
-        if(cache.isFat() && !jarEntry.endsWith(".class"))return true;
+        if(a8i.isJar() && !jarEntry.endsWith(".class"))return true;
         if(jarEntry.contains("org/h2"))return true;
         if(jarEntry.contains("javax/servlet/http"))return true;
         if(jarEntry.contains("package-info"))return true;
@@ -138,11 +135,11 @@ public class InstanceProcessor {
                 }
 
                 if(cls.isAnnotationPresent(Events.class)){
-                    cache.setEvents(getObject(cls));
+                    a8i.setEvents(getObject(cls));
                 }
 
                 ObjectDetails objectDetails = getObjectDetails(cls);
-                cache.getObjects().put(objectDetails.getName(), objectDetails);
+                a8i.getObjects().put(objectDetails.getName(), objectDetails);
             }
         }catch (Exception ex){ex.printStackTrace();}
     }
@@ -180,11 +177,11 @@ public class InstanceProcessor {
                 }
 
                 if(cls.isAnnotationPresent(Events.class)){
-                    cache.setEvents(getObject(cls));
+                    a8i.setEvents(getObject(cls));
                 }
 
                 ObjectDetails objectDetails = getObjectDetails(cls);
-                cache.getObjects().put(objectDetails.getName(), objectDetails);
+                a8i.getObjects().put(objectDetails.getName(), objectDetails);
 
             }catch (Exception ex){
                 ex.printStackTrace();
@@ -213,7 +210,7 @@ public class InstanceProcessor {
     protected ObjectDetails getObjectDetails(Class cls) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         ObjectDetails objectDetails = new ObjectDetails();
         objectDetails.setClazz(cls);
-        objectDetails.setName(util.getName(cls.getName()));
+        objectDetails.setName(A8i.getName(cls.getName()));
         Object object = getObject(cls);
         objectDetails.setObject(object);
         return objectDetails;
@@ -228,6 +225,21 @@ public class InstanceProcessor {
         } catch (InvocationTargetException e) {
         } catch (NoSuchMethodException e) {
         }
+//        Constructor constructor = null;
+//        Constructor[] constructors = cls.getDeclaredConstructors();
+//        for(Constructor activeConstructor : constructors){
+//            if(activeConstructor.getParameterCount() == 0){
+//                activeConstructor;
+//                break;
+//            }
+//        }
+//        constructor.setAccessible(true);
+//        try {
+//            object = constructor.newInstance();
+//        } catch (InstantiationException e) {
+//        } catch (IllegalAccessException e) {
+//        } catch (InvocationTargetException e) {
+//        }
         return object;
     }
 

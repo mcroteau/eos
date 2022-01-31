@@ -14,7 +14,7 @@ public class HttpSession {
     Map<String, Object> attributes;
 
     public HttpSession(Map<String, HttpSession> sessions, HttpExchange httpExchange){
-        this.id = A8i.Util.SESSION_GUID(27);
+        this.id = A8i.SESSION_GUID(27);
         this.sessions = sessions;
         this.httpExchange = httpExchange;
         this.attributes = new HashMap<>();

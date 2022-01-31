@@ -15,14 +15,12 @@ import java.util.Map;
 
 public class AnnotationProcessor {
 
-    A8i.Cache cache;
-    A8i.Util util;
+    A8i a8i;
     Map<String, ObjectDetails> processed;
     List<ObjectDetails> annotations;
 
-    public AnnotationProcessor(A8i.Cache cache, A8i.Util util){
-        this.cache = cache;
-        this.util = util;
+    public AnnotationProcessor(A8i a8i){
+        this.a8i = a8i;
         this.processed = new HashMap<>();
         this.annotations = new ArrayList<>();
         map();
@@ -50,8 +48,8 @@ public class AnnotationProcessor {
             for(Field field: fields) {
                 if(field.isAnnotationPresent(Bind.class)) {
                     String fieldKey = field.getName().toLowerCase();
-                    if(cache.getElementStorage().getElements().containsKey(fieldKey)){
-                        Object element = cache.getElementStorage().getElements().get(fieldKey).getElement();
+                    if(a8i.getElementStorage().getElements().containsKey(fieldKey)){
+                        Object element = a8i.getElementStorage().getElements().get(fieldKey).getElement();
                         field.setAccessible(true);
                         field.set(object, element);
                         processedFieldsCount++;
@@ -63,9 +61,9 @@ public class AnnotationProcessor {
                     Property annotation = field.getAnnotation(Property.class);
                     String key = annotation.value();
 
-                    if(cache.getPropertyStorage().getProperties().containsKey(key)){
+                    if(a8i.getPropertyStorage().getProperties().containsKey(key)){
                         field.setAccessible(true);
-                        String value = cache.getPropertyStorage().getProperties().get(key);
+                        String value = a8i.getPropertyStorage().getProperties().get(key);
                         attachValue(field, object, value);
                         processedFieldsCount++;
                     }else{
@@ -79,7 +77,7 @@ public class AnnotationProcessor {
                     processedFieldsCount){
                 processAnnotations( z + 1);
             }else{
-                String key = util.getName(objectDetails.getName());
+                String key = A8i.getName(objectDetails.getName());
                 processed.put(key, objectDetails);
             }
         }
@@ -127,13 +125,13 @@ public class AnnotationProcessor {
     }
 
     private void map(){
-        for(Map.Entry<String, ObjectDetails> entry: cache.getElementProcessor().getAnnotatedClasses().entrySet()){
+        for(Map.Entry<String, ObjectDetails> entry: a8i.getElementProcessor().getAnnotatedClasses().entrySet()){
             ObjectDetails objectDetails = entry.getValue();
             if(!annotations.contains(objectDetails))annotations.add(objectDetails);
         }
     }
 
     protected Boolean allAnnotationsProcessed(){
-        return this.processed.size() == cache.getElementProcessor().getAnnotatedClasses().size();
+        return this.processed.size() == a8i.getElementProcessor().getAnnotatedClasses().size();
     }
 }

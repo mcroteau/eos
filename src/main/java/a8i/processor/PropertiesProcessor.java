@@ -11,12 +11,10 @@ import java.util.Properties;
 
 public class PropertiesProcessor {
 
-    A8i.Cache cache;
-    A8i.Util util;
+    A8i a8i;
 
-    public PropertiesProcessor(A8i.Cache cache, A8i.Util util){
-        this.cache = cache;
-        this.util = util;
+    public PropertiesProcessor(A8i a8i){
+        this.a8i = a8i;
     }
 
     protected InputStream getPropertiesFile(String propertyFile) throws Exception{
@@ -24,7 +22,7 @@ public class PropertiesProcessor {
         InputStream is = this.getClass().getResourceAsStream(A8i.RESOURCES + propertyFile);
 
         if(is == null) {
-            String resourceUri = util.getResourceUri();
+            String resourceUri = a8i.getResourceUri();
             File file = new File(resourceUri + File.separator + propertyFile);
             if(!file.exists()) {
                 throw new Exception(propertyFile + " properties file cannot be located...");
@@ -36,9 +34,9 @@ public class PropertiesProcessor {
 
     public void run() throws IOException {
 
-        if (cache.getPropertiesFiles() != null) {
+        if (a8i.getPropertiesFiles() != null) {
 
-            for (String propertyFile : cache.getPropertiesFiles()) {
+            for (String propertyFile : a8i.getPropertiesFiles()) {
                 InputStream is = null;
                 Properties prop = null;
                 try {
@@ -51,7 +49,7 @@ public class PropertiesProcessor {
                     while (properties.hasMoreElements()) {
                         String key = (String) properties.nextElement();
                         String value = prop.getProperty(key);
-                        cache.getPropertyStorage().getProperties().put(key, value);
+                        a8i.getPropertyStorage().getProperties().put(key, value);
                     }
 
                 } catch (IOException ioe) {

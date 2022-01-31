@@ -19,11 +19,13 @@ import java.util.Map;
  */
 public class ElementCompiler {
 
+    A8i a8i;
     byte[] bytes;
     Map<String, HttpSession> sessions;
     HttpExchange httpExchange;
 
-    public ElementCompiler(byte[] bytes, Map<String, HttpSession> sessions, HttpExchange httpExchange){
+    public ElementCompiler(A8i a8i, byte[] bytes, Map<String, HttpSession> sessions, HttpExchange httpExchange){
+        this.a8i = a8i;
         this.bytes = bytes;
         this.sessions = sessions;
         this.httpExchange = httpExchange;

@@ -12,7 +12,7 @@ import java.util.List;
 public class TodoService {
 
     @Bind
-    A8i.Util util;
+    A8i a8i;
 
     @Bind
     TodoRepo todoRepo;
@@ -24,7 +24,7 @@ public class TodoService {
     }
 
     public String saveTodo(HttpRequest req, HttpResponse resp) {
-        Todo todo = (Todo) util.get(req, Todo.class);
+        Todo todo = (Todo) a8i.get(req, Todo.class);
         todoRepo.save(todo);
         resp.set("message", "Successfully added todo!");
         return "[redirect]/todos";
