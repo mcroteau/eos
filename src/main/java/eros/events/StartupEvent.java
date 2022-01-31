@@ -1,7 +1,7 @@
 package eros.events;
 
-import eros.A8i;
+import eros.Eros;
 
 public interface StartupEvent {
-    public void setupComplete(A8i a8i);
+    public void setupComplete(Eros.Cache cache);
 }

@@ -1,10 +1,10 @@
 package test;
 
-import eros.A8i;
 import eros.annotate.Bind;
 import eros.model.web.HttpRequest;
 import eros.model.web.HttpResponse;
 import eros.annotate.Service;
+import eros.util.Support;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import java.util.List;
 public class TodoService {
 
     @Bind
-    A8i a8i;
+    Support support;
 
     @Bind
     TodoRepo todoRepo;
@@ -24,7 +24,7 @@ public class TodoService {
     }
 
     public String saveTodo(HttpRequest req, HttpResponse resp) {
-        Todo todo = (Todo) a8i.get(req, Todo.class);
+        Todo todo = (Todo) support.get(req, Todo.class);
         todoRepo.save(todo);
         resp.set("message", "Successfully added todo!");
         return "[redirect]/todos";

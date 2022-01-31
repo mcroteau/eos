@@ -1,6 +1,5 @@
 package eros.startup;
 
-import eros.A8i;
 import eros.Eros;
 import eros.jdbc.Mediator;
 import eros.jdbc.Repo;
@@ -16,7 +15,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 
-public class Initializer {
+public class Startup {
 
     public static class Builder {
 
@@ -40,6 +39,10 @@ public class Initializer {
             Element repoElement = new Element();
             repoElement.setElement(repo);
             cache.getElementStorage().getElements().put("repo", repoElement);
+
+            Element supportElement = new Element();
+            supportElement.setElement(support);
+            cache.getElementStorage().getElements().put("support", supportElement);
 
             if(cache.getResources() == null) cache.setResources(new ArrayList<>());
             if(cache.getPropertiesFiles() == null) cache.setPropertiesFiles(new ArrayList<>());
@@ -122,13 +125,13 @@ public class Initializer {
             System.out.println("[READY!] " + name +"! : o . o . o . o . o . o . o . o . o . o . o . o  ");
         }
 
-        public Initializer build() throws Exception{
+        public Startup build() throws Exception{
             setAttributes();
             runProcessors();
             setDbAttributes();
             sayReady();
             dispatchEvent();
-            return new Initializer();
+            return new Startup();
         }
     }
 

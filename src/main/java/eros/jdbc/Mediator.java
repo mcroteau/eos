@@ -1,6 +1,5 @@
 package eros.jdbc;
 
-import eros.A8i;
 import eros.Eros;
 import eros.util.Settings;
 import eros.util.Support;
@@ -14,8 +13,6 @@ import java.io.StringReader;
 import java.sql.Connection;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import static eros.A8i.DATASOURCE;
 
 public class Mediator {
 

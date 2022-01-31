@@ -1,6 +1,5 @@
 package eros.model.web;
 
-import eros.A8i;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import eros.Eros;

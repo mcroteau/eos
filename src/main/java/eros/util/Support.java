@@ -1,7 +1,7 @@
 package eros.util;
 
 import com.sun.net.httpserver.Headers;
-import eros.A8i;
+import eros.Eros;
 import eros.model.web.HttpRequest;
 
 import java.io.*;
@@ -123,7 +123,7 @@ public class Support {
 
     public JarFile getJarFile(){
         try {
-            URL jarUri = A8i.class.getClassLoader().getResource("eros/");
+            URL jarUri = Eros.class.getClassLoader().getResource("eros/");
             String jarPath = jarUri.getPath().substring(5, jarUri.getPath().indexOf("!"));
 
             return new JarFile(jarPath);
@@ -267,7 +267,7 @@ public class Support {
         }
 
         final String RESOURCES_URI = "/src/main/resources/";
-        URL indexUri = A8i.class.getResource(RESOURCES_URI);
+        URL indexUri = Eros.class.getResource(RESOURCES_URI);
         if (indexUri == null) {
             throw new FileNotFoundException("A8i : unable to find resource " + RESOURCES_URI);
         }

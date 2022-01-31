@@ -27,9 +27,6 @@ import java.util.concurrent.Executors;
 public class Eros {
 
     public static final String SECURITYTAG = "eros.sessions";
-    public static final String DBMEDIATOR  = "dbmediator";
-    public static final String DATASOURCE  = "datasource";
-    public static final String REDIRECT    = "[redirect]";
     public static final String RESOURCES   = "/src/main/resources/";
 
     Support support;

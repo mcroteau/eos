@@ -10,7 +10,7 @@ import eros.processor.EndpointProcessor;
 import eros.processor.UxProcessor;
 import eros.cargo.ElementStorage;
 import eros.cargo.PropertyStorage;
-import eros.startup.Initializer;
+import eros.startup.Startup;
 import eros.web.Interceptor;
 import eros.web.Pointcut;
 import com.sun.net.httpserver.Headers;

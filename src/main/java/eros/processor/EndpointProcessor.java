@@ -1,6 +1,5 @@
 package eros.processor;
 
-import eros.A8i;
 import eros.Eros;
 import eros.annotate.Variable;
 import eros.annotate.verbs.Delete;

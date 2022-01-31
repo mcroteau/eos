@@ -1,8 +1,8 @@
 package eros.model.web;
 
-import eros.A8i;
 import com.sun.net.httpserver.HttpExchange;
 import eros.Eros;
+import eros.util.Support;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,9 +13,11 @@ public class HttpSession {
     HttpExchange httpExchange;
     Map<String, HttpSession> sessions;
     Map<String, Object> attributes;
+    Support support;
 
     public HttpSession(Map<String, HttpSession> sessions, HttpExchange httpExchange){
-        this.id = A8i.SESSION_GUID(27);
+        this.support = new Support();
+        this.id = support.SESSION_GUID(27);
         this.sessions = sessions;
         this.httpExchange = httpExchange;
         this.attributes = new HashMap<>();
