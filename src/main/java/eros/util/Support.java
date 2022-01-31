@@ -19,9 +19,27 @@ import java.util.jar.JarFile;
 
 public class Support {
 
+    boolean isJar;
+
+    public Support(){
+        this.isJar = this.isFat();
+    }
+
     public String removeLast(String s) {
         return (s == null || s.length() == 0) ? ""
                 : (s.substring(0, s.length() - 1));
+    }
+
+    public boolean isJar(){ return this.isJar; }
+
+    public Boolean isFat(){
+        String uri = null;
+        try {
+            uri = getClassesUri();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return uri.contains("jar:file:") ? true : false;
     }
 
     public String getPayload(byte[] bytes){
@@ -186,7 +204,7 @@ public class Support {
     }
 
     public String getProjectName() {
-        if(isJar()) {
+        if(isJar) {
             JarFile jarFile = getJarFile();
             String path = jarFile.getName();
             String[] bits = path.split("/");
@@ -196,7 +214,7 @@ public class Support {
             String namePre = bits[bits.length - 1];
             return namePre.replace(".jar", "");
         }else{
-            return this.getContextPath();
+            return "";
         }
     }
 
@@ -239,7 +257,7 @@ public class Support {
         return value;
     }
 
-    public static String getResourceUri(String contextPath) throws Exception{
+    public static String getResourceUri() throws Exception{
         String resourceUri = Paths.get("src", "main", "resources")
                 .toAbsolutePath()
                 .toString();

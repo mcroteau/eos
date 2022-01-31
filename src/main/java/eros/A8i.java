@@ -37,9 +37,6 @@ public class A8i {
     public static final String REDIRECT    = "[redirect]";
     public static final String RESOURCES   = "/src/main/resources/";
 
-
-
-
     Boolean fatJar;
     Object events;
     ElementStorage elementStorage;
@@ -92,33 +89,11 @@ public class A8i {
         return this.fatJar;
     }
 
-    private Boolean getFatJar(){
-        String uri = null;
-        try {
-            uri = getClassesUri();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return uri.contains("jar:file:") ? true : false;
-    }
+
 
     public DataSource getDatasource(){
         return this.dataSource;
     }
-
-    public Object getElement(String name){
-        String key = name.toLowerCase();
-        if(elementStorage.getElements().containsKey(key)){
-            return elementStorage.getElements().get(key).getElement();
-        }
-        return null;
-    }
-
-    public Map<String, Element> getElements(){
-        return this.elementStorage.getElements();
-    }
-
-
 
 
     public static class Injector{
@@ -181,65 +156,6 @@ public class A8i {
     }
 
 
-
-
-
-
-    public String getContextPath(){
-        return this.contextPath;
-    }
-    public String getDbScript(){
-        return this.dbScript;
-    }
-    public Object getEvents(){
-        return this.events;
-    }
-    public void setEvents(Object events){
-        this.events = events;
-    }
-    public List<String> getResources(){
-        return this.resources;
-    }
-    public void setResources(List<String> resources){
-        this.resources = resources;
-    }
-    public List<String> getPropertiesFiles(){
-        return this.propertiesFiles;
-    }
-    public void setPropertiesFiles(List<String> propertiesFiles){
-        this.propertiesFiles = propertiesFiles;
-    }
-    public ElementStorage getElementStorage(){
-        return this.elementStorage;
-    }
-    public PropertyStorage getPropertyStorage(){
-        return this.propertyStorage;
-    }
-    public EndpointProcessor getEndpointProcessor(){
-        return this.endpointProcessor;
-    }
-    public void setEndpointProcessor(EndpointProcessor endpointProcessor){ this.endpointProcessor = endpointProcessor; }
-    public ElementProcessor getElementProcessor(){
-        return this.elementProcessor;
-    }
-    public void setElementProcessor(ElementProcessor elementProcessor){
-        this.elementProcessor = elementProcessor;
-    }
-    public EndpointMappings getEndpointMappings() {
-        return endpointMappings;
-    }
-    public void setEndpointMappings(EndpointMappings endpointMappings) {
-        this.endpointMappings = endpointMappings;
-    }
-    public Map<String, ObjectDetails> getObjects() {
-        return this.objects;
-    }
-    public void setObjects(Map<String, ObjectDetails> objects) {
-        this.objects = objects;
-    }
-    public UxProcessor getViewProcessor(){ return this.uxProcessor; }
-    public Map<String, Interceptor> interceptors() { return this.interceptors; }
-    public Map<String, Pointcut> pointcuts() { return this.pointcuts; }
 
 
 }

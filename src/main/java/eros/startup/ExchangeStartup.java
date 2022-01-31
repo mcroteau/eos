@@ -1,8 +1,11 @@
 package eros.startup;
 
 import eros.A8i;
+import eros.Eros;
 import eros.jdbc.Repo;
 import eros.processor.UxProcessor;
+import eros.util.Settings;
+import eros.util.Support;
 import eros.web.Interceptor;
 import eros.web.Pointcut;
 
@@ -26,13 +29,14 @@ public class ExchangeStartup {
         this.interceptors = interceptors;
     }
 
-    public A8i start() throws Exception {
+    public void start() throws Exception {
 
+        Support support = new Support();
         InputStream is = this.getClass().getResourceAsStream("/src/main/resources/a8i.props");
 
         if(is == null) {
             try {
-                String uri = A8i.getResourceUri("/") + File.separator + "a8i.props";
+                String uri = support.getResourceUri() + File.separator + "a8i.props";
                 is = new FileInputStream(uri);
             } catch (FileNotFoundException fe) {}
         }
@@ -102,29 +106,34 @@ public class ExchangeStartup {
             }
         }
 
-        List<String> properties = new ArrayList<>();
+        List<String> propertiesFiles = new ArrayList<>();
         if(!propertiesPre.isEmpty()){
             for(String property : propertiesPre){
                 property = property.replaceAll("\\s+","");
                 if(property.equals("this")){
                     property = "a8i.props";
                 }
-                properties.add(property);
+                propertiesFiles.add(property);
             }
         }
 
-        return new A8i.Injector()
-                .setNoAction(noAction)
-                .setCreateDb(createDb)
-                .setDropDb(dropDb)
-                .withRepo(new Repo())
-                .withContextPath("/")
-                .withPointcuts(pointcuts)
-                .withInterceptors(interceptors)
-                .withWebResources(resources)
-                .withPropertyFiles(properties)
-                .withViewProcessor(uxProcessor)
-                .inject();
+
+        Settings settings = new Settings();
+        settings.setCreateDb(createDb);
+        settings.setDropDb(dropDb);
+        settings.setNoAction(noAction);
+        settings.setResources(resources);
+        settings.setPropertiesFiles(propertiesFiles);
+
+        Repo repo = new Repo();
+        new Eros.Data.Builder()
+                    .withSettings(settings)
+                    .withPointCuts(pointcuts)
+                    .withInterceptors(interceptors)
+                    .withUxProcessor(uxProcessor)
+                    .withRepo(repo)
+                    .make();
+
     }
 
 }

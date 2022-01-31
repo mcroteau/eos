@@ -1,11 +1,13 @@
 package eros.startup;
 
 import eros.A8i;
+import eros.Eros;
 import eros.jdbc.Mediator;
 import eros.jdbc.Repo;
 import eros.model.Element;
 import eros.model.web.EndpointMappings;
 import eros.processor.*;
+import eros.util.Support;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
@@ -19,29 +21,31 @@ public class Initializer {
 
     public static class Builder {
 
-        A8i a8i;
+        Eros.Cache cache;
         Repo repo;
+        Support support;
 
-        public Builder with(A8i a8i, Repo repo){
-            this.a8i = a8i;
+        public Builder with(Eros.Cache cache, Repo repo){
+            this.cache = cache;
             this.repo = repo;
+            this.support = support;
             return this;
         }
         private void setAttributes(){
             Element element = new Element();
-            element.setElement(a8i);
-            a8i.getElementStorage().getElements().put(A8i.A8i, element);
+            element.setElement(cache);
+            cache.getElementStorage().getElements().put(A8i.A8i, element);
 
             Element repoElement = new Element();
             repoElement.setElement(repo);
-            a8i.getElementStorage().getElements().put("repo", repoElement);
+            cache.getElementStorage().getElements().put("repo", repoElement);
 
-            if(a8i.getResources() == null) a8i.setResources(new ArrayList<>());
-            if(a8i.getPropertiesFiles() == null) a8i.setPropertiesFiles(new ArrayList<>());
+            if(cache.getResources() == null) cache.setResources(new ArrayList<>());
+            if(cache.getPropertiesFiles() == null) cache.setPropertiesFiles(new ArrayList<>());
         }
 
         private void initDatabase() throws Exception{
-            Mediator mediator = new Mediator(a8i);
+            Mediator mediator = new Mediator(support, settings, cache);
             Element element = new Element();
             element.setElement(mediator);
             a8i.getElementStorage().getElements().put(DBMEDIATOR, element);

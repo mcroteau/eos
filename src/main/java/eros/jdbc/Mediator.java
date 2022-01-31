@@ -1,6 +1,9 @@
 package eros.jdbc;
 
 import eros.A8i;
+import eros.Eros;
+import eros.util.Settings;
+import eros.util.Support;
 import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
@@ -16,34 +19,38 @@ import static eros.A8i.DATASOURCE;
 
 public class Mediator {
 
-    A8i a8i;
+    Support support;
+    Settings settings;
+    Eros.Cache cache;
 
     final String CREATEDB_URI = "src/main/resources/create-db.sql";
 
-    public Mediator(A8i a8i){
-        this.a8i = a8i;
+    public Mediator(Settings settings, Support support, Eros.Cache cache){
+        this.support = support;
+        this.settings = settings;
+        this.cache = cache;
     }
 
-    public Boolean createDb() throws Exception {
+    public void createDb() throws Exception {
 
-        String artifactPath = A8i.getResourceUri(a8i.getContextPath());
+        String artifactPath = support.getResourceUri();
 
-        if(!a8i.noAction &&
-                a8i.createDb) {
+        if(!settings.isNoAction() &&
+                settings.isCreateDb()) {
 
             StringBuilder createSql;
-            if (a8i.isJar()) {
-                JarFile jarFile = a8i.getJarFile();
+            if (support.isJar()) {
+                JarFile jarFile = support.getJarFile();
                 JarEntry jarEntry = jarFile.getJarEntry(CREATEDB_URI);
                 InputStream in = jarFile.getInputStream(jarEntry);
-                createSql = a8i.convert(in);
+                createSql = support.convert(in);
             } else {
                 File createFile = new File(artifactPath + File.separator + "create-db.sql");
                 InputStream in = new FileInputStream(createFile);
-                createSql = a8i.convert(in);
+                createSql = support.convert(in);
             }
 
-            DataSource datasource = (DataSource) a8i.getElement(DATASOURCE);
+            DataSource datasource = (DataSource) cache.getElement(DATASOURCE);
 
             if (datasource == null) {
                 throw new Exception("\n\n           " +
@@ -58,7 +65,7 @@ public class Mediator {
             }
             Connection conn = datasource.getConnection();
 
-            if(a8i.dropDb) {
+            if(settings.isDropDb()) {
                 RunScript.execute(conn, new StringReader("drop all objects;"));
             }
 
@@ -67,17 +74,16 @@ public class Mediator {
             conn.close();
         }
 
-        return true;
     }
 
-    public Boolean dropDb() {
+    public void dropDb() {
 
-        if(!a8i.noAction &&
-                a8i.dropDb) {
+        if(!settings.isNoAction() &&
+                settings.isCreateDb()) {
 
             try {
 
-                DataSource datasource = (DataSource) a8i.getElement(DATASOURCE);
+                DataSource datasource = (DataSource) cache.getElement(DATASOURCE);
                 Connection conn = datasource.getConnection();
 
                 RunScript.execute(conn, new StringReader("drop all objects;"));
@@ -86,12 +92,8 @@ public class Mediator {
 
             } catch (Exception e) {
             }
-
         }
-
-        return true;
     }
-
 
 }
 
