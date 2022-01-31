@@ -1,9 +1,9 @@
 package test.support;
 
-import a8i.annotate.Config;
-import a8i.annotate.Dependency;
-import a8i.annotate.Property;
-import a8i.jdbc.BasicDataSource;
+import eros.annotate.Config;
+import eros.annotate.Dependency;
+import eros.annotate.Property;
+import eros.jdbc.datasource.Basic;
 
 import javax.sql.DataSource;
 
@@ -24,7 +24,7 @@ public class DbConfig {
 
     @Dependency
     public DataSource dataSource(){
-        return new BasicDataSource.Builder()
+        return new Basic.Builder()
                 .driver(dbDriver)
                 .url(dbUrl)
                 .username(dbUser)

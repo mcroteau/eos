@@ -1,10 +1,10 @@
 package test;
 
-import a8i.A8i;
-import a8i.annotate.Bind;
-import a8i.model.web.HttpRequest;
-import a8i.model.web.HttpResponse;
-import a8i.annotate.Service;
+import eros.A8i;
+import eros.annotate.Bind;
+import eros.model.web.HttpRequest;
+import eros.model.web.HttpResponse;
+import eros.annotate.Service;
 
 import java.util.List;
 

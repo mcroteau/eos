@@ -1,7 +1,7 @@
 ### A8i Settings ###
-a8i.env=create,drop
-a8i.assets=assets
-a8i.properties=this
+eros.env=create,drop
+eros.assets=assets
+eros.properties=this
 
 ### Db Settings ###
 db.url=jdbc:h2:~/Mock
