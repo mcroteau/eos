@@ -1,4 +1,4 @@
-package eros.storage;
+package eros.cargo;
 
 import java.util.HashMap;
 import java.util.Map;

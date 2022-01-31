@@ -1,4 +1,4 @@
-package eros.support;
+package eros.startup;
 
 import eros.A8i;
 import eros.jdbc.Mediator;

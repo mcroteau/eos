@@ -1,4 +1,4 @@
-package eros.storage;
+package eros.cargo;
 
 import eros.model.Element;
 

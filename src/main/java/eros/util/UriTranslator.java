@@ -5,11 +5,11 @@ import com.sun.net.httpserver.HttpExchange;
 
 public class UriTranslator {
 
-    A8i a8i;
+    Support support;
     HttpExchange httpExchange;
 
-    public UriTranslator(A8i a8i, HttpExchange httpExchange){
-        this.a8i = a8i;
+    public UriTranslator(Support support, HttpExchange httpExchange){
+        this.support = support;
         this.httpExchange = httpExchange;
     }
 
@@ -23,7 +23,7 @@ public class UriTranslator {
         }
         if(uri.endsWith("/") &&
                 !uri.equals("/")){
-            uri = a8i.removeLast(uri);
+            uri = support.removeLast(uri);
         }
         return uri;
     }
