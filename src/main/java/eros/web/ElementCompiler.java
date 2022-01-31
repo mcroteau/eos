@@ -1,6 +1,6 @@
 package eros.web;
 
-import eros.A8i;
+import eros.Eros;
 import eros.model.web.FormElement;
 import eros.model.web.HttpRequest;
 import eros.model.web.HttpSession;
@@ -19,13 +19,13 @@ import java.util.Map;
  */
 public class ElementCompiler {
 
-    A8i a8i;
+    Eros.Cache cache;
     byte[] bytes;
     Map<String, HttpSession> sessions;
     HttpExchange httpExchange;
 
-    public ElementCompiler(A8i a8i, byte[] bytes, Map<String, HttpSession> sessions, HttpExchange httpExchange){
-        this.a8i = a8i;
+    public ElementCompiler(Eros.Cache cache, byte[] bytes, Map<String, HttpSession> sessions, HttpExchange httpExchange){
+        this.cache = cache;
         this.bytes = bytes;
         this.sessions = sessions;
         this.httpExchange = httpExchange;

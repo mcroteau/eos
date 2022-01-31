@@ -50,7 +50,7 @@ public class Mediator {
                 createSql = support.convert(in);
             }
 
-            DataSource datasource = (DataSource) cache.getElement(DATASOURCE);
+            DataSource datasource = (DataSource) cache.getElement("datasource");
 
             if (datasource == null) {
                 throw new Exception("\n\n           " +
@@ -83,7 +83,7 @@ public class Mediator {
 
             try {
 
-                DataSource datasource = (DataSource) cache.getElement(DATASOURCE);
+                DataSource datasource = (DataSource) cache.getElement("datasource");
                 Connection conn = datasource.getConnection();
 
                 RunScript.execute(conn, new StringReader("drop all objects;"));

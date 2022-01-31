@@ -7,6 +7,7 @@ import eros.jdbc.Repo;
 import eros.model.Element;
 import eros.model.web.EndpointMappings;
 import eros.processor.*;
+import eros.util.Settings;
 import eros.util.Support;
 
 import javax.sql.DataSource;
@@ -14,8 +15,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import static eros.A8i.DBMEDIATOR;
-import static eros.A8i.command;
 
 public class Initializer {
 
@@ -24,17 +23,19 @@ public class Initializer {
         Eros.Cache cache;
         Repo repo;
         Support support;
+        Settings settings;
 
         public Builder with(Eros.Cache cache, Repo repo){
             this.cache = cache;
             this.repo = repo;
-            this.support = support;
+            this.support = new Support();
+            this.settings = new Settings();
             return this;
         }
         private void setAttributes(){
             Element element = new Element();
             element.setElement(cache);
-            cache.getElementStorage().getElements().put(A8i.A8i, element);
+            cache.getElementStorage().getElements().put("cache", element);
 
             Element repoElement = new Element();
             repoElement.setElement(repo);
@@ -45,15 +46,15 @@ public class Initializer {
         }
 
         private void initDatabase() throws Exception{
-            Mediator mediator = new Mediator(support, settings, cache);
+            Mediator mediator = new Mediator(settings, support, cache);
             Element element = new Element();
             element.setElement(mediator);
-            a8i.getElementStorage().getElements().put(DBMEDIATOR, element);
+            cache.getElementStorage().getElements().put("dbmediator", element);
             mediator.createDb();
         }
 
         private void validateDatasource() throws Exception {
-            Element element = a8i.getElementStorage().getElements().get(A8i.DATASOURCE);
+            Element element = cache.getElementStorage().getElements().get("datasource");
             if(element != null){
                 DataSource dataSource = (DataSource) element.getElement();
                 repo.setDataSource(dataSource);
@@ -66,45 +67,45 @@ public class Initializer {
         }
 
         private void dispatchEvent() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-            if(a8i.getEvents() != null) {
-                Method setupComplete = a8i.getEvents().getClass().getDeclaredMethod("setupComplete", A8i.class);
+            if(cache.getEvents() != null) {
+                Method setupComplete = cache.getEvents().getClass().getDeclaredMethod("setupComplete", Eros.class);
                 if(setupComplete != null) {
                     setupComplete.setAccessible(true);
-                    setupComplete.invoke(a8i.getEvents(), a8i);
+                    setupComplete.invoke(cache.getEvents(), cache);
                 }
             }
         }
 
         private void runElementsProcessor() throws Exception {
-            ElementProcessor elementsProcessor = new ElementProcessor(a8i).run();
-            a8i.setElementProcessor(elementsProcessor);
+            ElementProcessor elementsProcessor = new ElementProcessor(cache).run();
+            cache.setElementProcessor(elementsProcessor);
         }
 
         private void runConfigProcessor() throws Exception {
-            if(a8i.getElementProcessor().getConfigs() != null &&
-                    a8i.getElementProcessor().getConfigs().size() > 0){
-                new ConfigurationProcessor(a8i).run();
+            if(cache.getElementProcessor().getConfigs() != null &&
+                    cache.getElementProcessor().getConfigs().size() > 0){
+                new ConfigurationProcessor(cache).run();
             }
         }
 
         private void runAnnotationProcessor() throws Exception {
-            new AnnotationProcessor(a8i).run();
+            new AnnotationProcessor(cache).run();
         }
 
         private void runEndpointProcessor() throws Exception {
-            EndpointProcessor endpointProcessor = new EndpointProcessor(a8i).run();
+            EndpointProcessor endpointProcessor = new EndpointProcessor(cache).run();
             EndpointMappings endpointMappings = endpointProcessor.getMappings();
-            a8i.setEndpointMappings(endpointMappings);
+            cache.setEndpointMappings(endpointMappings);
         }
 
         private void runPropertiesProcessor() throws Exception {
-            if(!a8i.getPropertiesFiles().isEmpty()) {
-                new PropertiesProcessor(a8i).run();
+            if(!cache.getPropertiesFiles().isEmpty()) {
+                new PropertiesProcessor(cache).run();
             }
         }
 
         private void runInstanceProcessor() throws Exception {
-            new InstanceProcessor(a8i).run();
+            new InstanceProcessor(cache).run();
         }
 
         private void runProcessors() throws Exception {
@@ -117,8 +118,8 @@ public class Initializer {
         }
 
         private void sayReady(){
-            String name = a8i.getProjectName();
-            command("[READY!] " + name +"! : o . o . o . o . o . o . o . o . o . o . o . o  ");
+            String name = support.getProject();
+            System.out.println("[READY!] " + name +"! : o . o . o . o . o . o . o . o . o . o . o . o  ");
         }
 
         public Initializer build() throws Exception{

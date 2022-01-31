@@ -1,11 +1,12 @@
 package eros.web;
 
-import eros.A8i;
+import eros.Eros;
 import eros.annotate.*;
 import eros.model.web.*;
 import eros.processor.UxProcessor;
 import eros.util.MimeGetter;
 import eros.util.ResourceResponse;
+import eros.util.Support;
 import eros.util.UriTranslator;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -24,11 +25,15 @@ import java.util.regex.Pattern;
 
 public class HttpTransmission implements HttpHandler {
 
-    A8i a8i;
+    public static final String REDIRECT = "[redirect]";
+
+    Eros.Cache cache;
+    Support support;
     Map<String, HttpSession> sessions;
 
-    public HttpTransmission(A8i a8i){
-        this.a8i = a8i;
+    public HttpTransmission(Eros.Cache cache){
+        this.cache = cache;
+        this.support = new Support();
         this.sessions = new ConcurrentHashMap<>();
     }
 
@@ -40,28 +45,28 @@ public class HttpTransmission implements HttpHandler {
         try {
 
             InputStream is = httpExchange.getRequestBody();
-            byte[] payloadBytes = a8i.getPayloadBytes(is);
+            byte[] payloadBytes = support.getPayloadBytes(is);
 
-            ElementCompiler requestCompiler = new ElementCompiler(a8i, payloadBytes, sessions, httpExchange);
+            ElementCompiler requestCompiler = new ElementCompiler(cache, payloadBytes, sessions, httpExchange);
             HttpRequest httpRequest = requestCompiler.compile();
-            String payload = a8i.getPayload(payloadBytes);
+            String payload = support.getPayload(payloadBytes);
             httpRequest.setRequestBody(payload);
 
 
-            Map<String, Interceptor> interceptors = a8i.interceptors();
+            Map<String, Interceptor> interceptors = cache.getInterceptors();
             for(Map.Entry<String, Interceptor> entry: interceptors.entrySet()){
                 Interceptor interceptor = entry.getValue();
                 interceptor.intercept(httpRequest, httpExchange);
             }
 
-            UriTranslator transformer = new UriTranslator(a8i, httpExchange);
+            UriTranslator transformer = new UriTranslator(support, httpExchange);
             String requestUri = transformer.translate();
             httpRequest.setValues(transformer.getParameters());
 
             String httpVerb = httpExchange.getRequestMethod().toLowerCase();
-            if(ResourceResponse.isResource(requestUri, a8i)){
+            if(ResourceResponse.isResource(requestUri, cache)){
                 new ResourceResponse.Builder()
-                        .withA8i(a8i)
+                        .withCache(cache)
                         .withRequestUri(requestUri)
                         .withHttpVerb(httpVerb)
                         .withHttpExchange(httpExchange)
@@ -145,7 +150,7 @@ public class HttpTransmission implements HttpHandler {
                 Headers headers = httpExchange.getResponseHeaders();
                 headers.add("content-type", mimeGetter.resolve());
                 outputStream.write(methodResponse.getBytes());
-            }else if(methodResponse.startsWith(A8i.REDIRECT)){
+            }else if(methodResponse.startsWith(this.REDIRECT)){
                 httpExchange.setAttribute("message", httpResponse.get("message"));
                 String redirect = getRedirect(methodResponse);
                 Headers headers = httpExchange.getResponseHeaders();
@@ -155,7 +160,7 @@ public class HttpTransmission implements HttpHandler {
                 return;
             }else{
 
-                if(!a8i.isJar()) {
+                if(!support.isJar()) {
 
                     Path webPath = Paths.get("webapp");
                     if(methodResponse.startsWith("/")){
@@ -238,8 +243,8 @@ public class HttpTransmission implements HttpHandler {
                         String designOutput = "";
                         try{
 
-                            UxProcessor uxProcessor = a8i.getViewProcessor();
-                            Map<String, Pointcut> pointcuts = a8i.pointcuts();
+                            UxProcessor uxProcessor = cache.getUxProcessor();
+                            Map<String, Pointcut> pointcuts = cache.getPointCuts();
                             designOutput = uxProcessor.process(pointcuts, completePage, httpResponse, httpRequest, httpExchange);
 
 
@@ -266,8 +271,8 @@ public class HttpTransmission implements HttpHandler {
 
                         try{
 
-                            UxProcessor uxProcessor = a8i.getViewProcessor();
-                            Map<String, Pointcut> pointcuts = a8i.pointcuts();
+                            UxProcessor uxProcessor = cache.getUxProcessor();
+                            Map<String, Pointcut> pointcuts = cache.getPointCuts();
                             pageOutput = uxProcessor.process(pointcuts, pageContent, httpResponse, httpRequest, httpExchange);
 
                             if(!pageOutput.startsWith("<html>")){
@@ -349,8 +354,8 @@ public class HttpTransmission implements HttpHandler {
                         String designOutput = "";
                         try{
 
-                            UxProcessor uxProcessor = a8i.getViewProcessor();
-                            Map<String, Pointcut> pointcuts = a8i.pointcuts();
+                            UxProcessor uxProcessor = cache.getUxProcessor();
+                            Map<String, Pointcut> pointcuts = cache.getPointCuts();
                             designOutput = uxProcessor.process(pointcuts, completePage, httpResponse, httpRequest, httpExchange);
 
 
@@ -377,8 +382,8 @@ public class HttpTransmission implements HttpHandler {
 
                         try{
 
-                            UxProcessor uxProcessor = a8i.getViewProcessor();
-                            Map<String, Pointcut> pointcuts = a8i.pointcuts();
+                            UxProcessor uxProcessor = cache.getUxProcessor();
+                            Map<String, Pointcut> pointcuts = cache.getPointCuts();
                             pageOutput = uxProcessor.process(pointcuts, pageContent, httpResponse, httpRequest, httpExchange);
 
                             if(!pageOutput.startsWith("<html>")){
@@ -506,7 +511,7 @@ public class HttpTransmission implements HttpHandler {
 
     protected EndpointMapping getHttpMapping(String verb, String uri){
 
-        for (Map.Entry<String, EndpointMapping> mappingEntry : a8i.getEndpointMappings().getMappings().entrySet()) {
+        for (Map.Entry<String, EndpointMapping> mappingEntry : cache.getEndpointMappings().getMappings().entrySet()) {
             EndpointMapping mapping = mappingEntry.getValue();
 
             String mappingUri = mapping.getPath();
@@ -518,7 +523,7 @@ public class HttpTransmission implements HttpHandler {
             }
         }
 
-        for (Map.Entry<String, EndpointMapping> mappingEntry : a8i.getEndpointMappings().getMappings().entrySet()) {
+        for (Map.Entry<String, EndpointMapping> mappingEntry : cache.getEndpointMappings().getMappings().entrySet()) {
             EndpointMapping mapping = mappingEntry.getValue();
             Matcher matcher = Pattern.compile(mapping.getRegexedPath())
                     .matcher(uri);

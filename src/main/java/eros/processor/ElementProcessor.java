@@ -1,6 +1,7 @@
 package eros.processor;
 
 import eros.A8i;
+import eros.Eros;
 import eros.annotate.*;
 import eros.model.Element;
 import eros.model.ObjectDetails;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 public class ElementProcessor {
 
-    A8i a8i;
+    Eros.Cache cache;
     Integer jdbcCount;
     Integer serviceCount;
     Integer elementCount;
@@ -21,8 +22,8 @@ public class ElementProcessor {
     Map<String, ObjectDetails> httpClasses;
     Map<String, ObjectDetails> annotatedClasses;
 
-    public ElementProcessor(A8i a8i){
-        this.a8i = a8i;
+    public ElementProcessor(Eros.Cache cache){
+        this.cache = cache;
         jdbcCount = 0;
         serviceCount = 0;
         elementCount = 0;
@@ -32,13 +33,13 @@ public class ElementProcessor {
     }
 
     public ElementProcessor run() {
-        for (Map.Entry<String, ObjectDetails> entry : a8i.getObjects().entrySet()) {
+        for (Map.Entry<String, ObjectDetails> entry : cache.getObjects().entrySet()) {
             Class cls = entry.getValue().getClazz();
             if (cls.isAnnotationPresent(Config.class)) {
                 configs.add(cls);
             }
         }
-        for (Map.Entry<String, ObjectDetails> entry : a8i.getObjects().entrySet()) {
+        for (Map.Entry<String, ObjectDetails> entry : cache.getObjects().entrySet()) {
             Class cls = entry.getValue().getClazz();
 
             if (cls.isAnnotationPresent(eros.annotate.Element.class)) {
@@ -87,6 +88,6 @@ public class ElementProcessor {
         String key = entry.getKey();
         Object object = entry.getValue().getObject();
         element.setElement(object);
-        a8i.getElementStorage().getElements().put(key, element);
+        cache.getElementStorage().getElements().put(key, element);
     }
 }

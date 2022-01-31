@@ -1,11 +1,13 @@
 package eros.processor;
 
 import eros.A8i;
+import eros.Eros;
 import eros.annotate.Dependency;
 import eros.annotate.Property;
 import eros.model.Element;
 import eros.model.ObjectDetails;
 import eros.model.web.MethodFeature;
+import eros.util.Support;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -14,7 +16,8 @@ import java.util.*;
 
 public class ConfigurationProcessor {
 
-    A8i a8i;
+    Eros.Cache cache;
+    Support support;
 
     Map<String, MethodFeature> methods;
     List<MethodFeature> iterableMethods;
@@ -22,8 +25,9 @@ public class ConfigurationProcessor {
 
     Map<String, Integer> issues;
 
-    public ConfigurationProcessor(A8i a8i) throws Exception{
-        this.a8i = a8i;
+    public ConfigurationProcessor(Eros.Cache cache) throws Exception{
+        this.cache = cache;
+        this.support = new Support();
         this.methods = new HashMap<>();
         this.processedMethods = new HashSet();
         this.iterableMethods = new ArrayList<>();
@@ -40,29 +44,29 @@ public class ConfigurationProcessor {
     }
 
     protected void process(int idx) throws Exception{
-        Integer classCount = a8i.getObjects().size();
+        Integer classCount = cache.getObjects().size();
 
         if(idx > iterableMethods.size()) idx = 0;
 
         for(Integer z = idx; z < iterableMethods.size(); z++){
             MethodFeature methodFeature = iterableMethods.get(z);
             Method method = methodFeature.getMethod();
-            String methodName = A8i.getName(method.getName());
+            String methodName = support.getName(method.getName());
             Object object = methodFeature.getObject();
 
             try {
 
                 Object dependency = method.invoke(object);
-                String clsName = A8i.getName(dependency.getClass().getName());
+                String clsName = support.getName(dependency.getClass().getName());
 
-                if(a8i.getObjects().get(clsName) != null){
-                    a8i.getObjects().get(clsName).setObject(dependency);
+                if(cache.getObjects().get(clsName) != null){
+                    cache.getObjects().get(clsName).setObject(dependency);
                 }else {
                     ObjectDetails objectDetails = new ObjectDetails();
                     objectDetails.setClazz(dependency.getClass());
                     objectDetails.setName(clsName);
                     objectDetails.setObject(dependency);
-                    a8i.getObjects().put(clsName, objectDetails);
+                    cache.getObjects().put(clsName, objectDetails);
                 }
 
                 createAddElement(method, dependency);
@@ -107,12 +111,12 @@ public class ConfigurationProcessor {
     protected void createAddElement(Method method, Object object){
         Element element = new Element();
         element.setElement(object);
-        String classKey = A8i.getName(method.getName());
-        a8i.getElementStorage().getElements().put(classKey, element);
+        String classKey = support.getName(method.getName());
+        cache.getElementStorage().getElements().put(classKey, element);
     }
 
     protected void setMapDependencyMethods() throws Exception {
-        for(Class config : a8i.getElementProcessor().getConfigs()){
+        for(Class config : cache.getElementProcessor().getConfigs()){
 
             Object object = null;
             Constructor[] constructors = config.getConstructors();
@@ -131,14 +135,14 @@ public class ConfigurationProcessor {
                         throw new Exception("More than one dependency with the same name defined : " + method.getName());
                     }
 
-                    if(a8i.getElementStorage().getElements().containsKey(methodKey)){
+                    if(cache.getElementStorage().getElements().containsKey(methodKey)){
                         System.out.println("\n\n");
                         System.out.println("Warning: you elements being injected twice, once by configuration, the other via @Bind.");
                         System.out.println("Take a look at " + config.getName() + " and @Bind for " + method.getName());
                         System.out.println("\n\n");
-                        Element existingElement = a8i.getElementStorage().getElements().get(methodKey);
+                        Element existingElement = cache.getElementStorage().getElements().get(methodKey);
                         existingElement.setElement(object);
-                        a8i.getElementStorage().getElements().replace(methodKey, existingElement);
+                        cache.getElementStorage().getElements().replace(methodKey, existingElement);
                     }
 
                     MethodFeature methodFeature = new MethodFeature();
@@ -154,10 +158,10 @@ public class ConfigurationProcessor {
                 if(field.isAnnotationPresent(Property.class)){
                     Property property = field.getAnnotation(Property.class);
                     String key = property.value();
-                    if(!a8i.getPropertyStorage().getProperties().containsKey(key)){
+                    if(!cache.getPropertyStorage().getProperties().containsKey(key)){
                         throw new Exception(key + " property is missing");
                     }
-                    String value = a8i.getPropertyStorage().getProperties().get(key);
+                    String value = cache.getPropertyStorage().getProperties().get(key);
                     field.setAccessible(true);
                     field.set(object, value);
                 }

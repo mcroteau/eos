@@ -1,7 +1,7 @@
 package eros.util;
 
-import eros.A8i;
 import com.sun.net.httpserver.HttpExchange;
+import eros.Eros;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -13,25 +13,27 @@ public class ResourceResponse {
     final String WEBAPP = "webapp";
     final String CONTENTTYPE = "Content-Type";
 
-    A8i a8i;
+    Eros.Cache cache;
     String requestUri;
     String httpVerb;
     HttpExchange httpExchange;
+    Support support;
 
     public ResourceResponse(Builder builder){
-        this.a8i = builder.a8i;
+        this.cache = builder.cache;
         this.requestUri = builder.requestUri;
         this.httpVerb = builder.httpVerb;
         this.httpExchange = builder.httpExchange;
+        this.support = new Support();
     }
 
-    public static Boolean isResource(String requestUri, A8i a8i){
-        if(a8i.getResources() == null) return false;
+    public static Boolean isResource(String requestUri, Eros.Cache cache){
+        if(cache.getResources() == null) return false;
 
         String[] bits = requestUri.split("/");
         if(bits.length > 1) {
             String resource = bits[1];
-            if (a8i.getResources().contains(resource)) return true;
+            if (cache.getResources().contains(resource)) return true;
         }
         return false;
     }
@@ -39,7 +41,7 @@ public class ResourceResponse {
     public void serve() throws IOException {
         InputStream fis;
 
-        if(a8i.isJar()){
+        if(support.isJar()){
 
             if(requestUri.startsWith("/"))requestUri = requestUri.replaceFirst("/","");
             String resourcePath = "/webapp/" + requestUri;
@@ -122,7 +124,7 @@ public class ResourceResponse {
     }
 
     public static class Builder {
-        A8i a8i;
+        Eros.Cache cache;
         String requestUri;
         String httpVerb;
         List<String> resources;
@@ -136,8 +138,8 @@ public class ResourceResponse {
             this.httpVerb = httpVerb;
             return this;
         }
-        public Builder withA8i(A8i a8i){
-            this.a8i = a8i;
+        public Builder withCache(Eros.Cache cache){
+            this.cache = cache;
             return this;
         }
         public Builder withResources(List<String> resources){

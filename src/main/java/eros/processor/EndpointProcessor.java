@@ -1,6 +1,7 @@
 package eros.processor;
 
 import eros.A8i;
+import eros.Eros;
 import eros.annotate.Variable;
 import eros.annotate.verbs.Delete;
 import eros.annotate.verbs.Get;
@@ -24,13 +25,13 @@ public class EndpointProcessor {
     public static final String PUT    = "Put";
     public static final String DELETE = "Delete";
 
-    A8i a8i;
+    Eros.Cache cache;
 
     Map<String, ObjectDetails> processed;
     EndpointMappings endpointMappings;
 
-    public EndpointProcessor(A8i a8i){
-        this.a8i = a8i;
+    public EndpointProcessor(Eros.Cache cache){
+        this.cache = cache;
         this.processed = new HashMap<>();
         this.endpointMappings = new EndpointMappings();
     }
@@ -43,11 +44,11 @@ public class EndpointProcessor {
     }
 
     private boolean allAnnotationsProcessed(){
-        return this.processed.size() == a8i.getElementProcessor().getHttpClasses().size();
+        return this.processed.size() == cache.getElementProcessor().getHttpClasses().size();
     }
 
     private void processWebAnnotations() throws Exception{
-        for(Map.Entry<String, ObjectDetails> entry : a8i.getElementProcessor().getHttpClasses().entrySet()){
+        for(Map.Entry<String, ObjectDetails> entry : cache.getElementProcessor().getHttpClasses().entrySet()){
             Class clazz = entry.getValue().getClazz();
             Method[] methods = clazz.getDeclaredMethods();
             for(Method method: methods){

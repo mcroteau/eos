@@ -2,6 +2,7 @@ package eros.model.web;
 
 import eros.A8i;
 import com.sun.net.httpserver.HttpExchange;
+import eros.Eros;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class HttpSession {
     }
 
     public boolean dispose(){
-        this.httpExchange.getResponseHeaders().set("Set-Cookie", A8i.SECURITYTAG + "=" + this.id + "; max-age=0" );
+        this.httpExchange.getResponseHeaders().set("Set-Cookie", Eros.SECURITYTAG + "=" + this.id + "; max-age=0" );
         if(this.sessions.containsKey(this.id)){
             this.sessions.remove(this.id);
             return true;

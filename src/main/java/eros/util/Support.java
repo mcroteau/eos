@@ -203,7 +203,7 @@ public class Support {
         return object;
     }
 
-    public String getProjectName() {
+    public String getProject() {
         if(isJar) {
             JarFile jarFile = getJarFile();
             String path = jarFile.getName();

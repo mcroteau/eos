@@ -1,6 +1,5 @@
 package eros.util;
 
-import eros.A8i;
 import com.sun.net.httpserver.HttpExchange;
 
 public class UriTranslator {

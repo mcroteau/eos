@@ -1,8 +1,10 @@
 package eros.processor;
 
 import eros.A8i;
+import eros.Eros;
 import eros.annotate.Events;
 import eros.model.ObjectDetails;
+import eros.util.Support;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -13,25 +15,27 @@ import java.util.jar.JarFile;
 
 public class InstanceProcessor {
 
-    A8i a8i;
+    Eros.Cache cache;
+    Support support;
     ClassLoader cl;
     List<String> jarDeps;
     Map<String, ObjectDetails> objects;
 
-    public InstanceProcessor(A8i a8i){
-        this.a8i = a8i;
+    public InstanceProcessor(Eros.Cache cache){
+        this.cache = cache;
+        this.support = new Support();
         this.objects = new HashMap<>();
         this.cl = Thread.currentThread().getContextClassLoader();
     }
 
     public InstanceProcessor run() {
-        if (a8i.isJar()) {
+        if (support.isJar()) {
             setJarDeps();
             getClassesJar();
         }else{
             String uri = null;
             try {
-                uri = a8i.getClassesUri();
+                uri = support.getClassesUri();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -44,7 +48,7 @@ public class InstanceProcessor {
     private List<String> setJarDeps(){
         jarDeps = new ArrayList<>();
 
-        Enumeration<JarEntry> entries = a8i.getJarEntries();
+        Enumeration<JarEntry> entries = support.getJarEntries();
 
         do{
 
@@ -77,18 +81,18 @@ public class InstanceProcessor {
     }
 
     protected Boolean isWithinRunningProgram(String jarEntry){
-        String main = a8i.getMain();
+        String main = support.getMain();
         String path = main.substring(0, getLastIndxOf(1, ".", main) + 1);
         String jarPath = getPath(jarEntry);
         return jarPath.contains(path) ? true : false;
     }
 
     protected Boolean isDirt(String jarEntry){
-        if(a8i.isJar() &&
+        if(support.isJar() &&
                 !isWithinRunningProgram(jarEntry) &&
                     isDep(jarEntry))return true;
 
-        if(a8i.isJar() && !jarEntry.endsWith(".class"))return true;
+        if(support.isJar() && !jarEntry.endsWith(".class"))return true;
         if(jarEntry.contains("org/h2"))return true;
         if(jarEntry.contains("javax/servlet/http"))return true;
         if(jarEntry.contains("package-info"))return true;
@@ -102,9 +106,9 @@ public class InstanceProcessor {
 
     protected void getClassesJar(){
         try {
-
-            URL jarUriTres = this.cl.getResource("eros/");
-            String jarPath = jarUriTres.getPath().substring(5, jarUriTres.getPath().indexOf("!"));
+            //todo:
+            URL jarUriTres = this.cl.getResource("eros/");//was 5
+            String jarPath = jarUriTres.getPath().substring(6, jarUriTres.getPath().indexOf("!"));
 
             JarFile file = new JarFile(jarPath);
             Enumeration jarFile = file.entries();
@@ -135,11 +139,11 @@ public class InstanceProcessor {
                 }
 
                 if(cls.isAnnotationPresent(Events.class)){
-                    a8i.setEvents(getObject(cls));
+                    cache.setEvents(getObject(cls));
                 }
 
                 ObjectDetails objectDetails = getObjectDetails(cls);
-                a8i.getObjects().put(objectDetails.getName(), objectDetails);
+                cache.getObjects().put(objectDetails.getName(), objectDetails);
             }
         }catch (Exception ex){ex.printStackTrace();}
     }
@@ -177,11 +181,11 @@ public class InstanceProcessor {
                 }
 
                 if(cls.isAnnotationPresent(Events.class)){
-                    a8i.setEvents(getObject(cls));
+                    cache.setEvents(getObject(cls));
                 }
 
                 ObjectDetails objectDetails = getObjectDetails(cls);
-                a8i.getObjects().put(objectDetails.getName(), objectDetails);
+                cache.getObjects().put(objectDetails.getName(), objectDetails);
 
             }catch (Exception ex){
                 ex.printStackTrace();
@@ -210,7 +214,7 @@ public class InstanceProcessor {
     protected ObjectDetails getObjectDetails(Class cls) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         ObjectDetails objectDetails = new ObjectDetails();
         objectDetails.setClazz(cls);
-        objectDetails.setName(A8i.getName(cls.getName()));
+        objectDetails.setName(support.getName(cls.getName()));
         Object object = getObject(cls);
         objectDetails.setObject(object);
         return objectDetails;

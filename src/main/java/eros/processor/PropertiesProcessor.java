@@ -1,6 +1,8 @@
 package eros.processor;
 
 import eros.A8i;
+import eros.Eros;
+import eros.util.Support;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,18 +13,20 @@ import java.util.Properties;
 
 public class PropertiesProcessor {
 
-    A8i a8i;
+    Eros.Cache cache;
+    Support support;
 
-    public PropertiesProcessor(A8i a8i){
-        this.a8i = a8i;
+    public PropertiesProcessor(Eros.Cache cache){
+        this.cache = cache;
+        this.support = new Support();
     }
 
     protected InputStream getPropertiesFile(String propertyFile) throws Exception{
 
-        InputStream is = this.getClass().getResourceAsStream(A8i.RESOURCES + propertyFile);
+        InputStream is = this.getClass().getResourceAsStream(Eros.RESOURCES + propertyFile);
 
         if(is == null) {
-            String resourceUri = a8i.getResourceUri();
+            String resourceUri = support.getResourceUri();
             File file = new File(resourceUri + File.separator + propertyFile);
             if(!file.exists()) {
                 throw new Exception(propertyFile + " properties file cannot be located...");
@@ -34,9 +38,9 @@ public class PropertiesProcessor {
 
     public void run() throws IOException {
 
-        if (a8i.getPropertiesFiles() != null) {
+        if (cache.getPropertiesFiles() != null) {
 
-            for (String propertyFile : a8i.getPropertiesFiles()) {
+            for (String propertyFile : cache.getPropertiesFiles()) {
                 InputStream is = null;
                 Properties prop = null;
                 try {
@@ -49,7 +53,7 @@ public class PropertiesProcessor {
                     while (properties.hasMoreElements()) {
                         String key = (String) properties.nextElement();
                         String value = prop.getProperty(key);
-                        a8i.getPropertyStorage().getProperties().put(key, value);
+                        cache.getPropertyStorage().getProperties().put(key, value);
                     }
 
                 } catch (IOException ioe) {

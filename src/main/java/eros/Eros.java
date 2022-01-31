@@ -6,6 +6,7 @@ import eros.cargo.ObjectStorage;
 import eros.cargo.PropertyStorage;
 import eros.jdbc.Repo;
 import eros.model.Element;
+import eros.model.ObjectDetails;
 import eros.model.web.EndpointMappings;
 import eros.processor.ElementProcessor;
 import eros.processor.EndpointProcessor;
@@ -19,12 +20,17 @@ import eros.web.Pointcut;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Eros {
+
+    public static final String SECURITYTAG = "eros.sessions";
+    public static final String DBMEDIATOR  = "dbmediator";
+    public static final String DATASOURCE  = "datasource";
+    public static final String REDIRECT    = "[redirect]";
+    public static final String RESOURCES   = "/src/main/resources/";
 
     Support support;
     HttpServer httpServer;
@@ -42,7 +48,8 @@ public class Eros {
         UxProcessor uxProcessor = new UxProcessor();
         ExchangeStartup exchangeStartup = new ExchangeStartup(pointcuts, interceptors, uxProcessor);
         exchangeStartup.start();
-        HttpTransmission modulator = new HttpTransmission(a8i);
+        Eros.Cache cache = exchangeStartup.getCache();
+        HttpTransmission modulator = new HttpTransmission(cache);
         httpServer.createContext("/", modulator);
         httpServer.start();
         return this;
@@ -104,14 +111,13 @@ public class Eros {
         ElementProcessor elementProcessor;
         EndpointMappings endpointMappings;
 
-        public Data(Data.Builder builder){
+        public Cache(Cache.Builder builder){
             this.pointcuts = builder.pointcuts;
             this.interceptors = builder.interceptors;
             this.settings = builder.settings;
             this.uxProcessor = builder.uxProcessor;
             this.repo = builder.repo;
         }
-
         public Object getElement(String name){
             String key = name.toLowerCase();
             if(elementStorage.getElements().containsKey(key)){
@@ -119,13 +125,35 @@ public class Eros {
             }
             return null;
         }
-
         public Map<String, Element> getElements(){
             return this.elementStorage.getElements();
         }
-
         public ElementStorage getElementStorage() {
             return this.elementStorage;
+        }
+        public List<String> getResources() {
+            return this.settings.getResources();
+        }
+        public List<String> getPropertiesFiles() {
+            return this.settings.getPropertiesFiles();
+        }
+        public void setResources(List<String> resources) {
+            this.settings.setResources(resources);
+        }
+        public void setPropertiesFiles(List<String> propertiesFiles) {
+            this.settings.setPropertiesFiles(propertiesFiles);
+        }
+        public Map<String, ObjectDetails> getObjects() {
+            return this.objectStorage.getObjects();
+        }
+        public Map<String, Interceptor> getInterceptors() {
+            return this.interceptors;
+        }
+        public UxProcessor getUxProcessor() {
+            return this.uxProcessor;
+        }
+        public Map<String, Pointcut> getPointCuts() {
+            return this.pointcuts;
         }
 
         public static class Builder{
@@ -156,8 +184,8 @@ public class Eros {
                 this.repo = repo;
                 return this;
             }
-            public Eros.Data make(){
-                return new Eros.Data(this);
+            public Eros.Cache make(){
+                return new Eros.Cache(this);
             }
         }
 

@@ -3,6 +3,8 @@ package eros.model.web;
 import eros.A8i;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
+import eros.Eros;
+import eros.util.Support;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,9 +18,11 @@ public class HttpRequest {
     Map<String, HttpSession> sessions;
     Map<String, FormElement> elements;
     String requestBody;
+    Support support;
 
     public HttpRequest(Map<String, HttpSession> sessions, HttpExchange httpExchange){
         this.sessions = sessions;
+        this.support = new Support();
         this.elements = new HashMap<>();
         this.httpExchange = httpExchange;
         this.setSession();
@@ -37,7 +41,7 @@ public class HttpRequest {
     }
 
     public void setSession(){
-        String id = A8i.getCookie(A8i.SECURITYTAG, httpExchange.getRequestHeaders());
+        String id = support.getCookie(Eros.SECURITYTAG, httpExchange.getRequestHeaders());
         if(this.sessions.containsKey(id)) {
             setSession(this.sessions.get(id));
         }
@@ -48,7 +52,7 @@ public class HttpRequest {
     }
 
     public HttpSession getSession(boolean newitup){
-        String id = A8i.getCookie(A8i.SECURITYTAG, httpExchange.getRequestHeaders());
+        String id = support.getCookie(Eros.SECURITYTAG, httpExchange.getRequestHeaders());
         if(!newitup){
             if(this.sessions.containsKey(id)){
                 setSession(this.sessions.get(id));
@@ -63,7 +67,7 @@ public class HttpRequest {
     private HttpSession getHttpSession(){
         HttpSession httpSession = new HttpSession(this.sessions, httpExchange);
         this.sessions.put(httpSession.getId(), httpSession);
-        String compound = A8i.SECURITYTAG + "=" + httpSession.getId();
+        String compound = Eros.SECURITYTAG + "=" + httpSession.getId();
         this.httpExchange.getResponseHeaders().set("Set-Cookie", compound);
         setSession(httpSession);
         return httpSession;

@@ -1,6 +1,5 @@
 package eros.startup;
 
-import eros.A8i;
 import eros.Eros;
 import eros.jdbc.Repo;
 import eros.processor.UxProcessor;
@@ -17,6 +16,7 @@ import java.util.*;
 
 public class ExchangeStartup {
 
+    Eros.Cache cache;
     UxProcessor uxProcessor;
     Map<String, Pointcut> pointcuts;
     Map<String, Interceptor> interceptors;
@@ -126,7 +126,7 @@ public class ExchangeStartup {
         settings.setPropertiesFiles(propertiesFiles);
 
         Repo repo = new Repo();
-        new Eros.Data.Builder()
+        this.cache = new Eros.Cache.Builder()
                     .withSettings(settings)
                     .withPointCuts(pointcuts)
                     .withInterceptors(interceptors)
@@ -134,6 +134,10 @@ public class ExchangeStartup {
                     .withRepo(repo)
                     .make();
 
+    }
+
+    public Eros.Cache getCache(){
+        return this.cache;
     }
 
 }

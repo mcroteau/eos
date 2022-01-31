@@ -30,12 +30,12 @@ import java.util.stream.Collectors;
 
 public class A8i {
 
-    public static final String A8i         = "eros";
-    public static final String SECURITYTAG = "a8i.sessions";
-    public static final String DBMEDIATOR  = "dbmediator";
-    public static final String DATASOURCE  = "datasource";
-    public static final String REDIRECT    = "[redirect]";
-    public static final String RESOURCES   = "/src/main/resources/";
+//    public static final String A8i         = "eros";
+//    public static final String SECURITYTAG = "a8i.sessions";
+//    public static final String DBMEDIATOR  = "dbmediator";
+//    public static final String DATASOURCE  = "datasource";
+//    public static final String REDIRECT    = "[redirect]";
+//    public static final String RESOURCES   = "/src/main/resources/";
 
     Boolean fatJar;
     Object events;
