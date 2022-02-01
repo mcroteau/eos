@@ -1,13 +1,9 @@
-<html>
-<head>
-    <title>Edit Todo</title>
-</head>
-<body>
+
     <h1>Edit Todo</h1>
 
-    <c:if test="${message != ''}">
+    <eos:if test="${message != ''}">
         <p id="notify">${message}</p>
-    </c:if>
+    </eos:if>
 
     <p><a href="/todos">Back to Todos</a></p>
 
@@ -15,6 +11,3 @@
         <input type="text" name="title" value="${todo.title}" id="title"/>
         <input type="submit" value="Update" id="update"/>
     </form>
-
-</body>
-</html>

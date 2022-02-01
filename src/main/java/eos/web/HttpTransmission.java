@@ -108,24 +108,11 @@ public class HttpTransmission implements HttpHandler {
             Method method = endpointMapping.getMethod();
             method.setAccessible(true);
 
-            String title = "";
-            if(method.isAnnotationPresent(Title.class)){
-                Title annotation = method.getAnnotation(Title.class);
-                if(annotation != null) {
-                    title = annotation.value();
-                }
-            }
 
             String design = null;
-            if(method.isAnnotationPresent(Design.class) ||
-                    method.isAnnotationPresent(Layout.class)){
-                Layout annotation = method.getAnnotation(Layout.class);
-                if(annotation != null) {
-                    design = annotation.value();
-                }else{
-                    Design annotationDos = method.getAnnotation(Design.class);
-                    design = annotationDos.value();
-                }
+            if(method.isAnnotationPresent(Design.class)){
+                Design annotationDos = method.getAnnotation(Design.class);
+                design = annotationDos.value();
             }
 
             Object object = endpointMapping.getClassDetails().getObject();
@@ -159,6 +146,10 @@ public class HttpTransmission implements HttpHandler {
                 httpExchange.close();
                 return;
             }else{
+
+                String title = httpResponse.getTitle();
+                String keywords = httpResponse.getKeywords();
+                String description = httpResponse.getDescription();
 
                 if(!support.isJar()) {
 
@@ -220,7 +211,7 @@ public class HttpTransmission implements HttpHandler {
 
                         String designContent = baos.toString(StandardCharsets.UTF_8.name());
 
-                        if(!designContent.contains("<a:content/>")){
+                        if(!designContent.contains("<eos:content/>")){
                             try {
                                 String message = "Your html template file is missing the <a:content/> tag";
                                 httpExchange.sendResponseHeaders(200, message.length());
@@ -232,13 +223,20 @@ public class HttpTransmission implements HttpHandler {
                             }
                         }
 
-                        String[] bits = designContent.split("<a:content/>");
+                        String[] bits = designContent.split("<eos:content/>");
                         String header = bits[0];
                         String bottom = bits[1];
 
                         header = header.concat(pageContent);
                         String completePage = header.concat(bottom);
                         completePage = completePage.replace("${title}", title);
+
+                        if(keywords != null) {
+                            completePage = completePage.replace("${keywords}", keywords);
+                        }
+                        if(description != null){
+                            completePage = completePage.replace("${description}", description);
+                        }
 
                         String designOutput = "";
                         try{
@@ -331,7 +329,7 @@ public class HttpTransmission implements HttpHandler {
                         }
 
                         String designContent = baos.toString(StandardCharsets.UTF_8.name());
-                        if(!designContent.contains("<a:content/>")){
+                        if(!designContent.contains("<eos:content/>")){
                             try {
                                 String message = "Your html template file is missing the <a:content/> tag";
                                 httpExchange.sendResponseHeaders(200, message.length());
@@ -343,13 +341,20 @@ public class HttpTransmission implements HttpHandler {
                             }
                         }
 
-                        String[] bits = designContent.split("<a:content/>");
+                        String[] bits = designContent.split("<eos:content/>");
                         String header = bits[0];
                         String bottom = bits[1];
 
                         header = header.concat(pageContent);
                         String completePage = header.concat(bottom);
                         completePage = completePage.replace("${title}", title);
+
+                        if(keywords != null) {
+                            completePage = completePage.replace("${keywords}", keywords);
+                        }
+                        if(description != null){
+                            completePage = completePage.replace("${description}", description);
+                        }
 
                         String designOutput = "";
                         try{

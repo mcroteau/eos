@@ -5,8 +5,9 @@ import java.util.Map;
 
 public class HttpResponse {
 
-    String design;
-    String pageTitle;
+    String title;
+    String keywords;
+    String description;
     Map<String, Object> data;
 
     public HttpResponse(){
@@ -24,22 +25,38 @@ public class HttpResponse {
         return null;
     }
 
-    public void setPageTitle(String pageTitle){
-        this.pageTitle = pageTitle;
+    public void setTitle(String title){
+        this.title = title;
     }
 
-    public String getPageTitle(){
-        if(this.pageTitle != null){
-            return this.pageTitle;
+    public String getTitle(){
+        if(this.title != null){
+            return this.title;
         }
         return "";
     }
 
-    public void setDesign(String design){
-        this.design = design;
+    public String getKeywords() {
+        if(this.keywords != null){
+            return this.keywords;
+        }
+        return "";
     }
 
-    public String getDesign(){ return this.design; }
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
+    }
+
+    public String getDescription() {
+        if(this.description != null){
+            return this.description;
+        }
+        return "";
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public Map<String, Object> data(){
         return this.data;

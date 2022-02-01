@@ -1,6 +1,7 @@
 package test;
 
 import eos.annotate.Bind;
+import eos.annotate.Design;
 import eos.annotate.HttpHandler;
 import eos.annotate.Variable;
 import eos.annotate.verbs.Get;
@@ -22,17 +23,29 @@ public class TodoHandler {
 
 
     @Get("/")
+    @Design("designs/default.htm")
     public String base(HttpResponse resp){
         List<Todo> todos = todoRepo.getList();
+        StringBuilder keywords = new StringBuilder();
+        int idx = 1;
         for(Todo todo : todos){
+            keywords.append(todo.getTitle());
+            if(idx < todos.size()){
+                keywords.append(",");
+            }
             List<TodoPerson> people = todoRepo.getPeople(todo.getId());
             todo.setPeople(people);
+            idx++;
         }
+        resp.setTitle(keywords.toString() + " that need to be done!");
+        resp.setKeywords(keywords.toString());
+        resp.setDescription(keywords.toString() + " that need to be done!");
         resp.set("todos", todos);
         return "/pages/todo/list.htm";
     }
 
     @Get("/todos")
+    @Design("designs/default.htm")
     public String getList(HttpResponse resp){
         List<Todo> todos = todoRepo.getList();
         for(Todo todo : todos){
@@ -44,7 +57,11 @@ public class TodoHandler {
     }
 
     @Get("/todos/create")
-    public String getCreate(){
+    @Design("designs/default.htm")
+    public String getCreate(HttpResponse resp){
+        resp.setTitle("Create");
+        resp.setKeywords("create todo, todos create, awesome");
+        resp.setDescription("Create your todo now!");
         return "/pages/todo/create.htm";
     }
 
@@ -58,6 +75,7 @@ public class TodoHandler {
     }
 
     @Get("/todos/edit/{{id}}")
+    @Design("designs/default.htm")
     public String getEdit(HttpResponse resp,
                           @Variable Integer id){
         Todo todo = todoRepo.getById(id);
@@ -85,6 +103,7 @@ public class TodoHandler {
     }
 
     @Get("/todos/person/add/{{id}}")
+    @Design("designs/default.htm")
     public String addPersonView(HttpResponse resp,
                                 @Variable Integer id){
         Todo todo = todoRepo.getById(id);
