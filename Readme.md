@@ -28,8 +28,19 @@ iterable. Here is what they look like:
 <a:set variable="selected" value="selected"/>
 ```
 
-rhino
-eos
+### todos 
+if property == property (int, long)
+if property != property (int, long)
+nested each
+page attributes
+meta keywords
+meta description
+
+
+
+
+
+
 
 
 
