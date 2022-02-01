@@ -47,7 +47,9 @@ public class UxProcessor {
                         if(ignore.contains(a8))continue;
                         if(entry.contains(this.FOREACH)){
                             Iterable deepIterable = getIterableObj(a8, entry, obj, entries);
-                            iterateEvaluate(a8, eachOut, deepIterable, httpResponse, entries);
+                            StringBuilder deepEachOut = new StringBuilder();
+                            iterateEvaluate(a8, deepEachOut, deepIterable, httpResponse, entries);
+                            eachOut.append(deepEachOut.toString());
                         }
                         entry = evaluateEntry(0, 0, iterable.getField(), entry, httpResponse);
                         if(entry.contains("<eos:set")){
@@ -99,12 +101,6 @@ public class UxProcessor {
                 }
                 evaluateEachEntry(entry, eachOut, obj, iterable.getField());
             }
-        }
-
-        entries.set(a8, eachOut.toString());
-        entries.set(iterable.getStop(), "");
-        for(int a7 = a8 + 1; a7 < iterable.getStop(); a7++){
-            entries.set(a7, "");
         }
     }
 
