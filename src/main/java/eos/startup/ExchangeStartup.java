@@ -32,23 +32,23 @@ public class ExchangeStartup {
     public void start() throws Exception {
 
         Support support = new Support();
-        InputStream is = this.getClass().getResourceAsStream("/src/main/resources/eros.props");
+        InputStream is = this.getClass().getResourceAsStream("/src/main/resources/eos.props");
 
         if(is == null) {
             try {
-                String uri = support.getResourceUri() + File.separator + "eros.props";
+                String uri = support.getResourceUri() + File.separator + "eos.props";
                 is = new FileInputStream(uri);
             } catch (FileNotFoundException fe) {}
         }
 
         if (is == null) {
-            throw new Exception("eros.props not found in src/main/resources/");
+            throw new Exception("eos.props not found in src/main/resources/");
         }
 
         Properties props = new Properties();
         props.load(is);
 
-        Object env = props.get("eros.env");
+        Object env = props.get("eos.env");
 
         Boolean noAction = true;
         Boolean createDb = false;
@@ -76,12 +76,12 @@ public class ExchangeStartup {
         }
 
         if(noAction && (createDb || dropDb))
-            throw new Exception("You need to either set eros.env=basic for basic systems that do not need " +
-                    "a database connection, or eros.env=create to create a db using src/main/resource/create-db.sql, " +
-                    "or eros.env=create,drop to both create and drop a database.");
+            throw new Exception("You need to either set eos.env=basic for basic systems that do not need " +
+                    "a database connection, or eos.env=create to create a db using src/main/resource/create-db.sql, " +
+                    "or eos.env=create,drop to both create and drop a database.");
 
-        Object resourcesProp = props.get("eros.assets");
-        Object propertiesProp = props.get("eros.properties");
+        Object resourcesProp = props.get("eos.assets");
+        Object propertiesProp = props.get("eos.properties");
 
         List<String> resourcesPre = new ArrayList<>();
         if(resourcesProp != null){
@@ -111,7 +111,7 @@ public class ExchangeStartup {
             for(String property : propertiesPre){
                 property = property.replaceAll("\\s+","");
                 if(property.equals("this")){
-                    property = "eros.props";
+                    property = "eos.props";
                 }
                 propertiesFiles.add(property);
             }
@@ -134,7 +134,11 @@ public class ExchangeStartup {
                     .withRepo(repo)
                     .make();
 
-        new Startup.Builder().with(cache, repo).build();
+        new Startup.Builder()
+                .withRepo(repo)
+                .withCache(cache)
+                .withSettings(settings)
+                .build();
 
     }
 

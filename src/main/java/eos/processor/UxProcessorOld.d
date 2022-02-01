@@ -1,23 +1,26 @@
 package eos.processor;
 
+import com.sun.net.httpserver.HttpExchange;
 import eos.exception.A8iException;
 import eos.model.Iterable;
 import eos.model.web.HttpRequest;
 import eos.model.web.HttpResponse;
 import eos.web.Pointcut;
-import com.sun.net.httpserver.HttpExchange;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
-public class UxProcessor {
+public class UxProcessorOld {
 
     final String NEWLINE = "\r\n";
-    final String FOREACH = "<eos:each";
+    final String FOREACH = "<a:each";
 
     public String process(Map<String, Pointcut> pointcuts, String view, HttpResponse httpResponse, HttpRequest request, HttpExchange exchange) throws A8iException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
@@ -26,7 +29,7 @@ public class UxProcessor {
 
         for(int a6 = 0; a6 < entries.size(); a6++) {
             String entryBase = entries.get(a6);
-            if(entryBase.contains("<eos:set")){
+            if(entryBase.contains("<a:set")){
                 setVariable(entryBase, httpResponse);
             }
 
@@ -41,13 +44,13 @@ public class UxProcessor {
 
                     for (int a8 = iterable.getStart(); a8 < iterable.getStop(); a8++) {
                         String entry = entries.get(a8);
-                        if(entry.contains("<eos:if condition=")){
+                        if(entry.contains("<a:if condition=")){
                             ignore = evaluateEachCondition(a8, entry, obj, httpResponse, entries);
                         }
                         if(ignore.contains(a8))continue;
                         if(entry.contains(this.FOREACH))continue;
                         entry = evaluateEntry(0, 0, iterable.getField(), entry, httpResponse);
-                        if(entry.contains("<eos:set")){
+                        if(entry.contains("<a:set")){
                             setEachVariable(entry, httpResponse, obj);
                         }
                         evaluateEachEntry(entry, eachOut, obj, iterable.getField());
@@ -61,7 +64,7 @@ public class UxProcessor {
                 }
             }else {
 
-                if(entryBase.contains("<eos:if condition=")){
+                if(entryBase.contains("<a:if condition=")){
                     evaluateCondition(a6, entryBase, httpResponse, entries);
                 }
 
@@ -83,7 +86,7 @@ public class UxProcessor {
         List<Integer> ignore = new ArrayList<>();
 
         int stop = getEachConditionStop(a8, entries);
-        int startIf = entry.indexOf("<eos:if condition=");
+        int startIf = entry.indexOf("<a:if condition=");
 
         int startExpression = entry.indexOf("${", startIf);
         int endExpression = entry.indexOf("}", startExpression);
@@ -98,7 +101,7 @@ public class UxProcessor {
         String predicatePre = bits[1].trim();
 
 
-        //<eos:if condition="${town.id == organization.townId}">
+        //<a:if condition="${town.id == organization.townId}">
 
         //todo:?2 levels
         //todo: switch
@@ -268,7 +271,7 @@ public class UxProcessor {
 
     private void evaluateCondition(int a6, String entry, HttpResponse httpResponse, List<String> entries) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, A8iException, NoSuchFieldException {
         int stop = getConditionStop(a6, entries);
-        int startIf = entry.indexOf("<eos:if condition=");
+        int startIf = entry.indexOf("<a:if condition=");
 
         int startExpression = entry.indexOf("${", startIf);
         int endExpression = entry.indexOf("}", startExpression);
@@ -516,7 +519,7 @@ public class UxProcessor {
 
     private int getEachConditionStop(int a6, List<String> entries){
         for(int a5 = a6 + 1; a5 < entries.size(); a5++){
-            if(entries.get(a5).contains("</eos:if>"))return a5;
+            if(entries.get(a5).contains("</a:if>"))return a5;
         }
         return a6;
     }
@@ -526,13 +529,13 @@ public class UxProcessor {
         int endCount = 0;
         for(int a5 = a6 + 1; a5 < entries.size(); a5++){
             String entry = entries.get(a5);
-            if(entry.contains("</eos:if>")){
+            if(entry.contains("</a:if>")){
                 endCount++;
             }
-            if(entry.contains("<eos:if condition=")){
+            if(entry.contains("<a:if condition=")){
                 startCount++;
             }
-            if(startCount == endCount && entry.contains("</eos:if>")){
+            if(startCount == endCount && entry.contains("</a:if>")){
                 return a5;
             }
         }
@@ -586,9 +589,9 @@ public class UxProcessor {
     }
 
     private void evaluateEachEntry(String entry, StringBuilder output, Object obj, String activeKey) throws NoSuchFieldException, IllegalAccessException {
-        if(entry.contains("<eos:each"))return;
-        if(entry.contains("</eos:each>"))return;
-        if(entry.contains("<eos:if condition"))return;
+        if(entry.contains("<a:each"))return;
+        if(entry.contains("</a:each>"))return;
+        if(entry.contains("<a:if condition"))return;
 
         if(entry.contains("${")) {
 
@@ -649,7 +652,7 @@ public class UxProcessor {
 
     private Iterable getIterableObj(int a6, String entry, Object obj, List<String> entries) throws A8iException, NoSuchFieldException, IllegalAccessException {
         List<Object> objs;
-        int startEach = entry.indexOf("<eos:each");
+        int startEach = entry.indexOf("<a:each");
 
         int startIterate = entry.indexOf("in=", startEach);
         int endIterate = entry.indexOf("\"", startIterate + 4);//4 eq i.n.=.".
@@ -678,7 +681,7 @@ public class UxProcessor {
 
     private Iterable getIterable(int a6, String entry, HttpResponse httpResponse, List<String> entries) throws A8iException, NoSuchFieldException, IllegalAccessException {
         List<Object> objs = new ArrayList<>();
-        int startEach = entry.indexOf("<eos:each");
+        int startEach = entry.indexOf("<a:each");
 
         int startIterate = entry.indexOf("in=", startEach);
         int endIterate = entry.indexOf("\"", startIterate + 4);//4 eq i.n.=.".
@@ -792,8 +795,8 @@ public class UxProcessor {
     private String evaluateEntry(int idx, int start, String activeField, String entry, HttpResponse httpResponse) throws NoSuchFieldException, IllegalAccessException, A8iException, NoSuchMethodException, InvocationTargetException {
 
         if(entry.contains("${") &&
-                !entry.contains("<eos:each") &&
-                    !entry.contains("<eos:if")) {
+                !entry.contains("<a:each") &&
+                    !entry.contains("<a:if")) {
 
             int startExpression = entry.indexOf("${", start);
             if(startExpression == -1)return entry;
@@ -937,7 +940,7 @@ public class UxProcessor {
         int a10 = idx;
         for(int a6 = idx; a6 < entries.size(); a6++){
             String entry = entries.get(a6);
-            if(entry.contains("</eos:each>")){
+            if(entry.contains("</a:each>")){
                 return a6;
             }
         }
@@ -950,15 +953,15 @@ public class UxProcessor {
         boolean startRendered = false;
         for(int a4 = a6; a4 < entries.size(); a4++) {
             String entry = entries.get(a4);
-            if(entry.contains("<eos:each")){
+            if(entry.contains("<a:each")){
                 startRendered = true;
             }
 
-            if(!startRendered && entry.contains("</eos:each>")){
+            if(!startRendered && entry.contains("</a:each>")){
                 return a4;
             }
 
-            if(startRendered && entry.contains("</eos:each>")){
+            if(startRendered && entry.contains("</a:each>")){
                 if(count == 1){
                     return a4;
                 }

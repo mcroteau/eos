@@ -1,4 +1,4 @@
-package test.support;
+package test.db;
 
 import eos.annotate.Config;
 import eos.annotate.Dependency;

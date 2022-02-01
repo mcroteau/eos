@@ -6,8 +6,8 @@ import eos.jdbc.Repo;
 import eos.model.Element;
 import eos.model.web.EndpointMappings;
 import eos.processor.*;
-import eos.util.Settings;
 import eos.util.Support;
+import eos.util.Settings;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
@@ -24,11 +24,19 @@ public class Startup {
         Support support;
         Settings settings;
 
-        public Builder with(Eos.Cache cache, Repo repo){
-            this.cache = cache;
-            this.repo = repo;
+        public Builder(){
             this.support = new Support();
-            this.settings = new Settings();
+        }
+        public Builder withRepo(Repo repo){
+            this.repo = repo;
+            return this;
+        }
+        public Builder withCache(Eos.Cache cache){
+            this.cache = cache;
+            return this;
+        }
+        public Builder withSettings(Settings settings){
+            this.settings = settings;
             return this;
         }
         private void setAttributes(){

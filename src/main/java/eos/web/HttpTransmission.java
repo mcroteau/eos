@@ -4,9 +4,9 @@ import eos.Eos;
 import eos.annotate.*;
 import eos.model.web.*;
 import eos.processor.UxProcessor;
+import eos.util.Support;
 import eos.util.MimeGetter;
 import eos.util.ResourceResponse;
-import eos.util.Support;
 import eos.util.UriTranslator;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -459,10 +459,10 @@ public class HttpTransmission implements HttpHandler {
             if(type.equals("com.sun.net.httpserver.HttpExchange")){
                 params.add(httpExchange);
             }
-            if(type.equals("eros.model.web.HttpRequest")){
+            if(type.equals("eos.model.web.HttpRequest")){
                 params.add(httpRequest);
             }
-            if(type.equals("eros.model.web.HttpResponse")){
+            if(type.equals("eos.model.web.HttpResponse")){
                 params.add(httpResponse);
             }
             if(type.equals("java.lang.Integer")){

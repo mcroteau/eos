@@ -19,7 +19,7 @@ public class TodoRepo {
         return count;
     }
 
-    public Todo getById(long id){
+    public Todo getById(int id){
         String sql = "select * from todos where id = [+]";
         Todo todo = (Todo) repo.get(sql, new Object[]{ id }, Todo.class);
         return todo;
@@ -31,27 +31,42 @@ public class TodoRepo {
         return todos;
     }
 
-    public boolean save(Todo todo){
+    public void save(Todo todo){
         String sql = "insert into todos (title) values ('[+]')";
         repo.save(sql, new Object[] {
                 todo.getTitle()
         });
-        return true;
     }
 
-    public boolean update(Todo todo) {
+    public void update(Todo todo) {
         String sql = "update todos set title = '[+]' where id = [+]";
         repo.update(sql, new Object[] {
                 todo.getTitle(),
                 todo.getId()
         });
-        return true;
     }
 
-    public boolean delete(long id){
+    public void delete(int id){
         String sql = "delete from todos where id = [+]";
         repo.delete(sql, new Object[] { id });
-        return true;
     }
 
+    public List<TodoPerson> getPeople(int id){
+        String sql = "select * from todo_people where todo_id = [+]";
+        List<TodoPerson> todoPeople = (ArrayList) repo.getList(sql, new Object[]{ id }, TodoPerson.class);
+        return todoPeople;
+    }
+
+    public void savePerson(TodoPerson todoPerson) {
+        String sql = "insert into todo_people (todo_id, person) values ([+],'[+]')";
+        repo.save(sql, new Object[] {
+                todoPerson.getTodoId(),
+                todoPerson.getPerson()
+        });
+    }
+
+    public void deletePerson(Integer id) {
+        String sql = "delete from todo_people where id = [+]";
+        repo.delete(sql, new Object[] { id });
+    }
 }

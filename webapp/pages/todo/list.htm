@@ -14,9 +14,9 @@
 
     <a href="/todos/create">New Todo</a>
 
-    <a:if condition="${todos.size() > 0}">
+    <eos:if condition="${todos.size() > 0}">
         <table>
-            <a:each in="${todos}" item="todo">
+            <eos:each in="${todos}" item="todo">
                 <tr>
                     <td>${todo.id}</td>
                     <td>
@@ -24,20 +24,21 @@
                     </td>
                     <td>
                         <form action="/todos/delete/${todo.id}" method="post">
+                            <a href="/todos/person/add/${todo.id}">Add Person</a>&nbsp;
                             <input type="submit" value="Delete" id="delete-${todo.id}"/>
                         </form>
                     </td>
                 </tr>
-            </a:each>
+            </eos:each>
         </table>
 
         <p>Count: <span id="count">${todos.size()}</span></p>
-    </a:if>
+    </eos:if>
 
 
-    <a:if condition="${todos.size() == 0}">
+    <eos:if condition="${todos.size() == 0}">
         <p>No todos created yet...</p>
-    </a:if>
+    </eos:if>
 
 </body>
 </html>
