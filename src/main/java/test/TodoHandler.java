@@ -24,6 +24,10 @@ public class TodoHandler {
     @Get("/")
     public String base(HttpResponse resp){
         List<Todo> todos = todoRepo.getList();
+        for(Todo todo : todos){
+            List<TodoPerson> people = todoRepo.getPeople(todo.getId());
+            todo.setPeople(people);
+        }
         resp.set("todos", todos);
         return "/pages/todo/list.htm";
     }
@@ -31,6 +35,10 @@ public class TodoHandler {
     @Get("/todos")
     public String getList(HttpResponse resp){
         List<Todo> todos = todoRepo.getList();
+        for(Todo todo : todos){
+            List<TodoPerson> people = todoRepo.getPeople(todo.getId());
+            todo.setPeople(people);
+        }
         resp.set("todos", todos);
         return "/pages/todo/list.htm";
     }

@@ -1,9 +1,12 @@
 package test;
 
+import java.util.List;
+
 public class Todo {
 
     Integer id;
     String title;
+    List<TodoPerson> people;
 
     public Integer getId() {
         return id;
@@ -19,5 +22,13 @@ public class Todo {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public List<TodoPerson> getPeople() {
+        return people;
+    }
+
+    public void setPeople(List<TodoPerson> people) {
+        this.people = people;
     }
 }

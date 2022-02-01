@@ -17,7 +17,11 @@
 <h4>People for ${todo.title}</h4>
 <ul>
 <eos:each in="${people}" item="person">
-    <li>${person.person}</li>
+    <li>${person.person}
+        <form action="/todos/person/delete/${person.id}" method="post">
+            <input type="submit" value="Remove Person"/>
+        </form>
+    </li>
 </eos:each>
 </ul>
 

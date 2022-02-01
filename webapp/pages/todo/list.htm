@@ -15,12 +15,18 @@
     <a href="/todos/create">New Todo</a>
 
     <eos:if condition="${todos.size() > 0}">
-        <table>
+        <table style="width:100%;">
             <eos:each in="${todos}" item="todo">
                 <tr>
                     <td>${todo.id}</td>
                     <td>
                         <a href="/todos/edit/${todo.id}" id="todo-${todo.id}">${todo.title}</a>
+                        <h4>People:</h4>
+                        <ul>
+                            <eos:each in="${todo.people}" item="person">
+                                <li>${person.person}</li>
+                            </eos:each>
+                        </ul>
                     </td>
                     <td>
                         <form action="/todos/delete/${todo.id}" method="post">

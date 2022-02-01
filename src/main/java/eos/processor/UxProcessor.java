@@ -45,7 +45,10 @@ public class UxProcessor {
                             ignore = evaluateEachCondition(a8, entry, obj, httpResponse, entries);
                         }
                         if(ignore.contains(a8))continue;
-                        if(entry.contains(this.FOREACH))continue;
+                        if(entry.contains(this.FOREACH)){
+                            Iterable deepIterable = getIterableObj(a8, entry, obj, entries);
+                            iterateEvaluate(a8, eachOut, deepIterable, httpResponse, entries);
+                        }
                         entry = evaluateEntry(0, 0, iterable.getField(), entry, httpResponse);
                         if(entry.contains("<eos:set")){
                             setEachVariable(entry, httpResponse, obj);
@@ -77,6 +80,32 @@ public class UxProcessor {
 
         StringBuilder finalOut = retrieveFinal(output);
         return finalOut.toString();
+    }
+
+    private void iterateEvaluate(int a8, StringBuilder eachOut, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException, A8iException, NoSuchMethodException, InvocationTargetException {
+        for(int a7 = 0; a7 < iterable.getPojos().size(); a7++) {
+            Object obj = iterable.getPojos().get(a7);
+            List<Integer> ignore = new ArrayList<>();
+            for (int a6 = iterable.getStart(); a6 < iterable.getStop(); a6++) {
+                String entry = entries.get(a6);
+                if(entry.contains("<eos:if condition=")){
+                    ignore = evaluateEachCondition(a8, entry, obj, httpResponse, entries);
+                }
+                if(ignore.contains(a8))continue;
+                if (entry.contains(this.FOREACH)) continue;
+                entry = evaluateEntry(0, 0, iterable.getField(), entry, httpResponse);
+                if(entry.contains("<eos:set")){
+                    setEachVariable(entry, httpResponse, obj);
+                }
+                evaluateEachEntry(entry, eachOut, obj, iterable.getField());
+            }
+        }
+
+        entries.set(a8, eachOut.toString());
+        entries.set(iterable.getStop(), "");
+        for(int a7 = a8 + 1; a7 < iterable.getStop(); a7++){
+            entries.set(a7, "");
+        }
     }
 
     private List<Integer> evaluateEachCondition(int a8, String entry, Object obj, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException {
@@ -549,14 +578,6 @@ public class UxProcessor {
         return "";
     }
 
-    private void iterateEvaluate(Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException, A8iException, NoSuchMethodException, InvocationTargetException {
-        for(int a6 = iterable.getStart(); a6 < iterable.getStop(); a6++){
-            String entryBase = entries.get(a6);
-            String entry = evaluateEntry(0, 0, iterable.getField(), entryBase, httpResponse);
-            entries.set(a6, entry);
-        }
-    }
-
 
     private StringBuilder retrieveFinal(StringBuilder eachOut){
         StringBuilder finalOut = new StringBuilder();
@@ -574,16 +595,16 @@ public class UxProcessor {
         }
     }
 
-    private void resolveIterable(StringBuilder eachOut, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException, A8iException, NoSuchMethodException, InvocationTargetException {
-        for(int a7 = 0; a7 < iterable.getPojos().size(); a7++){
-            Object obj = iterable.getPojos().get(a7);
-            for(int a8 = iterable.getStart(); a8 < iterable.getStop(); a8++){
-                String entry = entries.get(a8);
-                iterateEvaluate(iterable, httpResponse, entries);
-                evaluateEachEntry(entry, eachOut, obj, iterable.getField());
-            }
-        }
-    }
+//    private void resolveIterable(StringBuilder eachOut, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException, A8iException, NoSuchMethodException, InvocationTargetException {
+//        for(int a7 = 0; a7 < iterable.getPojos().size(); a7++){
+//            Object obj = iterable.getPojos().get(a7);
+//            for(int a8 = iterable.getStart(); a8 < iterable.getStop(); a8++){
+//                String entry = entries.get(a8);
+//                iterateEvaluate(a8, iterable, httpResponse, entries);
+//                evaluateEachEntry(entry, eachOut, obj, iterable.getField());
+//            }
+//        }
+//    }
 
     private void evaluateEachEntry(String entry, StringBuilder output, Object obj, String activeKey) throws NoSuchFieldException, IllegalAccessException {
         if(entry.contains("<eos:each"))return;
