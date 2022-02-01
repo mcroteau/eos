@@ -12,9 +12,9 @@
 
     <a href="/todos/create">New Todo</a>
 
-    <eros:if condition="${todos.size() > 0}">
+    <a:if condition="${todos.size() > 0}">
         <table>
-            <eros:each in="${todos}" item="todo">
+            <a:each in="${todos}" item="todo">
                 <tr>
                     <td>${todo.id}</td>
                     <td>
@@ -26,11 +26,11 @@
                         </form>
                     </td>
                 </tr>
-            </eros:each>
+            </a:each>
         </table>
 
         <p>Count: <span id="count">${todos.size()}</span></p>
-    </eros:if>
+    </a:if>
 
 
     <a:if condition="${todos.size() == 0}">

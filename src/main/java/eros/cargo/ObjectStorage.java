@@ -2,11 +2,16 @@ package eros.cargo;
 
 import eros.model.ObjectDetails;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ObjectStorage {
 
     Map<String, ObjectDetails> objects;
+
+    public ObjectStorage(){
+        this.objects = new HashMap<>();
+    }
 
     public Map<String, ObjectDetails> getObjects() {
         return objects;

@@ -459,10 +459,10 @@ public class HttpTransmission implements HttpHandler {
             if(type.equals("com.sun.net.httpserver.HttpExchange")){
                 params.add(httpExchange);
             }
-            if(type.equals("a8i.model.web.HttpRequest")){
+            if(type.equals("eros.model.web.HttpRequest")){
                 params.add(httpRequest);
             }
-            if(type.equals("a8i.model.web.HttpResponse")){
+            if(type.equals("eros.model.web.HttpResponse")){
                 params.add(httpResponse);
             }
             if(type.equals("java.lang.Integer")){

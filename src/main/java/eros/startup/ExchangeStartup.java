@@ -32,23 +32,23 @@ public class ExchangeStartup {
     public void start() throws Exception {
 
         Support support = new Support();
-        InputStream is = this.getClass().getResourceAsStream("/src/main/resources/a8i.props");
+        InputStream is = this.getClass().getResourceAsStream("/src/main/resources/eros.props");
 
         if(is == null) {
             try {
-                String uri = support.getResourceUri() + File.separator + "a8i.props";
+                String uri = support.getResourceUri() + File.separator + "eros.props";
                 is = new FileInputStream(uri);
             } catch (FileNotFoundException fe) {}
         }
 
         if (is == null) {
-            throw new Exception("A8i : a8i.props not found in src/main/resources/");
+            throw new Exception("eros.props not found in src/main/resources/");
         }
 
         Properties props = new Properties();
         props.load(is);
 
-        Object env = props.get("a8i.env");
+        Object env = props.get("eros.env");
 
         Boolean noAction = true;
         Boolean createDb = false;
@@ -76,12 +76,12 @@ public class ExchangeStartup {
         }
 
         if(noAction && (createDb || dropDb))
-            throw new Exception("You need to either set a8i.env=basic for basic systems that do not need " +
-                    "a database connection, or a8i.env=create to create a db using src/main/resource/create-db.sql, " +
-                    "or a8i.env=create,drop to both create and drop a database.");
+            throw new Exception("You need to either set eros.env=basic for basic systems that do not need " +
+                    "a database connection, or eros.env=create to create a db using src/main/resource/create-db.sql, " +
+                    "or eros.env=create,drop to both create and drop a database.");
 
-        Object resourcesProp = props.get("a8i.assets");
-        Object propertiesProp = props.get("a8i.properties");
+        Object resourcesProp = props.get("eros.assets");
+        Object propertiesProp = props.get("eros.properties");
 
         List<String> resourcesPre = new ArrayList<>();
         if(resourcesProp != null){
@@ -111,7 +111,7 @@ public class ExchangeStartup {
             for(String property : propertiesPre){
                 property = property.replaceAll("\\s+","");
                 if(property.equals("this")){
-                    property = "a8i.props";
+                    property = "eros.props";
                 }
                 propertiesFiles.add(property);
             }
@@ -133,6 +133,8 @@ public class ExchangeStartup {
                     .withUxProcessor(uxProcessor)
                     .withRepo(repo)
                     .make();
+
+        new Startup.Builder().with(cache, repo).build();
 
     }
 

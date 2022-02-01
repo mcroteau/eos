@@ -109,11 +109,14 @@ public class Eros {
         EndpointMappings endpointMappings;
 
         public Cache(Cache.Builder builder){
+            this.repo = builder.repo;
             this.pointcuts = builder.pointcuts;
             this.interceptors = builder.interceptors;
             this.settings = builder.settings;
             this.uxProcessor = builder.uxProcessor;
-            this.repo = builder.repo;
+            this.elementStorage = new ElementStorage();
+            this.propertyStorage = new PropertyStorage();
+            this.objectStorage = new ObjectStorage();
         }
         public Object getElement(String name){
             String key = name.toLowerCase();
