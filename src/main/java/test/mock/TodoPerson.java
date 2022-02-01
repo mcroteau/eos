@@ -1,4 +1,4 @@
-package test;
+package test.mock;
 
 public class TodoPerson {
     Integer id;

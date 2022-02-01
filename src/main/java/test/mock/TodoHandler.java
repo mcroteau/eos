@@ -1,4 +1,4 @@
-package test;
+package test.mock;
 
 import eos.annotate.Bind;
 import eos.annotate.Design;
