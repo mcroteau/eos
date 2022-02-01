@@ -1,20 +1,16 @@
-# A8i/
+# EOS
 
-A8i is an Open Source Java Web Server.
+EOS is an Open Source Java Web Server.
 An alternative to Tomcat & Jetty with built in 
 dependency injection, request routing and data management. 
 Also, if you are tired of deploying war files, 
-A8i projects can run as exploded jars or as a single fat uber jar!
+EOS projects can run as exploded jars or as a single fat uber jar!
 
 ### Running the Server
 ```
 public static void main(String[] arguments){
-    A8i.Server server = new A8i.ServerBuilder().withPort(3001).spawn(150).make();
-    server.registerPointcut(new GuestPointcut());
-    server.registerPointcut(new AuthenticatedPointcut());
-    server.registerPointcut(new UsernamePointcut());
-    server.registerInterceptor(new GarciaInterceptor());
-    server.run();
+    Eos eos = new Eos.Builder().withPort(3000).spawn(20).make();
+    eos.run();
 }
 ```
 

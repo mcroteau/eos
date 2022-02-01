@@ -1,19 +1,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>dev.j3ee</groupId>
-	<artifactId>a8i</artifactId>
+	<artifactId>eos</artifactId>
 	<packaging>jar</packaging>
 	<version>0.93-SNAPSHOT</version>
-	<name>A8i</name>
-	<description>A8i is a Full Fledged Java Application Server with built in Dependency Injection,
-    Request Mapping and Data Management support. A8i boasts its own custom view tag library and
+	<name>Eos</name>
+	<description>EOS is a Full Fledged Java Application Server with built in Dependency Injection,
+    Request Mapping and Data Management support. EOS boasts its own custom view tag library and
     the ability to write your own custom view tags.</description>
 	<url>www.j3ee.dev</url>
 
 	<licenses>
 		<license>
 			<name>MIT License</name>
-			<url>https://github.com/mcroteau/A8i/blob/master/License.md</url>
+			<url>https://github.com/mcroteau/Eos/blob/master/License.md</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -74,34 +74,7 @@
         <sourceDirectory>src/main/java</sourceDirectory>
 		<finalName>${project.artifactId}-${project.version}</finalName>
 
-        <resources>
-            <resource>
-                <directory>.</directory>
-                <includes>
-                    <include>webapp/**/*.*</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>.</directory>
-                <includes>
-                    <include>src/main/resources/**/*.*</include>
-                </includes>
-            </resource>
-        </resources>
-
-
 		<plugins>
-            <!--//// can delete ///? -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <executable>maven</executable>
-                    <mainClass>test.Main</mainClass>
-                    <workingDirectory>tmp</workingDirectory>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -175,9 +148,9 @@
     </build>
 
     <scm>
-        <connection>scm:git:git://github.com/mcroteau/A8i.git</connection>
-        <developerConnection>scm:git:git@github.com:mcroteau/A8i.git</developerConnection>
-        <url>https://github.com/mcroteau/A8i</url>
+        <connection>scm:git:git://github.com/mcroteau/Eos.git</connection>
+        <developerConnection>scm:git:git@github.com:mcroteau/Eos.git</developerConnection>
+        <url>https://github.com/mcroteau/Eos</url>
         <tag>v0.90</tag>
     </scm>
 
