@@ -33,7 +33,7 @@ iterable. Here is what they look like:
 ```
 
 rhino
-eros
+eos
 
 
 

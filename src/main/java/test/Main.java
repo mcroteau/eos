@@ -1,10 +1,10 @@
 package test;
 
-import eros.Eros;
+import eos.Eos;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        Eros eros = new Eros.Builder().withPort(3000).spawn(2000).make();
-        eros.run();
+        Eos eos = new Eos.Builder().withPort(3000).spawn(2000).make();
+        eos.run();
     }
 }

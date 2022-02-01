@@ -1,12 +1,12 @@
 package test;
 
-import eros.annotate.Bind;
-import eros.annotate.HttpHandler;
-import eros.annotate.Variable;
-import eros.annotate.verbs.Get;
-import eros.annotate.verbs.Post;
-import eros.model.web.HttpRequest;
-import eros.model.web.HttpResponse;
+import eos.annotate.Bind;
+import eos.annotate.HttpHandler;
+import eos.annotate.Variable;
+import eos.annotate.verbs.Get;
+import eos.annotate.verbs.Post;
+import eos.model.web.HttpRequest;
+import eos.model.web.HttpResponse;
 
 @HttpHandler
 public class TodoHandler {

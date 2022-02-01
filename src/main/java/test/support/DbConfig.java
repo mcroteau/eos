@@ -1,9 +1,9 @@
 package test.support;
 
-import eros.annotate.Config;
-import eros.annotate.Dependency;
-import eros.annotate.Property;
-import eros.jdbc.datasource.Basic;
+import eos.annotate.Config;
+import eos.annotate.Dependency;
+import eos.annotate.Property;
+import eos.jdbc.datasource.Basic;
 
 import javax.sql.DataSource;
 

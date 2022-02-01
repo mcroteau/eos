@@ -1,10 +1,10 @@
 package test;
 
-import eros.annotate.Bind;
-import eros.model.web.HttpRequest;
-import eros.model.web.HttpResponse;
-import eros.annotate.Service;
-import eros.util.Support;
+import eos.annotate.Bind;
+import eos.model.web.HttpRequest;
+import eos.model.web.HttpResponse;
+import eos.annotate.Service;
+import eos.util.Support;
 
 import java.util.List;
 

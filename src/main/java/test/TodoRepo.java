@@ -1,8 +1,8 @@
 package test;
 
-import eros.annotate.DataStore;
-import eros.annotate.Bind;
-import eros.jdbc.Repo;
+import eos.annotate.DataStore;
+import eos.annotate.Bind;
+import eos.jdbc.Repo;
 
 import java.util.ArrayList;
 import java.util.List;
