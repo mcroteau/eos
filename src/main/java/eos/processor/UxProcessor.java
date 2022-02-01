@@ -579,7 +579,7 @@ public class UxProcessor {
         StringBuilder finalOut = new StringBuilder();
         String[] parts = eachOut.toString().split("\n");
         for(String bit : parts){
-            if(!bit.isEmpty())finalOut.append(bit + this.NEWLINE);
+            if(!bit.trim().equals(""))finalOut.append(bit + this.NEWLINE);
         }
         return finalOut;
     }
