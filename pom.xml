@@ -3,7 +3,7 @@
 	<groupId>dev.j3ee</groupId>
 	<artifactId>eos</artifactId>
 	<packaging>jar</packaging>
-	<version>0.94</version>
+	<version>0.95-SNAPSHOT</version>
 	<name>Eos</name>
 	<description>EOS is a Full Fledged Java Application Server with built in Dependency Injection,
     Request Mapping and Data Management support. EOS boasts its own custom view tag library and
@@ -200,7 +200,7 @@
         <connection>scm:git:git://github.com/mcroteau/Eos.git</connection>
         <developerConnection>scm:git:git@github.com:mcroteau/Eos.git</developerConnection>
         <url>https://github.com/mcroteau/Eos</url>
-        <tag>v0.94</tag>
+        <tag>v0.90</tag>
     </scm>
 
     <distributionManagement>
