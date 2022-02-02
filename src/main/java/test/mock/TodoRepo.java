@@ -39,9 +39,10 @@ public class TodoRepo {
     }
 
     public void update(Todo todo) {
-        String sql = "update todos set title = '[+]' where id = [+]";
+        String sql = "update todos set title = '[+]', complete = [+] where id = [+]";
         repo.update(sql, new Object[] {
                 todo.getTitle(),
+                todo.isComplete(),
                 todo.getId()
         });
     }

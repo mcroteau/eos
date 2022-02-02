@@ -74,14 +74,34 @@ public class UxProcessor {
                 entries.set(a6, entryBase);
             }
         }
-
+        List<String> entriesCleaned = cleanup(entries);
         StringBuilder output = new StringBuilder();
-        for(int a6 = 0; a6 < entries.size(); a6++) {
-            output.append(entries.get(a6) + this.NEWLINE);
+        for(int a6 = 0; a6 < entriesCleaned.size(); a6++) {
+            output.append(entriesCleaned.get(a6) + this.NEWLINE);
         }
 
         StringBuilder finalOut = retrieveFinal(output);
         return finalOut.toString();
+    }
+
+
+    private List<String> cleanup(List<String> entries){
+        for(int a6 = 0; a6 < entries.size(); a6++){
+            String entry = entries.get(a6);
+            if(entry.contains("<eos:if"))entries.set(a6, "");
+            if(entry.contains("</eos:if>"))entries.set(a6, "");
+        }
+        return entries;
+    }
+
+
+    private StringBuilder retrieveFinal(StringBuilder eachOut){
+        StringBuilder finalOut = new StringBuilder();
+        String[] parts = eachOut.toString().split("\n");
+        for(String bit : parts){
+            if(!bit.trim().equals(""))finalOut.append(bit + this.NEWLINE);
+        }
+        return finalOut;
     }
 
     private void iterateEvaluate(int a8, StringBuilder eachOut, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException, A8iException, NoSuchMethodException, InvocationTargetException {
@@ -575,32 +595,12 @@ public class UxProcessor {
     }
 
 
-    private StringBuilder retrieveFinal(StringBuilder eachOut){
-        StringBuilder finalOut = new StringBuilder();
-        String[] parts = eachOut.toString().split("\n");
-        for(String bit : parts){
-            if(!bit.trim().equals(""))finalOut.append(bit + this.NEWLINE);
-        }
-        return finalOut;
-    }
-
 
     private void retrofit(int a6, int size, List<String> entries){
         for(int a10 = a6; a10 < a6 + size + 1; a10++){
             entries.set(a10, "");
         }
     }
-
-//    private void resolveIterable(StringBuilder eachOut, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException, A8iException, NoSuchMethodException, InvocationTargetException {
-//        for(int a7 = 0; a7 < iterable.getPojos().size(); a7++){
-//            Object obj = iterable.getPojos().get(a7);
-//            for(int a8 = iterable.getStart(); a8 < iterable.getStop(); a8++){
-//                String entry = entries.get(a8);
-//                iterateEvaluate(a8, iterable, httpResponse, entries);
-//                evaluateEachEntry(entry, eachOut, obj, iterable.getField());
-//            }
-//        }
-//    }
 
     private void evaluateEachEntry(String entry, StringBuilder output, Object obj, String activeKey) throws NoSuchFieldException, IllegalAccessException {
         if(entry.contains("<eos:each"))return;

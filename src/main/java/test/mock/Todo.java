@@ -6,6 +6,7 @@ public class Todo {
 
     Integer id;
     String title;
+    boolean complete;
     List<TodoPerson> people;
 
     public Integer getId() {
@@ -22,6 +23,14 @@ public class Todo {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public boolean isComplete() {
+        return complete;
+    }
+
+    public void setComplete(boolean complete) {
+        this.complete = complete;
     }
 
     public List<TodoPerson> getPeople() {

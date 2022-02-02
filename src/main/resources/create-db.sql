@@ -1,7 +1,8 @@
 -- your create schema sql --
 create table todos (
 	id bigint PRIMARY KEY AUTO_INCREMENT,
-	title character varying(254) NOT NULL
+	title character varying(254) NOT NULL,
+	complete boolean default false
 );
 
 create table todo_people (

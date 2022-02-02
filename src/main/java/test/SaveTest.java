@@ -19,11 +19,11 @@ public class SaveTest {
                 .url("http://localhost:3000/todos/save")
                 .post(formBody)
                 .build();
-        Response response = null;
+        Response response;
         try {
             response = client.newCall(request).execute();
             String body = response.body().string();
-//            System.out.println(body);
+            System.out.println(body);
             assertTrue(body.contains("<span id=\"count\">1</span>"));
         }catch (IOException ioex){}
     }
