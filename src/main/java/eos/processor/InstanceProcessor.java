@@ -107,7 +107,7 @@ public class InstanceProcessor {
         try {
             //todo:
             URL jarUriTres = this.cl.getResource("eos/");//was 5
-            String jarPath = jarUriTres.getPath().substring(6, jarUriTres.getPath().indexOf("!"));
+            String jarPath = jarUriTres.getPath().substring(5, jarUriTres.getPath().indexOf("!"));
 
             JarFile file = new JarFile(jarPath);
             Enumeration jarFile = file.entries();
