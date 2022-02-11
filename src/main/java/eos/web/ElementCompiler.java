@@ -1,11 +1,11 @@
 package eos.web;
 
+import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpExchange;
 import eos.Eos;
 import eos.model.web.FormElement;
 import eos.model.web.HttpRequest;
 import eos.model.web.HttpSession;
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;

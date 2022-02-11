@@ -6,8 +6,8 @@ import eos.jdbc.Repo;
 import eos.model.Element;
 import eos.model.web.EndpointMappings;
 import eos.processor.*;
-import eos.util.Support;
 import eos.util.Settings;
+import eos.util.Support;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
@@ -79,7 +79,7 @@ public class Startup {
 
         private void dispatchEvent() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
             if(cache.getEvents() != null) {
-                Method setupComplete = cache.getEvents().getClass().getDeclaredMethod("setupComplete", Eos.class);
+                Method setupComplete = cache.getEvents().getClass().getDeclaredMethod("setupComplete", Eos.Cache.class);
                 if(setupComplete != null) {
                     setupComplete.setAccessible(true);
                     setupComplete.invoke(cache.getEvents(), cache);

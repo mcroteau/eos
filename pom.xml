@@ -5,7 +5,7 @@
 	<packaging>jar</packaging>
 	<version>0.96-SNAPSHOT</version>
 	<name>Eos</name>
-	<description>EOS is a Full Fledged Java Application Server with built in Dependency Injection,
+	<description>EOS is a full Fledged Java Application Server with built in Dependency Injection,
     Request Mapping and Data Management support. EOS boasts its own custom view tag library and
     the ability to write your own custom view tags.</description>
 	<url>www.j3ee.dev</url>
@@ -92,55 +92,18 @@
     <build>
         <defaultGoal>package</defaultGoal>
 
-        <resources>
-            <resource>
-                <directory>.</directory>
-                <includes>
-                    <include>webapp/**/*.*</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>.</directory>
-                <includes>
-                    <include>src/main/resources/**/*.*</include>
-                </includes>
-            </resource>
-        </resources>
-
 		<plugins>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<finalName>Eos</finalName>
-					<appendAssemblyId>false</appendAssemblyId>
-					<archive>
-						<manifest>
-							<mainClass>test.Main</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.codehaus.mojo</groupId>-->
-<!--                <artifactId>exec-maven-plugin</artifactId>-->
-<!--                <version>3.0.0</version>-->
-<!--                <configuration>-->
-<!--                    <executable>maven</executable>-->
-<!--                    <mainClass>test.Main</mainClass>-->
-<!--                    <workingDirectory>tmp</workingDirectory>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <executable>maven</executable>
+                    <mainClass>test.Main</mainClass>
+                    <workingDirectory>tmp</workingDirectory>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

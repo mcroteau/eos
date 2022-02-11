@@ -1,25 +1,28 @@
 package eos.processor;
 
-import eos.exception.A8iException;
+import com.sun.net.httpserver.HttpExchange;
+import eos.exception.EosException;
 import eos.model.Iterable;
 import eos.model.web.HttpRequest;
 import eos.model.web.HttpResponse;
 import eos.web.Pointcut;
-import com.sun.net.httpserver.HttpExchange;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class UxProcessor {
 
     final String NEWLINE = "\r\n";
     final String FOREACH = "<eos:each";
 
-    public String process(Map<String, Pointcut> pointcuts, String view, HttpResponse httpResponse, HttpRequest request, HttpExchange exchange) throws A8iException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public String process(Map<String, Pointcut> pointcuts, String view, HttpResponse httpResponse, HttpRequest request, HttpExchange exchange) throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         List<String> entries = Arrays.asList(view.split("\n"));
         evaluatePointcuts(request, exchange, entries, pointcuts);
@@ -104,7 +107,7 @@ public class UxProcessor {
         return finalOut;
     }
 
-    private void iterateEvaluate(int a8, StringBuilder eachOut, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException, A8iException, NoSuchMethodException, InvocationTargetException {
+    private void iterateEvaluate(int a8, StringBuilder eachOut, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException, EosException, NoSuchMethodException, InvocationTargetException {
         for(int a7 = 0; a7 < iterable.getPojos().size(); a7++) {
             Object obj = iterable.getPojos().get(a7);
             List<Integer> ignore = new ArrayList<>();
@@ -311,7 +314,7 @@ public class UxProcessor {
         return a6;
     }
 
-    private void evaluateCondition(int a6, String entry, HttpResponse httpResponse, List<String> entries) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, A8iException, NoSuchFieldException {
+    private void evaluateCondition(int a6, String entry, HttpResponse httpResponse, List<String> entries) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, EosException, NoSuchFieldException {
         int stop = getConditionStop(a6, entries);
         int startIf = entry.indexOf("<eos:if condition=");
 
@@ -531,7 +534,7 @@ public class UxProcessor {
         }
     }
 
-    private Boolean isConditionMet(String subject, String predicate, String condition, Type type) throws A8iException {
+    private Boolean isConditionMet(String subject, String predicate, String condition, Type type) throws EosException {
         if (type.getTypeName().equals("int") || type.getTypeName().equals("java.lang.Integer")) {
             if (condition.equals(">")) {
                 if (Integer.valueOf(String.valueOf(subject)) > Integer.valueOf(predicate))
@@ -554,7 +557,7 @@ public class UxProcessor {
                     return true;
             }
         } else {
-            throw new A8iException("integers only covered right now.");
+            throw new EosException("integers only covered right now.");
         }
         return false;
     }
@@ -664,7 +667,7 @@ public class UxProcessor {
     }
 
 
-    private Iterable getIterableObj(int a6, String entry, Object obj, List<String> entries) throws A8iException, NoSuchFieldException, IllegalAccessException {
+    private Iterable getIterableObj(int a6, String entry, Object obj, List<String> entries) throws EosException, NoSuchFieldException, IllegalAccessException {
         List<Object> objs;
         int startEach = entry.indexOf("<eos:each");
 
@@ -693,7 +696,7 @@ public class UxProcessor {
         return iterable;
     }
 
-    private Iterable getIterable(int a6, String entry, HttpResponse httpResponse, List<String> entries) throws A8iException, NoSuchFieldException, IllegalAccessException {
+    private Iterable getIterable(int a6, String entry, HttpResponse httpResponse, List<String> entries) throws EosException, NoSuchFieldException, IllegalAccessException {
         List<Object> objs = new ArrayList<>();
         int startEach = entry.indexOf("<eos:each");
 
@@ -806,7 +809,7 @@ public class UxProcessor {
         return null;
     }
 
-    private String evaluateEntry(int idx, int start, String activeField, String entry, HttpResponse httpResponse) throws NoSuchFieldException, IllegalAccessException, A8iException, NoSuchMethodException, InvocationTargetException {
+    private String evaluateEntry(int idx, int start, String activeField, String entry, HttpResponse httpResponse) throws NoSuchFieldException, IllegalAccessException, EosException, NoSuchMethodException, InvocationTargetException {
 
         if(entry.contains("${") &&
                 !entry.contains("<eos:each") &&
@@ -878,7 +881,7 @@ public class UxProcessor {
 
     }
 
-    private String invokeMethod(String fieldBase, Object obj) throws A8iException {
+    private String invokeMethod(String fieldBase, Object obj) throws EosException {
         int startMethod = fieldBase.indexOf(".");
         int endMethod = fieldBase.indexOf("(", startMethod);
         String name = fieldBase.substring(startMethod + 1, endMethod)
@@ -924,8 +927,8 @@ public class UxProcessor {
         return null;
     }
 
-    private List<Object> getMethodParameters(Method method, String[] parameters) throws A8iException {
-        if(method.getParameterTypes().length != parameters.length)throw new A8iException("parameters on " + method + " don't match.");
+    private List<Object> getMethodParameters(Method method, String[] parameters) throws EosException {
+        if(method.getParameterTypes().length != parameters.length)throw new EosException("parameters on " + method + " don't match.");
 
         List<Object> finalParams = new ArrayList<>();
         for(int a6 = 0; a6 < parameters.length; a6++){

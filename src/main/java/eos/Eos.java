@@ -12,21 +12,23 @@ import eos.processor.ElementProcessor;
 import eos.processor.EndpointProcessor;
 import eos.processor.UxProcessor;
 import eos.startup.ExchangeStartup;
-import eos.util.Support;
 import eos.util.Settings;
+import eos.util.Support;
 import eos.web.HttpTransmission;
 import eos.web.Interceptor;
 import eos.web.Pointcut;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Eos {
 
-    public static final String SECURITYTAG = "eros.sessions";
+    public static final String SECURITYTAG = "eos.sessions";
     public static final String RESOURCES   = "/src/main/resources/";
 
     Support support;
@@ -45,7 +47,7 @@ public class Eos {
         UxProcessor uxProcessor = new UxProcessor();
         ExchangeStartup exchangeStartup = new ExchangeStartup(pointcuts, interceptors, uxProcessor);
         exchangeStartup.start();
-        Eos.Cache cache = exchangeStartup.getCache();
+        Cache cache = exchangeStartup.getCache();
         HttpTransmission modulator = new HttpTransmission(cache);
         httpServer.createContext("/", modulator);
         httpServer.start();
@@ -108,7 +110,7 @@ public class Eos {
         ElementProcessor elementProcessor;
         EndpointMappings endpointMappings;
 
-        public Cache(Cache.Builder builder){
+        public Cache(Builder builder){
             this.repo = builder.repo;
             this.pointcuts = builder.pointcuts;
             this.interceptors = builder.interceptors;
@@ -184,8 +186,8 @@ public class Eos {
                 this.repo = repo;
                 return this;
             }
-            public Eos.Cache make(){
-                return new Eos.Cache(this);
+            public Cache make(){
+                return new Cache(this);
             }
         }
 

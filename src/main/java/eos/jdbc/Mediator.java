@@ -1,8 +1,8 @@
 package eos.jdbc;
 
 import eos.Eos;
-import eos.util.Support;
 import eos.util.Settings;
+import eos.util.Support;
 import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;

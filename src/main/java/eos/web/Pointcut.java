@@ -1,7 +1,7 @@
 package eos.web;
 
-import eos.model.web.HttpRequest;
 import com.sun.net.httpserver.HttpExchange;
+import eos.model.web.HttpRequest;
 
 public interface Pointcut {
 
