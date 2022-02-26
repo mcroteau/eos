@@ -1,9 +1,6 @@
 package test.mock;
 
-import eos.annotate.Bind;
-import eos.annotate.Design;
-import eos.annotate.HttpHandler;
-import eos.annotate.Variable;
+import eos.annotate.*;
 import eos.annotate.verbs.Get;
 import eos.annotate.verbs.Post;
 import eos.model.web.HttpRequest;
@@ -21,6 +18,12 @@ public class TodoHandler {
     @Bind
     TodoRepo todoRepo;
 
+
+    @Text
+    @Get("/text")
+    public String text(){
+        return "Hello World";
+    }
 
     @Get("/")
     @Design("designs/default.htm")
