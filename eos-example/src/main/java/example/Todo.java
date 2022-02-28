@@ -1,4 +1,4 @@
-package example.mock;
+package example;
 
 import java.util.List;
 
