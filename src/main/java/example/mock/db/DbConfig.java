@@ -1,4 +1,4 @@
-package test.mock.db;
+package example.mock.db;
 
 import eos.annotate.Config;
 import eos.annotate.Dependency;

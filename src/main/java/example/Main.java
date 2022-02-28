@@ -1,9 +1,7 @@
-package test;
+package example;
 
 import eos.Eos;
 import eos.util.Support;
-import org.junit.internal.TextListener;
-import org.junit.runner.JUnitCore;
 
 public class Main {
     public static void main(String[] args) throws Exception {

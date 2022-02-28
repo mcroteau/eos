@@ -1,9 +1,9 @@
 package eos;
 
 import com.sun.net.httpserver.HttpServer;
-import eos.cargo.ElementStorage;
-import eos.cargo.ObjectStorage;
-import eos.cargo.PropertyStorage;
+import eos.storage.ElementStorage;
+import eos.storage.ObjectStorage;
+import eos.storage.PropertyStorage;
 import eos.jdbc.Repo;
 import eos.model.Element;
 import eos.model.ObjectDetails;

@@ -1,4 +1,4 @@
-package eos.cargo;
+package eos.storage;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package test.mock;
+package example.mock;
 
 import eos.annotate.*;
 import eos.annotate.verbs.Get;

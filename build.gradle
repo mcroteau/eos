@@ -1,0 +1,78 @@
+plugins {
+    id "maven-publish"
+    id "application"
+}
+
+repositories {
+    mavenCentral()
+}
+
+group = "dev.j3ee"
+version = "0.97"
+
+application{
+    mainClass = "MainKt"
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "sonatype"
+            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = ""
+                password = ""
+            }
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            groupId = "dev.j3ee"
+            artifactId = "eos"
+            version = "0.97"
+            from components.java
+            pom {
+                name = "EOS"
+                description = "EOS Java Framework"
+                url = "http://github.com/mcroteau/Eos.git"
+                licenses {
+                    license {
+                        name = "MIT"
+                        url = "https://opensource.org/licenses/MIT"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "mike"
+                        name = "Mike Croteau"
+                        email = "croteau.mike@gmail.com"
+                    }
+                }
+                scm {
+                    connection = "scm:git:git://github.com/mcroteau/Eos.git"
+                    developerConnection = "scm:git:ssh://github.com/mcroteau/Eos.git"
+                    url = "http://github.com/mcroteau/Eos"
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation "com.h2database:h2:2.1.210"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.8.2"
+}
+
+signing {
+    useInMemoryPgpKeys(
+            "",
+            ""
+    )
+    sign(publishing.publications)
+}

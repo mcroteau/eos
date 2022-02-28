@@ -37,11 +37,6 @@
             <version>2.1.210</version>
         </dependency>
         <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>4.9.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.8.1</version>
@@ -50,11 +45,6 @@
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
             <version>1.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13</version>
         </dependency>
     </dependencies>
 
@@ -100,7 +90,7 @@
                 <version>3.0.0</version>
                 <configuration>
                     <executable>maven</executable>
-                    <mainClass>test.Main</mainClass>
+                    <mainClass>example.Main</mainClass>
                     <workingDirectory>tmp</workingDirectory>
                 </configuration>
             </plugin>
@@ -114,7 +104,7 @@
                     <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
-                            <mainClass>test.Main</mainClass>
+                            <mainClass>example.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

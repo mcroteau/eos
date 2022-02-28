@@ -1,4 +1,4 @@
-package test.mock;
+package example.mock;
 
 import eos.annotate.DataStore;
 import eos.annotate.Bind;
