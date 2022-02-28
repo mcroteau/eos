@@ -3,7 +3,7 @@ package eos.web;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import eos.Eos;
+import eos.EOS;
 import eos.annotate.*;
 import eos.model.web.*;
 import eos.processor.UxProcessor;
@@ -27,11 +27,11 @@ public class HttpTransmission implements HttpHandler {
 
     public static final String REDIRECT = "[redirect]";
 
-    Eos.Cache cache;
+    EOS.Cache cache;
     Support support;
     Map<String, HttpSession> sessions;
 
-    public HttpTransmission(Eos.Cache cache){
+    public HttpTransmission(EOS.Cache cache){
         this.cache = cache;
         this.support = new Support();
         this.sessions = new ConcurrentHashMap<>();

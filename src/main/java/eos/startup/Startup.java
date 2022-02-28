@@ -1,6 +1,6 @@
 package eos.startup;
 
-import eos.Eos;
+import eos.EOS;
 import eos.jdbc.Mediator;
 import eos.jdbc.Repo;
 import eos.model.Element;
@@ -19,7 +19,7 @@ public class Startup {
 
     public static class Builder {
 
-        Eos.Cache cache;
+        EOS.Cache cache;
         Repo repo;
         Support support;
         Settings settings;
@@ -31,7 +31,7 @@ public class Startup {
             this.repo = repo;
             return this;
         }
-        public Builder withCache(Eos.Cache cache){
+        public Builder withCache(EOS.Cache cache){
             this.cache = cache;
             return this;
         }
@@ -79,7 +79,7 @@ public class Startup {
 
         private void dispatchEvent() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
             if(cache.getEvents() != null) {
-                Method setupComplete = cache.getEvents().getClass().getDeclaredMethod("setupComplete", Eos.Cache.class);
+                Method setupComplete = cache.getEvents().getClass().getDeclaredMethod("setupComplete", EOS.Cache.class);
                 if(setupComplete != null) {
                     setupComplete.setAccessible(true);
                     setupComplete.invoke(cache.getEvents(), cache);

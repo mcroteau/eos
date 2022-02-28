@@ -1,6 +1,6 @@
 package eos.processor;
 
-import eos.Eos;
+import eos.EOS;
 import eos.annotate.Variable;
 import eos.annotate.verbs.Delete;
 import eos.annotate.verbs.Get;
@@ -24,12 +24,12 @@ public class EndpointProcessor {
     public static final String PUT    = "Put";
     public static final String DELETE = "Delete";
 
-    Eos.Cache cache;
+    EOS.Cache cache;
 
     Map<String, ObjectDetails> processed;
     EndpointMappings endpointMappings;
 
-    public EndpointProcessor(Eos.Cache cache){
+    public EndpointProcessor(EOS.Cache cache){
         this.cache = cache;
         this.processed = new HashMap<>();
         this.endpointMappings = new EndpointMappings();

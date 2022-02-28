@@ -2,7 +2,7 @@ package eos.model.web;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
-import eos.Eos;
+import eos.EOS;
 import eos.util.Support;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class HttpRequest {
     }
 
     public void setSession(){
-        String id = support.getCookie(Eos.SECURITYTAG, httpExchange.getRequestHeaders());
+        String id = support.getCookie(EOS.SECURITYTAG, httpExchange.getRequestHeaders());
         if(this.sessions.containsKey(id)) {
             setSession(this.sessions.get(id));
         }
@@ -51,7 +51,7 @@ public class HttpRequest {
     }
 
     public HttpSession getSession(boolean newitup){
-        String id = support.getCookie(Eos.SECURITYTAG, httpExchange.getRequestHeaders());
+        String id = support.getCookie(EOS.SECURITYTAG, httpExchange.getRequestHeaders());
         if(!newitup){
             if(this.sessions.containsKey(id)){
                 setSession(this.sessions.get(id));
@@ -66,7 +66,7 @@ public class HttpRequest {
     private HttpSession getHttpSession(){
         HttpSession httpSession = new HttpSession(this.sessions, httpExchange);
         this.sessions.put(httpSession.getId(), httpSession);
-        String compound = Eos.SECURITYTAG + "=" + httpSession.getId();
+        String compound = EOS.SECURITYTAG + "=" + httpSession.getId();
         this.httpExchange.getResponseHeaders().set("Set-Cookie", compound);
         setSession(httpSession);
         return httpSession;

@@ -10,8 +10,8 @@ repositories {
 group = "dev.j3ee"
 version = "0.97"
 
-application{
-    mainClass = "MainKt"
+application {
+    mainClass = "example.Main"
 }
 
 java {
@@ -37,9 +37,9 @@ publishing {
             version = "0.97"
             from components.java
             pom {
-                name = "EOS"
+                name = "eos"
                 description = "EOS Java Framework"
-                url = "http://github.com/mcroteau/Eos.git"
+                url = "http://github.com/mcroteau/eos.git"
                 licenses {
                     license {
                         name = "MIT"
@@ -54,9 +54,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection = "scm:git:git://github.com/mcroteau/Eos.git"
-                    developerConnection = "scm:git:ssh://github.com/mcroteau/Eos.git"
-                    url = "http://github.com/mcroteau/Eos"
+                    connection = "scm:git:git://github.com/mcroteau/eos.git"
+                    developerConnection = "scm:git:ssh://github.com/mcroteau/eos.git"
+                    url = "http://github.com/mcroteau/eos"
                 }
             }
         }

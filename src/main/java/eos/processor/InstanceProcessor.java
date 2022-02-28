@@ -1,6 +1,6 @@
 package eos.processor;
 
-import eos.Eos;
+import eos.EOS;
 import eos.annotate.Events;
 import eos.model.ObjectDetails;
 import eos.util.Support;
@@ -14,13 +14,13 @@ import java.util.jar.JarFile;
 
 public class InstanceProcessor {
 
-    Eos.Cache cache;
+    EOS.Cache cache;
     Support support;
     ClassLoader cl;
     List<String> jarDeps;
     Map<String, ObjectDetails> objects;
 
-    public InstanceProcessor(Eos.Cache cache){
+    public InstanceProcessor(EOS.Cache cache){
         this.cache = cache;
         this.support = new Support();
         this.objects = new HashMap<>();

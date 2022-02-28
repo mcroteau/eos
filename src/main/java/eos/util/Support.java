@@ -1,7 +1,7 @@
 package eos.util;
 
 import com.sun.net.httpserver.Headers;
-import eos.Eos;
+import eos.EOS;
 import eos.model.web.HttpRequest;
 
 import java.io.*;
@@ -123,7 +123,7 @@ public class Support {
 
     public JarFile getJarFile(){
         try {
-            URL jarUri = Eos.class.getClassLoader().getResource("eos/");
+            URL jarUri = EOS.class.getClassLoader().getResource("eos/");
             String jarPath = jarUri.getPath().substring(5, jarUri.getPath().indexOf("!"));
 
             return new JarFile(jarPath);
@@ -267,7 +267,7 @@ public class Support {
         }
 
         final String RESOURCES_URI = "/src/main/resources/";
-        URL indexUri = Eos.class.getResource(RESOURCES_URI);
+        URL indexUri = EOS.class.getResource(RESOURCES_URI);
         if (indexUri == null) {
             throw new FileNotFoundException("A8i : unable to find resource " + RESOURCES_URI);
         }

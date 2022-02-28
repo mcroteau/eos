@@ -1,7 +1,7 @@
 package eos.model.web;
 
 import com.sun.net.httpserver.HttpExchange;
-import eos.Eos;
+import eos.EOS;
 import eos.util.Support;
 
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public class HttpSession {
     }
 
     public boolean dispose(){
-        this.httpExchange.getResponseHeaders().set("Set-Cookie", Eos.SECURITYTAG + "=" + this.id + "; max-age=0" );
+        this.httpExchange.getResponseHeaders().set("Set-Cookie", EOS.SECURITYTAG + "=" + this.id + "; max-age=0" );
         if(this.sessions.containsKey(this.id)){
             this.sessions.remove(this.id);
             return true;

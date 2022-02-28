@@ -1,6 +1,6 @@
 package eos.startup;
 
-import eos.Eos;
+import eos.EOS;
 import eos.jdbc.Repo;
 import eos.processor.UxProcessor;
 import eos.util.Settings;
@@ -16,7 +16,7 @@ import java.util.*;
 
 public class ExchangeStartup {
 
-    Eos.Cache cache;
+    EOS.Cache cache;
     UxProcessor uxProcessor;
     Map<String, Pointcut> pointcuts;
     Map<String, Interceptor> interceptors;
@@ -126,7 +126,7 @@ public class ExchangeStartup {
         settings.setPropertiesFiles(propertiesFiles);
 
         Repo repo = new Repo();
-        this.cache = new Eos.Cache.Builder()
+        this.cache = new EOS.Cache.Builder()
                     .withSettings(settings)
                     .withPointCuts(pointcuts)
                     .withInterceptors(interceptors)
@@ -142,7 +142,7 @@ public class ExchangeStartup {
 
     }
 
-    public Eos.Cache getCache(){
+    public EOS.Cache getCache(){
         return this.cache;
     }
 

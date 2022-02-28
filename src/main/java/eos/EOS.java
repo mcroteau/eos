@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Eos {
+public class EOS {
 
     public static final String SECURITYTAG = "eos.sessions";
     public static final String RESOURCES   = "/src/main/resources/";
@@ -36,14 +36,14 @@ public class Eos {
     Map<String, Pointcut> pointcuts;
     Map<String, Interceptor> interceptors;
 
-    public Eos(Builder builder){
+    public EOS(Builder builder){
         this.support = builder.support;
         this.httpServer = builder.httpServer;
         this.pointcuts = new HashMap<>();
         this.interceptors = new HashMap<>();
     }
 
-    public Eos run() throws Exception {
+    public EOS start() throws Exception {
         UxProcessor uxProcessor = new UxProcessor();
         ExchangeStartup exchangeStartup = new ExchangeStartup(pointcuts, interceptors, uxProcessor);
         exchangeStartup.start();
@@ -51,6 +51,11 @@ public class Eos {
         HttpTransmission modulator = new HttpTransmission(cache);
         httpServer.createContext("/", modulator);
         httpServer.start();
+        return this;
+    }
+
+    public EOS stop() throws Exception {
+        httpServer.stop(0);
         return this;
     }
 
@@ -68,26 +73,23 @@ public class Eos {
 
     public static class Builder{
         Integer port;
+        Support support;
         HttpServer httpServer;
         ExecutorService executors;
-        Support support;
 
         public Builder withPort(Integer port){
             this.port = port;
             return this;
         }
-        public Builder withSupport(Support support){
-            this.support = support;
-            return this;
-        }
         public Builder spawn(int numberThreads) throws IOException {
+            support = new Support();
             this.executors = Executors.newFixedThreadPool(numberThreads);
             this.httpServer = HttpServer.create(new InetSocketAddress(this.port), 0);
             this.httpServer.setExecutor(executors);
             return this;
         }
-        public Eos make() {
-            return new Eos(this);
+        public EOS make() {
+            return new EOS(this);
         }
     }
 
@@ -238,7 +240,6 @@ public class Eos {
         public void setEndpointMappings(EndpointMappings endpointMappings) {
             this.endpointMappings = endpointMappings;
         }
-
 
     }
 

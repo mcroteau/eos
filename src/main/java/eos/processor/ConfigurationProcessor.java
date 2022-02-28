@@ -1,6 +1,6 @@
 package eos.processor;
 
-import eos.Eos;
+import eos.EOS;
 import eos.annotate.Dependency;
 import eos.annotate.Property;
 import eos.model.Element;
@@ -15,7 +15,7 @@ import java.util.*;
 
 public class ConfigurationProcessor {
 
-    Eos.Cache cache;
+    EOS.Cache cache;
     Support support;
 
     Map<String, MethodFeature> methods;
@@ -24,7 +24,7 @@ public class ConfigurationProcessor {
 
     Map<String, Integer> issues;
 
-    public ConfigurationProcessor(Eos.Cache cache) throws Exception{
+    public ConfigurationProcessor(EOS.Cache cache) throws Exception{
         this.cache = cache;
         this.support = new Support();
         this.methods = new HashMap<>();
