@@ -1,8 +1,8 @@
-package example;
+package foo;
 
 import eos.annotate.DataStore;
 import eos.annotate.Bind;
-import eos.data.Repo;
+import eos.jdbc.Repo;
 
 import java.util.ArrayList;
 import java.util.List;

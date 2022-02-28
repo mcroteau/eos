@@ -1,9 +1,9 @@
-package example;
+package foo;
 
 import eos.annotate.Config;
 import eos.annotate.Dependency;
 import eos.annotate.Property;
-import eos.datasource.Basic;
+import eos.jdbc.datasource.Basic;
 
 import javax.sql.DataSource;
 

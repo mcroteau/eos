@@ -1,3 +1,4 @@
 rootProject.name="eos"
 include "eos-ux"
+include "eos-example"
 include "eos-core"

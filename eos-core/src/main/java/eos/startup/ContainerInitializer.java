@@ -2,7 +2,6 @@ package eos.startup;
 
 import eos.EOS;
 import eos.data.Mediator;
-import eos.data.Repo;
 import eos.model.Element;
 import eos.model.web.EndpointMappings;
 import eos.processor.*;
@@ -15,19 +14,19 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 
-public class Startup {
+public class ContainerInitializer {
 
     public static class Builder {
 
         EOS.Cache cache;
-        Repo repo;
+        EOS.Repo repo;
         Support support;
         Settings settings;
 
         public Builder(){
             this.support = new Support();
         }
-        public Builder withRepo(Repo repo){
+        public Builder withRepo(EOS.Repo repo){
             this.repo = repo;
             return this;
         }
@@ -133,13 +132,13 @@ public class Startup {
             System.out.println("[READY!] " + name +"! : o . o . o . o . o . o . o . o . o . o . o . o  ");
         }
 
-        public Startup build() throws Exception{
+        public ContainerInitializer build() throws Exception{
             setAttributes();
             runProcessors();
             setDbAttributes();
             sayReady();
             dispatchEvent();
-            return new Startup();
+            return new ContainerInitializer();
         }
     }
 

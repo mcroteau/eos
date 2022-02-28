@@ -1,7 +1,6 @@
 package eos.startup;
 
 import eos.EOS;
-import eos.data.Repo;
 import eos.util.Settings;
 import eos.util.Support;
 import eos.ux.ExperienceProcessor;
@@ -14,16 +13,16 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.*;
 
-public class ExchangeStartup {
+public class ExchangeInitializer {
 
     EOS.Cache cache;
     ExperienceProcessor experienceProcessor;
     Map<String, Pointcut> pointcuts;
     Map<String, Interceptor> interceptors;
 
-    public ExchangeStartup(Map<String, Pointcut> pointcuts,
-                           Map<String, Interceptor> interceptors,
-                           ExperienceProcessor experienceProcessor){
+    public ExchangeInitializer(Map<String, Pointcut> pointcuts,
+                               Map<String, Interceptor> interceptors,
+                               ExperienceProcessor experienceProcessor){
         this.experienceProcessor = experienceProcessor;
         this.pointcuts = pointcuts;
         this.interceptors = interceptors;
@@ -125,7 +124,7 @@ public class ExchangeStartup {
         settings.setResources(resources);
         settings.setPropertiesFiles(propertiesFiles);
 
-        Repo repo = new Repo();
+        EOS.Repo repo = new EOS.Repo();
         this.cache = new EOS.Cache.Builder()
                     .withSettings(settings)
                     .withPointCuts(pointcuts)
@@ -134,7 +133,7 @@ public class ExchangeStartup {
                     .withRepo(repo)
                     .make();
 
-        new Startup.Builder()
+        new ContainerInitializer.Builder()
                 .withRepo(repo)
                 .withCache(cache)
                 .withSettings(settings)

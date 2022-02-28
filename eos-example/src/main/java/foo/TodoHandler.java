@@ -1,4 +1,4 @@
-package example;
+package foo;
 
 import eos.annotate.*;
 import eos.annotate.verbs.Get;
@@ -17,7 +17,6 @@ public class TodoHandler {
 
     @Bind
     TodoRepo todoRepo;
-
 
     @Text
     @Get("/text")
