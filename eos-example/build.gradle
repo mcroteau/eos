@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id "java"
 }
 
 group 'org.example'
@@ -10,5 +10,5 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation "dev.j3ee:eos:0.96"
 }

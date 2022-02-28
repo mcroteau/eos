@@ -3,12 +3,12 @@ package example;
 import eos.annotate.Config;
 import eos.annotate.Dependency;
 import eos.annotate.Property;
-import eos.jdbc.datasource.Basic;
+import eos.datasource.Basic;
 
 import javax.sql.DataSource;
 
 @Config
-public class DbConfig {
+public class DataConfig {
 
     @Property("db.url")
     String dbUrl;

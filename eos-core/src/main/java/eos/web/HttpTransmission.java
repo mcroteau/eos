@@ -6,11 +6,11 @@ import com.sun.net.httpserver.HttpHandler;
 import eos.EOS;
 import eos.annotate.*;
 import eos.model.web.*;
-import eos.processor.UxProcessor;
 import eos.util.MimeGetter;
 import eos.util.ResourceResponse;
 import eos.util.Support;
 import eos.util.UriTranslator;
+import eos.ux.UxProcessor;
 
 import java.io.*;
 import java.lang.reflect.Method;

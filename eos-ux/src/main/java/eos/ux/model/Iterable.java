@@ -1,4 +1,4 @@
-package eos.model;
+package eos.ux.model;
 
 import java.util.List;
 

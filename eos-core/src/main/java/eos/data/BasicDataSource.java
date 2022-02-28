@@ -1,4 +1,4 @@
-package eos.jdbc.datasource;
+package eos.data;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -8,16 +8,16 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
-public class Basic implements DataSource {
+public class BasicDataSource implements DataSource {
 
-    public Basic(Builder builder){
+    public BasicDataSource(Builder builder){
         this.init = true;
         this.dbDriver = builder.dbDriver;
         this.dbUrl = builder.dbUrl;
         this.dbName = builder.dbName;
         this.dbUsername = builder.dbUsername;
         this.dbPassword = builder.dbPassword;
-        Basic.DB = this.dbName;
+        BasicDataSource.DB = this.dbName;
     }
 
     Boolean init;
@@ -63,8 +63,8 @@ public class Basic implements DataSource {
             return this;
         }
 
-        public Basic build(){
-            return new Basic(this);
+        public BasicDataSource build(){
+            return new BasicDataSource(this);
         }
 
     }

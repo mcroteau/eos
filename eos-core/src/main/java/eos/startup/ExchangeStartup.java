@@ -1,10 +1,10 @@
 package eos.startup;
 
 import eos.EOS;
-import eos.jdbc.Repo;
-import eos.processor.UxProcessor;
+import eos.data.Repo;
 import eos.util.Settings;
 import eos.util.Support;
+import eos.ux.UxProcessor;
 import eos.web.Interceptor;
 import eos.web.Pointcut;
 

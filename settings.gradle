@@ -1,0 +1,3 @@
+rootProject.name="eos"
+include "eos-ux"
+include "eos-core"

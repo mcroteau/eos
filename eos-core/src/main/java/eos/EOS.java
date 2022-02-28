@@ -1,19 +1,19 @@
 package eos;
 
 import com.sun.net.httpserver.HttpServer;
-import eos.jdbc.Repo;
+import eos.data.Repo;
 import eos.model.Element;
 import eos.model.ObjectDetails;
 import eos.model.web.EndpointMappings;
 import eos.processor.ElementProcessor;
 import eos.processor.EndpointProcessor;
-import eos.processor.UxProcessor;
 import eos.startup.ExchangeStartup;
 import eos.storage.ElementStorage;
 import eos.storage.ObjectStorage;
 import eos.storage.PropertyStorage;
 import eos.util.Settings;
 import eos.util.Support;
+import eos.ux.UxProcessor;
 import eos.web.HttpTransmission;
 import eos.web.Interceptor;
 import eos.web.Pointcut;

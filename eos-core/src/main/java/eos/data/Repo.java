@@ -1,4 +1,4 @@
-package eos.jdbc;
+package eos.data;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Constructor;

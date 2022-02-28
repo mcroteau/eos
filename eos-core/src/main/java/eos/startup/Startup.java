@@ -1,8 +1,8 @@
 package eos.startup;
 
 import eos.EOS;
-import eos.jdbc.Mediator;
-import eos.jdbc.Repo;
+import eos.data.Mediator;
+import eos.data.Repo;
 import eos.model.Element;
 import eos.model.web.EndpointMappings;
 import eos.processor.*;

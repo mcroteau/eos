@@ -9,8 +9,8 @@ EOS projects can run as exploded jars or as a single fat uber jar!
 ### Running the Server
 ```
 public static void main(String[] arguments){
-    Eos eos = new Eos.Builder().withPort(3000).spawn(20).make();
-    eos.run();
+    EOS eos = new EOS.Builder().withPort(3000).spawn(20).make();
+    eos.start();
 }
 ```
 
@@ -35,6 +35,9 @@ nested each
 page attributes
 meta keywords
 meta description
+
+
+### move
 
 
 

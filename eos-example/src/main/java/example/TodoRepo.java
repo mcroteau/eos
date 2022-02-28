@@ -2,7 +2,7 @@ package example;
 
 import eos.annotate.DataStore;
 import eos.annotate.Bind;
-import eos.jdbc.Repo;
+import eos.data.Repo;
 
 import java.util.ArrayList;
 import java.util.List;

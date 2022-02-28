@@ -1,4 +1,4 @@
-package eos.processor;
+package eos.ux;
 
 import com.sun.net.httpserver.HttpExchange;
 import eos.exception.EosException;
