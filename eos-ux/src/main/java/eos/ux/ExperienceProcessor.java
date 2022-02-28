@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class UxProcessor {
+public class ExperienceProcessor {
 
     final String NEWLINE = "\r\n";
     final String FOREACH = "<eos:each";

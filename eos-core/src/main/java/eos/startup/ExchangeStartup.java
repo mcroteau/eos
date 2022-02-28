@@ -4,7 +4,7 @@ import eos.EOS;
 import eos.data.Repo;
 import eos.util.Settings;
 import eos.util.Support;
-import eos.ux.UxProcessor;
+import eos.ux.ExperienceProcessor;
 import eos.web.Interceptor;
 import eos.web.Pointcut;
 
@@ -17,14 +17,14 @@ import java.util.*;
 public class ExchangeStartup {
 
     EOS.Cache cache;
-    UxProcessor uxProcessor;
+    ExperienceProcessor experienceProcessor;
     Map<String, Pointcut> pointcuts;
     Map<String, Interceptor> interceptors;
 
     public ExchangeStartup(Map<String, Pointcut> pointcuts,
                            Map<String, Interceptor> interceptors,
-                           UxProcessor uxProcessor){
-        this.uxProcessor = uxProcessor;
+                           ExperienceProcessor experienceProcessor){
+        this.experienceProcessor = experienceProcessor;
         this.pointcuts = pointcuts;
         this.interceptors = interceptors;
     }
@@ -130,7 +130,7 @@ public class ExchangeStartup {
                     .withSettings(settings)
                     .withPointCuts(pointcuts)
                     .withInterceptors(interceptors)
-                    .withUxProcessor(uxProcessor)
+                    .withUxProcessor(experienceProcessor)
                     .withRepo(repo)
                     .make();
 

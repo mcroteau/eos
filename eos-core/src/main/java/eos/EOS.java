@@ -13,7 +13,7 @@ import eos.storage.ObjectStorage;
 import eos.storage.PropertyStorage;
 import eos.util.Settings;
 import eos.util.Support;
-import eos.ux.UxProcessor;
+import eos.ux.ExperienceProcessor;
 import eos.web.HttpTransmission;
 import eos.web.Interceptor;
 import eos.web.Pointcut;
@@ -44,8 +44,8 @@ public class EOS {
     }
 
     public EOS start() throws Exception {
-        UxProcessor uxProcessor = new UxProcessor();
-        ExchangeStartup exchangeStartup = new ExchangeStartup(pointcuts, interceptors, uxProcessor);
+        ExperienceProcessor experienceProcessor = new ExperienceProcessor();
+        ExchangeStartup exchangeStartup = new ExchangeStartup(pointcuts, interceptors, experienceProcessor);
         exchangeStartup.start();
         Cache cache = exchangeStartup.getCache();
         HttpTransmission modulator = new HttpTransmission(cache);
@@ -107,7 +107,7 @@ public class EOS {
         ElementStorage elementStorage;
 
         Repo repo;
-        UxProcessor uxProcessor;
+        ExperienceProcessor experienceProcessor;
         EndpointProcessor endpointProcessor;
         ElementProcessor elementProcessor;
         EndpointMappings endpointMappings;
@@ -117,7 +117,7 @@ public class EOS {
             this.pointcuts = builder.pointcuts;
             this.interceptors = builder.interceptors;
             this.settings = builder.settings;
-            this.uxProcessor = builder.uxProcessor;
+            this.experienceProcessor = builder.experienceProcessor;
             this.elementStorage = new ElementStorage();
             this.propertyStorage = new PropertyStorage();
             this.objectStorage = new ObjectStorage();
@@ -153,8 +153,8 @@ public class EOS {
         public Map<String, Interceptor> getInterceptors() {
             return this.interceptors;
         }
-        public UxProcessor getUxProcessor() {
-            return this.uxProcessor;
+        public ExperienceProcessor getUxProcessor() {
+            return this.experienceProcessor;
         }
         public Map<String, Pointcut> getPointCuts() {
             return this.pointcuts;
@@ -164,7 +164,7 @@ public class EOS {
 
             Repo repo;
             Settings settings;
-            UxProcessor uxProcessor;
+            ExperienceProcessor experienceProcessor;
             Map<String, Pointcut> pointcuts;
             Map<String, Interceptor> interceptors;
 
@@ -180,8 +180,8 @@ public class EOS {
                 this.interceptors = interceptors;
                 return this;
             }
-            public Builder withUxProcessor(UxProcessor uxProcessor) {
-                this.uxProcessor = uxProcessor;
+            public Builder withUxProcessor(ExperienceProcessor experienceProcessor) {
+                this.experienceProcessor = experienceProcessor;
                 return this;
             }
             public Builder withRepo(Repo repo) {

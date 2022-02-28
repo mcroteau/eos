@@ -10,7 +10,7 @@ import eos.util.MimeGetter;
 import eos.util.ResourceResponse;
 import eos.util.Support;
 import eos.util.UriTranslator;
-import eos.ux.UxProcessor;
+import eos.ux.ExperienceProcessor;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -241,9 +241,9 @@ public class HttpTransmission implements HttpHandler {
                         String designOutput = "";
                         try{
 
-                            UxProcessor uxProcessor = cache.getUxProcessor();
+                            ExperienceProcessor experienceProcessor = cache.getUxProcessor();
                             Map<String, Pointcut> pointcuts = cache.getPointCuts();
-                            designOutput = uxProcessor.process(pointcuts, completePage, httpResponse, httpRequest, httpExchange);
+                            designOutput = experienceProcessor.process(pointcuts, completePage, httpResponse, httpRequest, httpExchange);
 
 
                         }catch(Exception ex){
@@ -269,9 +269,9 @@ public class HttpTransmission implements HttpHandler {
 
                         try{
 
-                            UxProcessor uxProcessor = cache.getUxProcessor();
+                            ExperienceProcessor experienceProcessor = cache.getUxProcessor();
                             Map<String, Pointcut> pointcuts = cache.getPointCuts();
-                            pageOutput = uxProcessor.process(pointcuts, pageContent, httpResponse, httpRequest, httpExchange);
+                            pageOutput = experienceProcessor.process(pointcuts, pageContent, httpResponse, httpRequest, httpExchange);
 
                             if(!pageOutput.startsWith("<html>")){
                                 pageOutput = "<html>" + pageOutput;
@@ -359,9 +359,9 @@ public class HttpTransmission implements HttpHandler {
                         String designOutput = "";
                         try{
 
-                            UxProcessor uxProcessor = cache.getUxProcessor();
+                            ExperienceProcessor experienceProcessor = cache.getUxProcessor();
                             Map<String, Pointcut> pointcuts = cache.getPointCuts();
-                            designOutput = uxProcessor.process(pointcuts, completePage, httpResponse, httpRequest, httpExchange);
+                            designOutput = experienceProcessor.process(pointcuts, completePage, httpResponse, httpRequest, httpExchange);
 
 
                         }catch(Exception ex){
@@ -387,9 +387,9 @@ public class HttpTransmission implements HttpHandler {
 
                         try{
 
-                            UxProcessor uxProcessor = cache.getUxProcessor();
+                            ExperienceProcessor experienceProcessor = cache.getUxProcessor();
                             Map<String, Pointcut> pointcuts = cache.getPointCuts();
-                            pageOutput = uxProcessor.process(pointcuts, pageContent, httpResponse, httpRequest, httpExchange);
+                            pageOutput = experienceProcessor.process(pointcuts, pageContent, httpResponse, httpRequest, httpExchange);
 
                             if(!pageOutput.startsWith("<html>")){
                                 pageOutput = "<html>" + pageOutput;
