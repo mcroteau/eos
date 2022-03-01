@@ -1,5 +1,6 @@
 plugins {
     id "java"
+    id "signing"
     id "maven-publish"
 }
 
@@ -12,16 +13,12 @@ subprojects {
     repositories {
         mavenCentral()
     }
-    java {
-        withJavadocJar()
-        withSourcesJar()
-    }
 }
 
 task sources(type: Jar) {
     from { project(":eos-core").sourceSets.main.allJava }
     from { project(":eos-ux").sourceSets.main.allJava }
-    archiveClassifier = "sources"
+    archiveClassifier="sources"
 }
 
 ext.module = { moduleName ->
@@ -36,8 +33,9 @@ java {
     withJavadocJar()
 }
 
-group = "dev.j3ee"
-version = "0.97"
+version = "1.96"
+
+println System.getenv("SONATYPE_PASSWORD")
 
 publishing {
     repositories {
@@ -45,8 +43,8 @@ publishing {
             name = "sonatype"
             setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
             credentials {
-                username = ""
-                password = ""
+                username = "${System.getenv("SONATYPE_USERNAME")}"
+                password = "${System.getenv("SONATYPE_PASSWORD")}"
             }
         }
     }
@@ -54,8 +52,11 @@ publishing {
         maven(MavenPublication) {
             groupId = "dev.j3ee"
             artifactId = "eos"
-            version = "0.97"
+            version = "1.96"
             from components.java
+
+            artifact(sources)
+
             pom {
                 name = "eos"
                 description = "EOS Framework"
@@ -83,3 +84,10 @@ publishing {
     }
 }
 
+signing {
+    useInMemoryPgpKeys(
+            "",
+            "${System.getenv("GPG_PASSWORD")}"
+    )
+    sign(publishing.publications)
+}
