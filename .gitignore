@@ -60,6 +60,7 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+**/tmp/
 *secret.txt
 *checklist.md
 

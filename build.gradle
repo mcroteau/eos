@@ -7,13 +7,24 @@ repositories {
     mavenCentral()
 }
 
+subprojects {
+    apply plugin: "java"
+    repositories {
+        mavenCentral()
+    }
+}
+
+ext.module = { moduleName ->
+    def classOutputDirConst = "/classes/java/main"
+    return "${project(":${moduleName}").buildDir}${classOutputDirConst}"
+}
+
+jar {
+    from(module(":eos-ux"), module(":eos-core"))
+}
+
 group = "dev.j3ee"
 version = "0.97"
-
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
 
 publishing {
     repositories {
@@ -34,7 +45,7 @@ publishing {
             from components.java
             pom {
                 name = "eos"
-                description = "EOS Java Framework"
+                description = "EOS Framework"
                 url = "http://github.com/mcroteau/eos.git"
                 licenses {
                     license {
