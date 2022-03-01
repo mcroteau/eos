@@ -12,15 +12,47 @@ subprojects {
     repositories {
         mavenCentral()
     }
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
 }
 
-ext.module = { moduleName ->
-    def classOutputDirConst = "/classes/java/main"
-    return "${project(":${moduleName}").buildDir}${classOutputDirConst}"
+sourceSets {
+    main.java.srcDirs += "${project(":eos-core").projectDir}/src/main/java"
+    main.java.srcDirs += "${project(":eos-ux").projectDir}/src/main/java"
 }
 
-jar {
-    from(module(":eos-ux"), module(":eos-core"))
+task sourcesJar(type: Jar) {
+    from sourceSets.main.java
+    archiveClassifier = 'sources'
+}
+
+
+dependencies{
+    implementation project(":eos-core")
+    implementation project(":eos-ux")
+    implementation "com.h2database:h2:2.1.210"
+}
+
+//ext.module = { moduleName ->
+//    return "${project(":${moduleName}").buildDir}/classes/java/main"
+//}
+//ext.source = { moduleName ->
+//    return "${project(":${moduleName}").projectDir}/src/main/java"
+//}
+//
+//task sourcesJar(type: Jar) {
+//    from(source(":eos-core"), source(":eos-ux"))
+//}
+//
+//jar {
+//    from(module(":eos-core"), module(":eos-ux"))
+//}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 group = "dev.j3ee"
