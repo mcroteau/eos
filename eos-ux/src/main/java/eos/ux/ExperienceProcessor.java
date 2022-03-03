@@ -79,8 +79,8 @@ public class ExperienceProcessor {
         }
         List<String> entriesCleaned = cleanup(entries);
         StringBuilder output = new StringBuilder();
-        for(int a6 = 0; a6 < entriesCleaned.size(); a6++) {
-            output.append(entriesCleaned.get(a6) + this.NEWLINE);
+        for (String s : entriesCleaned) {
+            output.append(s + this.NEWLINE);
         }
 
         StringBuilder finalOut = retrieveFinal(output);
@@ -341,78 +341,19 @@ public class ExperienceProcessor {
 
                 String[] keys = left.split("\\.");
                 String objName = keys[0];
+                int queryStart = left.indexOf(".");
+                String query = left.substring(queryStart + 1);
 
                 if(!keys[1].contains("(")){
                     String field = keys[1].trim();
-
                     if (httpResponse.data().containsKey(objName)) {
-
-                        if(predicate != null && predicate.equals("")) {
-
+                        if(predicate.contains("'")) predicate = predicate.replace("'", "");
+                        if (predicate != null && predicate != "") {
                             Object obj = httpResponse.get(objName);
-                            Field fieldObj = obj.getClass().getDeclaredField(field);
-
-                            fieldObj.setAccessible(true);
-                            Object valueObj = fieldObj.get(obj);
-                            Type type = fieldObj.getType();
-                            String value = String.valueOf(valueObj);
-
-                            //todo: test the following
-                            switch (type.getTypeName()) {
-                                case "java.lang.String":
-
-                                    if (value.equals(predicate) && condition.equals("!=")) {
-                                        clearUxPartial(a6, stop, entries);
-                                    }
-                                    if (!value.equals(predicate) && condition.equals("==")) {
-                                        clearUxPartial(a6, stop, entries);
-                                    }
-                                    break;
-
-                                case "java.lang.Integer":
-
-                                    Integer valueInt = Integer.valueOf(value);
-                                    Integer predicateInt = Integer.valueOf(predicate);
-                                    if (valueInt.equals(predicateInt) && condition.equals("!=")) {
-                                        clearUxPartial(a6, stop, entries);
-                                    }
-                                    if (!valueInt.equals(predicateInt) && condition.equals("==")) {
-                                        clearUxPartial(a6, stop, entries);
-                                    }
-                                    break;
-
-                                case "java.lang.Boolean":
-
-                                    Boolean valueBool = Boolean.valueOf(value);
-                                    Boolean predicateBool = Boolean.valueOf(predicate);
-                                    if (valueBool.equals(predicateBool) && condition.equals("!=")) {
-                                        clearUxPartial(a6, stop, entries);
-                                    }
-                                    if (!valueBool.equals(predicateBool) && condition.equals("==")) {
-                                        clearUxPartial(a6, stop, entries);
-                                    }
-                                    break;
-
-
-                                case "java.math.BigDecimal":
-
-                                    BigDecimal valueBd = new BigDecimal(value);
-                                    BigDecimal predicateBd = new BigDecimal(predicate);
-                                    if (valueBd.equals(predicateBd) && condition.equals("!=")) {
-                                        clearUxPartial(a6, stop, entries);
-                                    }
-                                    if (!valueBd.equals(predicateBd) && condition.equals("==")) {
-                                        clearUxPartial(a6, stop, entries);
-                                    }
-                                    break;
-                                default:
-                                    break;
-
-                            }
-
+                            String value = getValueRecursive(0, query, obj).toString();
+                            checkCondition(a6, stop, value, condition, predicate, entries);
                         }
-
-                    }else{
+                    } else {
                         clearUxPartial(a6, stop, entries);
                     }
 
@@ -442,21 +383,14 @@ public class ExperienceProcessor {
                 String subject = parts[0].trim();
                 String predicate = parts[1].trim();
 
-                if(httpResponse.data().containsKey(subject)){
+                if (httpResponse.data().containsKey(subject)) {
+                    if (predicate.contains("'")) predicate = predicate.replace("'", "");
+                    String value = httpResponse.get(subject).toString();
 
-                    if(predicate.contains("''"))predicate = predicate.replaceAll("'","");
-
-                    String value = String.valueOf(httpResponse.get(subject));
-                    if(value.equals(predicate) && condition.equals("!=")){
-                        clearUxPartial(a6, stop, entries);
-                    }
-                    if(!value.equals(predicate) && condition.equals("==")){
-                        clearUxPartial(a6, stop, entries);
-                    }
-
-                }else{
-                    if(condition.equals("!=") &&
-                            (predicate.equals("''") || predicate.equals("null"))){
+                    checkCondition(a6, stop, value, condition, predicate, entries);
+                } else {
+                    if (condition == "!=" &&
+                            (predicate == "''" || predicate == "null")) {
                         clearUxPartial(a6, stop, entries);
                     }
                 }
@@ -520,7 +454,16 @@ public class ExperienceProcessor {
 
     }
 
-    private List<Integer> getIgnoreEntries(int a6, int stop) {
+    void checkCondition(int a6, int stop, String value, String condition, String predicate, List<String> entries){
+        if (value.equals(predicate) && condition.equals("!=")) {
+            clearUxPartial(a6, stop, entries);
+        }
+        if (!value.equals(predicate) && condition.equals("==")) {
+            clearUxPartial(a6, stop, entries);
+        }
+    }
+
+    List<Integer> getIgnoreEntries(int a6, int stop) {
         List<Integer> ignore = new ArrayList<>();
         for (int a4 = a6; a4 < stop; a4++) {
             ignore.add(a4);

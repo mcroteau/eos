@@ -35,8 +35,6 @@ java {
 
 version = "1.96"
 
-println System.getenv("SONATYPE_PASSWORD")
-
 publishing {
     repositories {
         maven {
