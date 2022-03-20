@@ -1,6 +1,8 @@
+
 plugins {
     id "java"
     id "signing"
+    id "application"
     id "maven-publish"
 }
 
@@ -8,32 +10,22 @@ repositories {
     mavenCentral()
 }
 
-subprojects {
-    apply plugin: "java"
-    repositories {
-        mavenCentral()
-    }
+application{
+    mainClass = "example.foo.Main"
 }
 
-task sources(type: Jar) {
-    from { project(":eos-core").sourceSets.main.allJava }
-    from { project(":eos-ux").sourceSets.main.allJava }
-    archiveClassifier="sources"
-}
-
-ext.module = { moduleName ->
-    return "${project(":${moduleName}").buildDir}/classes/java/main"
-}
-
-jar {
-    from(module(":eos-core"), module(":eos-ux"))
+dependencies {
+    implementation "com.h2database:h2:2.1.210"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.8.2"
 }
 
 java {
+    withSourcesJar()
     withJavadocJar()
 }
 
-version = "1.96"
+version = "1.97"
 
 publishing {
     repositories {
@@ -50,10 +42,8 @@ publishing {
         maven(MavenPublication) {
             groupId = "dev.j3ee"
             artifactId = "eos"
-            version = "1.96"
+            version = "1.97"
             from components.java
-
-            artifact(sources)
 
             pom {
                 name = "eos"

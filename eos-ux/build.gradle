@@ -1,5 +1,0 @@
-dependencies {
-    implementation "dev.j3ee:eos:0.96"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
-    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.8.2"
-}
