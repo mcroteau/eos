@@ -26,7 +26,7 @@ abstract class BaseTest {
 
     @BeforeEach
     public void setup() throws Exception {
-        eos = new EOS.Builder().withPort(8080).luminosity(10).create();
+        eos = new EOS.Builder().port(8080).ambiance(10).create();
         eos.start();
 
         support = new Support();
@@ -39,11 +39,6 @@ abstract class BaseTest {
         List propertiesFiles = new ArrayList<String>();
         propertiesFiles.add("eos.props");
         settings.setPropertiesFiles(propertiesFiles);
-
-//        Map<String, Interceptor> interceptors = new HashMap();
-//        MockInterceptor interceptor = new MockInterceptor();
-//        String interceptorName = support.getName(interceptor.class.getName();
-//        interceptor.put(interceptorName, interceptor);
 
         EOS.Repo repo = new EOS.Repo();
         cache = new EOS.Cache.Builder()

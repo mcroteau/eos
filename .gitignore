@@ -61,6 +61,5 @@ gradle-app.setting
 .classpath
 
 **/tmp/
-*secret.txt
 *checklist.md
 

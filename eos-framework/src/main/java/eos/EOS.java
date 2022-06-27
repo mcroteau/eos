@@ -50,7 +50,7 @@ public class EOS {
         this.interceptors = new HashMap<>();
     }
 
-    public EOS launch() throws Exception {
+    public EOS start() throws Exception {
         ExperienceProcessor experienceProcessor = new ExperienceProcessor();
         ExchangeInitializer exchangeInitializer = new ExchangeInitializer(pointcuts, interceptors, experienceProcessor);
         exchangeInitializer.start();

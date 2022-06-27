@@ -1,5 +1,4 @@
 plugins {
-    id("org.jetbrains.dokka") version "1.6.20"
     id 'maven-publish'
     id 'java-library'
     id 'signing'
@@ -25,12 +24,11 @@ jacoco {
     toolVersion = "0.8.7"
 }
 
-def dokkaOutputDir = "$buildDir/dokka"
-
-tasks.named("dokkaHtml") {}
-
-task deleteDokkaOutputDir(type:Delete) {
-    delete(dokkaOutputDir)
+task javadocJar(type: Jar, dependsOn: 'javadoc') {
+    from javadoc.destinationDir
+}
+task sourcesJar(type: Jar, dependsOn: 'classes') {
+    from sourceSets.main.allSource
 }
 
 task coverage{
@@ -39,26 +37,6 @@ task coverage{
     dependsOn 'jacocoTestReport'
 }
 
-task javadocJar(type: Jar) {
-    dependsOn(deleteDokkaOutputDir, tasks.dokkaHtml)
-    archiveClassifier.set("javadoc")
-    from(dokkaOutputDir)
-    with jar
-}
-
-task sourcesJar(type:Jar){
-    dependsOn(JavaPlugin.CLASSES_TASK_NAME)
-    classifier = "sources"
-    from(sourceSets["main"].allSource)
-    artifacts {
-        add("archives", sourcesJar)
-    }
-}
-
-task artifact{
-    dependsOn(build)
-    dependsOn(javadocJar)
-}
 
 publishing {
     repositories {
@@ -83,7 +61,7 @@ publishing {
             artifact(javadocJar)
             artifact(sourcesJar)
             pom {
-                name.set("plsar-framework")
+                name.set("eos-framework")
                 description.set("Java Web Framework. EOS incorporates everything you need " +
                         "in order to build a full stack web system including: dependency injection, " +
                         "http routing, a data persistence layer, templating and view data binding. " +
