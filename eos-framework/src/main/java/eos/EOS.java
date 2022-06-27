@@ -50,7 +50,7 @@ public class EOS {
         this.interceptors = new HashMap<>();
     }
 
-    public EOS start() throws Exception {
+    public EOS launch() throws Exception {
         ExperienceProcessor experienceProcessor = new ExperienceProcessor();
         ExchangeInitializer exchangeInitializer = new ExchangeInitializer(pointcuts, interceptors, experienceProcessor);
         exchangeInitializer.start();
@@ -84,11 +84,11 @@ public class EOS {
         HttpServer httpServer;
         ExecutorService executors;
 
-        public Builder withPort(Integer port){
+        public Builder port(Integer port){
             this.port = port;
             return this;
         }
-        public Builder luminosity(int numberThreads) throws IOException {
+        public Builder ambiance(int numberThreads) throws IOException {
             support = new Support();
             this.executors = Executors.newFixedThreadPool(numberThreads);
             this.httpServer = HttpServer.create(new InetSocketAddress(this.port), 0);

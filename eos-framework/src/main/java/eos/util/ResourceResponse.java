@@ -10,7 +10,7 @@ import java.util.List;
 public class ResourceResponse {
 
     final String GET = "get";
-    final String WEBAPP = "webapp";
+    final String WEBAPP = "web-ux";
     final String CONTENTTYPE = "Content-Type";
 
     EOS.Cache cache;
@@ -44,7 +44,7 @@ public class ResourceResponse {
         if(support.isJar()){
 
             if(requestUri.startsWith("/"))requestUri = requestUri.replaceFirst("/","");
-            String resourcePath = "/webapp/" + requestUri;
+            String resourcePath = "/web-ux/" + requestUri;
 
             InputStream ris = this.getClass().getResourceAsStream(resourcePath);
 

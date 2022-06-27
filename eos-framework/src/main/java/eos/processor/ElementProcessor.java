@@ -53,7 +53,7 @@ public class ElementProcessor {
                 buildAddElement(entry);
                 serviceCount++;
             }
-            if (cls.isAnnotationPresent(HttpHandler.class)) {
+            if (cls.isAnnotationPresent(HttpRouter.class)) {
                 httpClasses.put(entry.getKey(), entry.getValue());
             }
 

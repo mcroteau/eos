@@ -127,7 +127,7 @@ public class HttpTransmission implements HttpHandler {
                 headers.add("content-type", "text/html");
                 httpExchange.sendResponseHeaders(200, methodResponse.length());
                 outputStream.write(methodResponse.getBytes());
-            }else if(method.isAnnotationPresent(JsonOutput.class)){
+            }else if(method.isAnnotationPresent(Json.class)){
                 Headers headers = httpExchange.getResponseHeaders();
                 headers.add("content-type", "application/json");
                 httpExchange.sendResponseHeaders(200, methodResponse.length());
@@ -153,7 +153,7 @@ public class HttpTransmission implements HttpHandler {
 
                 if(!support.isJar()) {
 
-                    Path webPath = Paths.get("webapp");
+                    Path webPath = Paths.get("web-ux");
                     if(methodResponse.startsWith("/")){
                         methodResponse = methodResponse.replaceFirst("/", "");
                     }
@@ -304,7 +304,7 @@ public class HttpTransmission implements HttpHandler {
                 }else{
 
                     if(methodResponse.startsWith("/"))methodResponse = methodResponse.replaceFirst("/","");
-                    String pagePath = "/webapp/" + methodResponse;
+                    String pagePath = "/web-ux/" + methodResponse;
 
                     InputStream pageInput = this.getClass().getResourceAsStream(pagePath);
 
@@ -319,7 +319,7 @@ public class HttpTransmission implements HttpHandler {
 
 
                     if(design != null) {
-                        String designPath = "/webapp/" + design;
+                        String designPath = "/web-ux/" + design;
                         InputStream designInput = this.getClass().getResourceAsStream(designPath);
 
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
