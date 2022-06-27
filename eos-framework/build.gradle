@@ -62,7 +62,7 @@ publishing {
             artifact(sourcesJar)
             pom {
                 name.set("eos-framework")
-                description.set("Java Web Framework. EOS incorporates everything you need " +
+                description.set("EOS is a self contained server & framework. EOS incorporates everything you need " +
                         "in order to build a full stack web system including: dependency injection, " +
                         "http routing, a data persistence layer, templating and view data binding. " +
                         "We hope you enjoy")
