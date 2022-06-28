@@ -242,7 +242,7 @@ public class HttpTransmission implements HttpHandler {
                         try{
 
                             ExperienceProcessor experienceProcessor = cache.getUxProcessor();
-                            Map<String, Pointcut> pointcuts = cache.getPointCuts();
+                            Map<String, Fragment> pointcuts = cache.getPointCuts();
                             designOutput = experienceProcessor.process(pointcuts, completePage, httpResponse, httpRequest, httpExchange);
 
 
@@ -270,7 +270,7 @@ public class HttpTransmission implements HttpHandler {
                         try{
 
                             ExperienceProcessor experienceProcessor = cache.getUxProcessor();
-                            Map<String, Pointcut> pointcuts = cache.getPointCuts();
+                            Map<String, Fragment> pointcuts = cache.getPointCuts();
                             pageOutput = experienceProcessor.process(pointcuts, pageContent, httpResponse, httpRequest, httpExchange);
 
                             if(!pageOutput.startsWith("<html>")){
@@ -296,8 +296,8 @@ public class HttpTransmission implements HttpHandler {
 
                         //todo:cleanup
 //                        for(Map.Entry<String, Interceptor> entry: interceptors.entrySet()){
-//                            Interceptor interceptor = entry.getValue();
-//                            interceptor.post(httpRequest, httpExchange);
+//                            Interceptor security.interceptor = entry.getValue();
+//                            security.interceptor.post(httpRequest, httpExchange);
 //                        }
 
                     }
@@ -360,7 +360,7 @@ public class HttpTransmission implements HttpHandler {
                         try{
 
                             ExperienceProcessor experienceProcessor = cache.getUxProcessor();
-                            Map<String, Pointcut> pointcuts = cache.getPointCuts();
+                            Map<String, Fragment> pointcuts = cache.getPointCuts();
                             designOutput = experienceProcessor.process(pointcuts, completePage, httpResponse, httpRequest, httpExchange);
 
 
@@ -388,7 +388,7 @@ public class HttpTransmission implements HttpHandler {
                         try{
 
                             ExperienceProcessor experienceProcessor = cache.getUxProcessor();
-                            Map<String, Pointcut> pointcuts = cache.getPointCuts();
+                            Map<String, Fragment> pointcuts = cache.getPointCuts();
                             pageOutput = experienceProcessor.process(pointcuts, pageContent, httpResponse, httpRequest, httpExchange);
 
                             if(!pageOutput.startsWith("<html>")){
@@ -417,8 +417,8 @@ public class HttpTransmission implements HttpHandler {
 
             //todo: cleanup
 //            for(Map.Entry<String, Interceptor> entry: interceptors.entrySet()){
-//                Interceptor interceptor = entry.getValue();
-//                interceptor.post(httpRequest, httpExchange);
+//                Interceptor security.interceptor = entry.getValue();
+//                security.interceptor.post(httpRequest, httpExchange);
 //            }
 
             outputStream.flush();

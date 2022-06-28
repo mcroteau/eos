@@ -62,4 +62,5 @@ gradle-app.setting
 
 **/tmp/
 *checklist.md
+*gradle.properties
 

@@ -5,7 +5,7 @@ import eos.util.Settings;
 import eos.util.Support;
 import eos.ux.ExperienceProcessor;
 import eos.web.Interceptor;
-import eos.web.Pointcut;
+import eos.web.Fragment;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,10 +17,10 @@ public class ExchangeInitializer {
 
     EOS.Cache cache;
     ExperienceProcessor experienceProcessor;
-    Map<String, Pointcut> pointcuts;
+    Map<String, Fragment> pointcuts;
     Map<String, Interceptor> interceptors;
 
-    public ExchangeInitializer(Map<String, Pointcut> pointcuts,
+    public ExchangeInitializer(Map<String, Fragment> pointcuts,
                                Map<String, Interceptor> interceptors,
                                ExperienceProcessor experienceProcessor){
         this.experienceProcessor = experienceProcessor;

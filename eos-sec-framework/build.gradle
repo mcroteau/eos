@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.h2database:h2:2.1.210"
+    implementation project(":eos-framework")
     implementation "org.jacoco:org.jacoco.core:0.8.7"
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:5.8.2"
@@ -26,12 +26,10 @@ jacoco {
 
 task javadocJar(type: Jar) {
     from javadoc
-    classifier = 'javadoc'
 }
 
 task sourcesJar(type:Jar){
     dependsOn(JavaPlugin.CLASSES_TASK_NAME)
-    classifier = "sources"
     from(sourceSets["main"].allSource)
     artifacts {
         add("archives", sourcesJar)
@@ -65,7 +63,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId = "io.eos-ecosystem"
-            artifactId = "eos-framework"
+            artifactId = "eos-sec-framework"
             version = "1.00"
             from(components["java"])
         }
@@ -73,10 +71,9 @@ publishing {
             artifact(sourcesJar)
             artifact(javadocJar)
             pom {
-                name.set("eos-framework")
-                description.set("EOS is a self contained server & framework. EOS incorporates everything you need " +
-                        "in order to build a full stack web system including: dependency injection, " +
-                        "http routing, a data persistence layer, templating and view data binding.")
+                name.set("eos-sec-framework")
+                description.set("EOS security is a lightweight authentication & " +
+                        "authorization security framework built for the EOS Framework.")
                 url.set("http://github.com/mcroteau/eos")
                 licenses {
                     license {

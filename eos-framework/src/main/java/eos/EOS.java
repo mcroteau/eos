@@ -16,7 +16,7 @@ import eos.util.Support;
 import eos.ux.ExperienceProcessor;
 import eos.web.HttpTransmission;
 import eos.web.Interceptor;
-import eos.web.Pointcut;
+import eos.web.Fragment;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class EOS {
 
     Support support;
     HttpServer httpServer;
-    Map<String, Pointcut> pointcuts;
+    Map<String, Fragment> pointcuts;
     Map<String, Interceptor> interceptors;
 
     public EOS(Builder builder){
@@ -66,9 +66,9 @@ public class EOS {
         return this;
     }
 
-    public boolean registerPointcut(Pointcut pointcut){
-        String key = support.getName(pointcut.getClass().getName());
-        this.pointcuts.put(key, pointcut);
+    public boolean registerPointcut(Fragment fragment){
+        String key = support.getName(fragment.getClass().getName());
+        this.pointcuts.put(key, fragment);
         return true;
     }
 
@@ -106,7 +106,7 @@ public class EOS {
 
         Settings settings;
 
-        Map<String, Pointcut> pointcuts;
+        Map<String, Fragment> pointcuts;
         Map<String, Interceptor> interceptors;
 
         ObjectStorage objectStorage;
@@ -163,7 +163,7 @@ public class EOS {
         public ExperienceProcessor getUxProcessor() {
             return this.experienceProcessor;
         }
-        public Map<String, Pointcut> getPointCuts() {
+        public Map<String, Fragment> getPointCuts() {
             return this.pointcuts;
         }
 
@@ -172,14 +172,14 @@ public class EOS {
             Repo repo;
             Settings settings;
             ExperienceProcessor experienceProcessor;
-            Map<String, Pointcut> pointcuts;
+            Map<String, Fragment> pointcuts;
             Map<String, Interceptor> interceptors;
 
             public Builder withSettings(Settings settings) {
                 this.settings = settings;
                 return this;
             }
-            public Builder withPointCuts(Map<String, Pointcut> pointcuts) {
+            public Builder withPointCuts(Map<String, Fragment> pointcuts) {
                 this.pointcuts = pointcuts;
                 return this;
             }

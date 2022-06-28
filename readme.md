@@ -14,7 +14,7 @@ public static void main(String[] arguments){
 }
 ```
 
-### What is a pointcut?
+### What is a eos.fragment?
 
 
 ### Built-in view tag library

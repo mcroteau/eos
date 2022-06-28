@@ -21,8 +21,8 @@ public class TodoRouter {
 
     @Plain
     @Get("/text")
-    public String text(){
-        return "Ether.";
+    public String eos(){
+        return "EOS.";
     }
 
     @Get("/")

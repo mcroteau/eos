@@ -1,5 +1,5 @@
 include "eos-framework"
-//include "eos-sec-framework"
+include "eos-sec-framework"
 //include ":eos-examples:simple-rest-endpoint"
 include ":eos-examples:template-html-binding"
 //include ":eos-examples:authentication-authorization"

@@ -5,7 +5,7 @@ import eos.exception.EosException;
 import eos.model.web.Iterable;
 import eos.model.web.HttpRequest;
 import eos.model.web.HttpResponse;
-import eos.web.Pointcut;
+import eos.web.Fragment;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -22,7 +22,7 @@ public class ExperienceProcessor {
     final String NEWLINE = "\r\n";
     final String FOREACH = "<eos:each";
 
-    public String process(Map<String, Pointcut> pointcuts, String view, HttpResponse httpResponse, HttpRequest request, HttpExchange exchange) throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public String process(Map<String, Fragment> pointcuts, String view, HttpResponse httpResponse, HttpRequest request, HttpExchange exchange) throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         List<String> entries = Arrays.asList(view.split("\n"));
         evaluatePointcuts(request, exchange, entries, pointcuts);
@@ -254,11 +254,11 @@ public class ExperienceProcessor {
 
     }
 
-    private void evaluatePointcuts(HttpRequest request, HttpExchange exchange, List<String> entries, Map<String, Pointcut> pointcuts) {
+    private void evaluatePointcuts(HttpRequest request, HttpExchange exchange, List<String> entries, Map<String, Fragment> pointcuts) {
 
-        for(Map.Entry<String, Pointcut> entry: pointcuts.entrySet()){
-            Pointcut pointcut = entry.getValue();
-            String key = pointcut.getKey();//dice:rollem in <dice:rollem> is key
+        for(Map.Entry<String, Fragment> entry: pointcuts.entrySet()){
+            Fragment fragment = entry.getValue();
+            String key = fragment.getKey();//dice:rollem in <dice:rollem> is key
 
             String open = "<" + key + ">";
             String rabbleDos = "<" + key + "/>";
@@ -270,8 +270,8 @@ public class ExperienceProcessor {
                 if(entryBase.trim().startsWith("<%--"))entries.set(a6, "");
 
                 if(entryBase.contains(rabbleDos) &&
-                        !pointcut.isEvaluation()){
-                    String output = pointcut.halloween(request, exchange);
+                        !fragment.isEvaluation()){
+                    String output = fragment.process(request, exchange);
                     if(output != null) {
                         entryBase = entryBase.replace(rabbleDos, output);
                         entries.set(a6, entryBase);
@@ -280,16 +280,16 @@ public class ExperienceProcessor {
 
                 if(entryBase.contains(open)){
                     int stop = getAttributeClose(a6, close, entries);
-                    if(pointcut.isEvaluation()){
-                        Boolean isTrue = pointcut.isTrue(request, exchange);
+                    if(fragment.isEvaluation()){
+                        Boolean isTrue = fragment.evaluatesTrue(request, exchange);
                         if(!isTrue){
                             for(int a4 = a6; a4 < stop; a4++){
                                 entries.set(a4, "");
                             }
                         }
                     }
-                    if(!pointcut.isEvaluation()){
-                        String output = pointcut.halloween(request, exchange);
+                    if(!fragment.isEvaluation()){
+                        String output = fragment.process(request, exchange);
                         if(output != null) {
                             entryBase = entryBase.replace(open, output);
                             entryBase = entryBase.replace(open + close, output);
