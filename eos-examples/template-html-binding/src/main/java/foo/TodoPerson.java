@@ -1,9 +1,9 @@
-package example.foo;
+package foo;
 
 public class TodoPerson {
     Integer id;
     Integer todoId;
-    String person;
+    String name;
 
     public Integer getId() {
         return id;
@@ -21,11 +21,11 @@ public class TodoPerson {
         this.todoId = todoId;
     }
 
-    public String getPerson() {
-        return person;
+    public String getName() {
+        return name;
     }
 
-    public void setPerson(String person) {
-        this.person = person;
+    public void setName(String name) {
+        this.name = name;
     }
 }

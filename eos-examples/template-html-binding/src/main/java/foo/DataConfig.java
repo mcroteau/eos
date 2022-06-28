@@ -1,4 +1,4 @@
-package example.foo;
+package foo;
 
 import eos.annotate.Config;
 import eos.annotate.Dependency;

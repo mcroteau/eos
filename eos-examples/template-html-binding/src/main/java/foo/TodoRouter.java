@@ -1,4 +1,4 @@
-package example.foo;
+package foo;
 
 import eos.EOS;
 import eos.annotate.*;
@@ -10,8 +10,8 @@ import eos.util.Support;
 
 import java.util.List;
 
-@HttpHandler
-public class TodoHandler {
+@HttpRouter
+public class TodoRouter {
 
     @Bind
     EOS.Util util;
@@ -22,11 +22,11 @@ public class TodoHandler {
     @Plain
     @Get("/text")
     public String text(){
-        return "Hello World";
+        return "Ether.";
     }
 
     @Get("/")
-    @Design("designs/default.htm")
+    @Design("designs/default.jsa")
     public String base(HttpResponse resp){
         List<Todo> todos = todoRepo.getList();
         StringBuilder keywords = new StringBuilder();
@@ -44,11 +44,11 @@ public class TodoHandler {
         resp.setKeywords(keywords.toString());
         resp.setDescription(keywords.toString() + " that need to be done!");
         resp.set("todos", todos);
-        return "/pages/todo/list.htm";
+        return "/pages/todo/list.jsa";
     }
 
     @Get("/todos")
-    @Design("designs/default.htm")
+    @Design("designs/default.jsa")
     public String getList(HttpResponse resp){
         List<Todo> todos = todoRepo.getList();
         for(Todo todo : todos){
@@ -56,16 +56,16 @@ public class TodoHandler {
             todo.setPeople(people);
         }
         resp.set("todos", todos);
-        return "/pages/todo/list.htm";
+        return "/pages/todo/list.jsa";
     }
 
     @Get("/todos/create")
-    @Design("designs/default.htm")
+    @Design("designs/default.jsa")
     public String getCreate(HttpResponse resp){
         resp.setTitle("Create");
         resp.setKeywords("create todo, todos create, awesome");
         resp.setDescription("Create your todo now!");
-        return "/pages/todo/create.htm";
+        return "/pages/todo/create.jsa";
     }
 
     @Post("/todos/save")
@@ -78,12 +78,12 @@ public class TodoHandler {
     }
 
     @Get("/todos/edit/{{id}}")
-    @Design("designs/default.htm")
+    @Design("designs/default.jsa")
     public String getEdit(HttpResponse resp,
                           @Variable Integer id){
         Todo todo = todoRepo.getById(id);
         resp.set("todo", todo);
-        return "/pages/todo/edit.htm";
+        return "/pages/todo/edit.jsa";
     }
 
     @Post("/todos/update/{{id}}")
@@ -106,14 +106,14 @@ public class TodoHandler {
     }
 
     @Get("/todos/person/add/{{id}}")
-    @Design("designs/default.htm")
+    @Design("designs/default.jsa")
     public String addPersonView(HttpResponse resp,
                                 @Variable Integer id){
         Todo todo = todoRepo.getById(id);
         List<TodoPerson> people = todoRepo.getPeople(id);
         resp.set("people", people);
         resp.set("todo", todo);
-        return "/pages/todo/add_person.htm";
+        return "/pages/todo/add_person.jsa";
     }
 
     @Post("/todos/person/add")

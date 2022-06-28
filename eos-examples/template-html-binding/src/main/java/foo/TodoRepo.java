@@ -1,4 +1,4 @@
-package example.foo;
+package foo;
 
 import eos.EOS;
 import eos.annotate.DataStore;
@@ -59,10 +59,10 @@ public class TodoRepo {
     }
 
     public void savePerson(TodoPerson todoPerson) {
-        String sql = "insert into todo_people (todo_id, person) values ([+],'[+]')";
+        String sql = "insert into todo_people (todo_id, name) values ([+],'[+]')";
         repo.save(sql, new Object[] {
                 todoPerson.getTodoId(),
-                todoPerson.getPerson()
+                todoPerson.getName()
         });
     }
 

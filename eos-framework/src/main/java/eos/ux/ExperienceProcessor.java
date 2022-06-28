@@ -44,7 +44,7 @@ public class ExperienceProcessor {
 
                     for (int a8 = iterable.getStart(); a8 < iterable.getStop(); a8++) {
                         String entry = entries.get(a8);
-                        if(entry.contains("<eos:if condition=")){
+                        if(entry.contains("<eos:if spec=")){
                             ignore = evaluateEachCondition(a8, entry, obj, httpResponse, entries);
                         }
                         if(ignore.contains(a8))continue;
@@ -69,7 +69,7 @@ public class ExperienceProcessor {
                 }
             }else {
 
-                if(entryBase.contains("<eos:if condition=")){
+                if(entryBase.contains("<eos:if spec=")){
                     evaluateCondition(a6, entryBase, httpResponse, entries);
                 }
 
@@ -113,7 +113,7 @@ public class ExperienceProcessor {
             List<Integer> ignore = new ArrayList<>();
             for (int a6 = iterable.getStart(); a6 < iterable.getStop(); a6++) {
                 String entry = entries.get(a6);
-                if(entry.contains("<eos:if condition=")){
+                if(entry.contains("<eos:if spec=")){
                     ignore = evaluateEachCondition(a8, entry, obj, httpResponse, entries);
                 }
                 if(ignore.contains(a8))continue;
@@ -131,7 +131,7 @@ public class ExperienceProcessor {
         List<Integer> ignore = new ArrayList<>();
 
         int stop = getEachConditionStop(a8, entries);
-        int startIf = entry.indexOf("<eos:if condition=");
+        int startIf = entry.indexOf("<eos:if spec=");
 
         int startExpression = entry.indexOf("${", startIf);
         int endExpression = entry.indexOf("}", startExpression);
@@ -146,7 +146,7 @@ public class ExperienceProcessor {
         String predicatePre = bits[1].trim();
 
 
-        //<eos:if condition="${town.id == organization.townId}">
+        //<eos:if spec="${town.id == organization.townId}">
 
         //todo:?2 levels
         //todo: switch
@@ -316,7 +316,7 @@ public class ExperienceProcessor {
 
     private void evaluateCondition(int a6, String entry, HttpResponse httpResponse, List<String> entries) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, EosException, NoSuchFieldException {
         int stop = getConditionStop(a6, entries);
-        int startIf = entry.indexOf("<eos:if condition=");
+        int startIf = entry.indexOf("<eos:if spec=");
 
         int startExpression = entry.indexOf("${", startIf);
         int endExpression = entry.indexOf("}", startExpression);
@@ -520,7 +520,7 @@ public class ExperienceProcessor {
             if(entry.contains("</eos:if>")){
                 endCount++;
             }
-            if(entry.contains("<eos:if condition=")){
+            if(entry.contains("<eos:if spec=")){
                 startCount++;
             }
             if(startCount == endCount && entry.contains("</eos:if>")){
@@ -551,7 +551,7 @@ public class ExperienceProcessor {
     private void evaluateEachEntry(String entry, StringBuilder output, Object obj, String activeKey) throws NoSuchFieldException, IllegalAccessException {
         if(entry.contains("<eos:each"))return;
         if(entry.contains("</eos:each>"))return;
-        if(entry.contains("<eos:if condition"))return;
+        if(entry.contains("<eos:if spec"))return;
 
         if(entry.contains("${")) {
 
