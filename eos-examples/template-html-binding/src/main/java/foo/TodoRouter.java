@@ -1,12 +1,11 @@
 package foo;
 
-import eos.EOS;
+import eos.Eos;
 import eos.annotate.*;
 import eos.annotate.verbs.Get;
 import eos.annotate.verbs.Post;
 import eos.model.web.HttpRequest;
 import eos.model.web.HttpResponse;
-import eos.util.Support;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
 public class TodoRouter {
 
     @Bind
-    EOS.Util util;
+    Eos.Util util;
 
     @Bind
     TodoRepo todoRepo;
@@ -22,7 +21,7 @@ public class TodoRouter {
     @Plain
     @Get("/text")
     public String eos(){
-        return "EOS.";
+        return "Eos.";
     }
 
     @Get("/")

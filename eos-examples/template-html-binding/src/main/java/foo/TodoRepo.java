@@ -1,6 +1,6 @@
 package foo;
 
-import eos.EOS;
+import eos.Eos;
 import eos.annotate.DataStore;
 import eos.annotate.Bind;
 
@@ -11,7 +11,7 @@ import java.util.List;
 public class TodoRepo {
 
     @Bind
-    EOS.Repo repo;
+    Eos.Repo repo;
 
     public Long getCount() {
         String sql = "select count(*) from todos";

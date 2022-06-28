@@ -2,7 +2,7 @@ package eos.web;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
-import eos.EOS;
+import eos.Eos;
 import eos.model.web.FormElement;
 import eos.model.web.HttpRequest;
 import eos.model.web.HttpSession;
@@ -19,12 +19,12 @@ import java.util.Map;
  */
 public class ElementCompiler {
 
-    EOS.Cache cache;
+    Eos.Cache cache;
     byte[] bytes;
     Map<String, HttpSession> sessions;
     HttpExchange httpExchange;
 
-    public ElementCompiler(EOS.Cache cache, byte[] bytes, Map<String, HttpSession> sessions, HttpExchange httpExchange){
+    public ElementCompiler(Eos.Cache cache, byte[] bytes, Map<String, HttpSession> sessions, HttpExchange httpExchange){
         this.cache = cache;
         this.bytes = bytes;
         this.sessions = sessions;

@@ -1,0 +1,21 @@
+<sec:authenticated>
+    Hello <auth:user/>!
+    You are authenticated.
+</sec:authenticated>
+
+<sec:guest>
+    <h1>Signin.</h1>
+    <form action="/signin" method="post">
+        <input type="text" name="user"/>
+        <input type="text" name="pass"/>
+        <input type="submit" name="Signin!"/>
+    </form>
+    <p><strong>Super User</strong><br/>
+        username : croteau.mike+uno@gmail.com<br/>
+        password : quietstorm
+    </p>
+    <p><strong>Basic User</strong><br/>
+        username : croteau.mike+dos@gmail.com<br/>
+        password : quietstorm
+    </p>
+</sec:guest>

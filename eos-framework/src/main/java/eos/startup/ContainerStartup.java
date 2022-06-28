@@ -1,6 +1,6 @@
 package eos.startup;
 
-import eos.EOS;
+import eos.Eos;
 import eos.data.Mediator;
 import eos.model.Element;
 import eos.model.web.EndpointMappings;
@@ -18,19 +18,19 @@ public class ContainerStartup {
 
     public static class Builder {
 
-        EOS.Cache cache;
-        EOS.Repo repo;
+        Eos.Cache cache;
+        Eos.Repo repo;
         Support support;
         Settings settings;
 
         public Builder(){
             this.support = new Support();
         }
-        public Builder withRepo(EOS.Repo repo){
+        public Builder withRepo(Eos.Repo repo){
             this.repo = repo;
             return this;
         }
-        public Builder withCache(EOS.Cache cache){
+        public Builder withCache(Eos.Cache cache){
             this.cache = cache;
             return this;
         }
@@ -48,7 +48,7 @@ public class ContainerStartup {
             cache.getElementStorage().getElements().put("repo", repoElement);
 
             Element supportElement = new Element();
-            supportElement.setElement(new EOS.Util());
+            supportElement.setElement(new Eos.Util());
             cache.getElementStorage().getElements().put("util", supportElement);
 
             if(cache.getResources() == null) cache.setResources(new ArrayList<>());
@@ -78,7 +78,7 @@ public class ContainerStartup {
 
         private void dispatchEvent() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
             if(cache.getEvents() != null) {
-                Method setupComplete = cache.getEvents().getClass().getDeclaredMethod("setupComplete", EOS.Cache.class);
+                Method setupComplete = cache.getEvents().getClass().getDeclaredMethod("setupComplete", Eos.Cache.class);
                 if(setupComplete != null) {
                     setupComplete.setAccessible(true);
                     setupComplete.invoke(cache.getEvents(), cache);

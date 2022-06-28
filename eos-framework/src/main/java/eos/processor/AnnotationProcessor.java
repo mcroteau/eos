@@ -1,6 +1,6 @@
 package eos.processor;
 
-import eos.EOS;
+import eos.Eos;
 import eos.annotate.Bind;
 import eos.annotate.Property;
 import eos.model.ObjectDetails;
@@ -16,12 +16,12 @@ import java.util.Map;
 
 public class AnnotationProcessor {
 
-    EOS.Cache cache;
+    Eos.Cache cache;
     Support support;
     Map<String, ObjectDetails> processed;
     List<ObjectDetails> annotations;
 
-    public AnnotationProcessor(EOS.Cache cache){
+    public AnnotationProcessor(Eos.Cache cache){
         this.cache = cache;
         this.support = new Support();
         this.processed = new HashMap<>();

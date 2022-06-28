@@ -1,6 +1,6 @@
 package eos.processor;
 
-import eos.EOS;
+import eos.Eos;
 import eos.annotate.*;
 import eos.model.Element;
 import eos.model.ObjectDetails;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class ElementProcessor {
 
-    EOS.Cache cache;
+    Eos.Cache cache;
     Integer jdbcCount;
     Integer serviceCount;
     Integer elementCount;
@@ -21,7 +21,7 @@ public class ElementProcessor {
     Map<String, ObjectDetails> httpClasses;
     Map<String, ObjectDetails> annotatedClasses;
 
-    public ElementProcessor(EOS.Cache cache){
+    public ElementProcessor(Eos.Cache cache){
         this.cache = cache;
         jdbcCount = 0;
         serviceCount = 0;

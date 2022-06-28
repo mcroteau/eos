@@ -1,7 +1,7 @@
 package eos.events;
 
-import eos.EOS;
+import eos.Eos;
 
 public interface StartupEvent {
-    public void setupComplete(EOS.Cache cache);
+    public void setupComplete(Eos.Cache cache);
 }

@@ -1,6 +1,6 @@
 package eos.data;
 
-import eos.EOS;
+import eos.Eos;
 import eos.util.Settings;
 import eos.util.Support;
 import org.h2.tools.RunScript;
@@ -18,11 +18,11 @@ public class Mediator {
 
     Support support;
     Settings settings;
-    EOS.Cache cache;
+    Eos.Cache cache;
 
     final String CREATEDB_URI = "src/main/resources/create-db.sql";
 
-    public Mediator(Settings settings, Support support, EOS.Cache cache){
+    public Mediator(Settings settings, Support support, Eos.Cache cache){
         this.support = support;
         this.settings = settings;
         this.cache = cache;

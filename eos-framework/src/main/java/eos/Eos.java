@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class EOS {
+public class Eos {
 
     public static final String SECURITYTAG = "eos.sessions";
     public static final String RESOURCES   = "/src/main/resources/";
@@ -43,14 +43,14 @@ public class EOS {
     Map<String, Fragment> pointcuts;
     Map<String, Interceptor> interceptors;
 
-    public EOS(Builder builder){
+    public Eos(Builder builder){
         this.support = builder.support;
         this.httpServer = builder.httpServer;
         this.pointcuts = new HashMap<>();
         this.interceptors = new HashMap<>();
     }
 
-    public EOS start() throws Exception {
+    public Eos start() throws Exception {
         ExperienceProcessor experienceProcessor = new ExperienceProcessor();
         ExchangeInitializer exchangeInitializer = new ExchangeInitializer(pointcuts, interceptors, experienceProcessor);
         exchangeInitializer.start();
@@ -61,12 +61,12 @@ public class EOS {
         return this;
     }
 
-    public EOS stop() throws Exception {
+    public Eos stop() throws Exception {
         httpServer.stop(0);
         return this;
     }
 
-    public boolean registerPointcut(Fragment fragment){
+    public boolean addFragment(Fragment fragment){
         String key = support.getName(fragment.getClass().getName());
         this.pointcuts.put(key, fragment);
         return true;
@@ -95,8 +95,8 @@ public class EOS {
             this.httpServer.setExecutor(executors);
             return this;
         }
-        public EOS create() {
-            return new EOS(this);
+        public Eos create() {
+            return new Eos(this);
         }
     }
 

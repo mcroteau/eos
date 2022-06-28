@@ -1,7 +1,7 @@
 package eos.util;
 
 import com.sun.net.httpserver.HttpExchange;
-import eos.EOS;
+import eos.Eos;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -13,7 +13,7 @@ public class ResourceResponse {
     final String WEBAPP = "web-ux";
     final String CONTENTTYPE = "Content-Type";
 
-    EOS.Cache cache;
+    Eos.Cache cache;
     String requestUri;
     String httpVerb;
     HttpExchange httpExchange;
@@ -27,7 +27,7 @@ public class ResourceResponse {
         this.support = new Support();
     }
 
-    public static Boolean isResource(String requestUri, EOS.Cache cache){
+    public static Boolean isResource(String requestUri, Eos.Cache cache){
         if(cache.getResources() == null) return false;
 
         String[] bits = requestUri.split("/");
@@ -124,7 +124,7 @@ public class ResourceResponse {
     }
 
     public static class Builder {
-        EOS.Cache cache;
+        Eos.Cache cache;
         String requestUri;
         String httpVerb;
         List<String> resources;
@@ -138,7 +138,7 @@ public class ResourceResponse {
             this.httpVerb = httpVerb;
             return this;
         }
-        public Builder withCache(EOS.Cache cache){
+        public Builder withCache(Eos.Cache cache){
             this.cache = cache;
             return this;
         }

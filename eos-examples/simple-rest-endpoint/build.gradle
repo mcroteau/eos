@@ -1,0 +1,18 @@
+plugins {
+    id 'application'
+}
+
+application{
+    mainClass.set("foo.Main")
+}
+
+group 'io.eos-framework'
+version '1.00'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(":eos-framework")
+}

@@ -1,6 +1,6 @@
 package eos.processor;
 
-import eos.EOS;
+import eos.Eos;
 import eos.util.Support;
 
 import java.io.File;
@@ -12,17 +12,17 @@ import java.util.Properties;
 
 public class PropertiesProcessor {
 
-    EOS.Cache cache;
+    Eos.Cache cache;
     Support support;
 
-    public PropertiesProcessor(EOS.Cache cache){
+    public PropertiesProcessor(Eos.Cache cache){
         this.cache = cache;
         this.support = new Support();
     }
 
     protected InputStream getPropertiesFile(String propertyFile) throws Exception{
 
-        InputStream is = this.getClass().getResourceAsStream(EOS.RESOURCES + propertyFile);
+        InputStream is = this.getClass().getResourceAsStream(Eos.RESOURCES + propertyFile);
 
         if(is == null) {
             String resourceUri = support.getResourceUri();

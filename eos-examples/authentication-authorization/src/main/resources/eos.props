@@ -1,0 +1,8 @@
+plsar.env=create,drop
+plsar.assets=
+plsar.properties=this
+
+db.url=jdbc:h2:~/devDb
+db.driver=org.h2.Driver
+db.user=sa
+db.pass=

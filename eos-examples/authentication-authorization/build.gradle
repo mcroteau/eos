@@ -1,0 +1,33 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.6.20'
+    id 'application'
+}
+
+application{
+    mainClass.set("foo.MainKt")
+}
+
+group 'net.plsar'
+version '1.000'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(":eos-sec-framework")
+    implementation project(":eos-framework")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "com.h2database:h2:2.1.210"
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}

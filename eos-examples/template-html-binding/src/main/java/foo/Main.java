@@ -1,10 +1,10 @@
 package foo;
 
-import eos.EOS;
+import eos.Eos;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        EOS eos = new EOS.Builder()
+        Eos eos = new Eos.Builder()
                         .port(8080)
                         .ambiance(200)
                         .create();

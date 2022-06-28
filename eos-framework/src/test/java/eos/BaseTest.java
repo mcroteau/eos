@@ -15,8 +15,8 @@ import java.util.List;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 abstract class BaseTest {
 
-    EOS eos;
-    EOS.Cache cache;
+    Eos eos;
+    Eos.Cache cache;
     Support support;
 
     @AfterEach
@@ -26,7 +26,7 @@ abstract class BaseTest {
 
     @BeforeEach
     public void setup() throws Exception {
-        eos = new EOS.Builder().port(8080).ambiance(10).create();
+        eos = new Eos.Builder().port(8080).ambiance(10).create();
         eos.start();
 
         support = new Support();
@@ -40,8 +40,8 @@ abstract class BaseTest {
         propertiesFiles.add("eos.props");
         settings.setPropertiesFiles(propertiesFiles);
 
-        EOS.Repo repo = new EOS.Repo();
-        cache = new EOS.Cache.Builder()
+        Eos.Repo repo = new Eos.Repo();
+        cache = new Eos.Cache.Builder()
             .withSettings(settings)
             .withPointCuts(new HashMap<>())
             .withInterceptors(new HashMap<>())

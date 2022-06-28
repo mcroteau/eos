@@ -1,6 +1,6 @@
 package eos.startup;
 
-import eos.EOS;
+import eos.Eos;
 import eos.util.Settings;
 import eos.util.Support;
 import eos.ux.ExperienceProcessor;
@@ -15,7 +15,7 @@ import java.util.*;
 
 public class ExchangeInitializer {
 
-    EOS.Cache cache;
+    Eos.Cache cache;
     ExperienceProcessor experienceProcessor;
     Map<String, Fragment> pointcuts;
     Map<String, Interceptor> interceptors;
@@ -124,8 +124,8 @@ public class ExchangeInitializer {
         settings.setResources(resources);
         settings.setPropertiesFiles(propertiesFiles);
 
-        EOS.Repo repo = new EOS.Repo();
-        this.cache = new EOS.Cache.Builder()
+        Eos.Repo repo = new Eos.Repo();
+        this.cache = new Eos.Cache.Builder()
                     .withSettings(settings)
                     .withPointCuts(pointcuts)
                     .withInterceptors(interceptors)
@@ -141,7 +141,7 @@ public class ExchangeInitializer {
 
     }
 
-    public EOS.Cache getCache(){
+    public Eos.Cache getCache(){
         return this.cache;
     }
 
