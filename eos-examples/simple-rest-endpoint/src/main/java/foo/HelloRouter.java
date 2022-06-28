@@ -23,7 +23,7 @@ public class HelloRouter {
     @Json
     @Get("/json")
     public String json(HttpResponse resp){
-        resp.set("message", "(((  Eos.  )))");
+        resp.set("message", "Eos.");
         return gson.toJson(resp);
     }
 
