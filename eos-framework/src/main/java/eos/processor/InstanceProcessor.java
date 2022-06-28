@@ -6,6 +6,7 @@ import eos.model.ObjectDetails;
 import eos.util.Support;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.*;
@@ -121,13 +122,6 @@ public class InstanceProcessor {
 
                 if(isDirt(jarEntry.toString()))continue;
 
-//                if(jarEntry.toString().contains("javax"))continue;
-//                if(jarEntry.toString().contains("org/apache/jasper"))continue;
-//                if(jarEntry.toString().contains("org/apache/taglibs"))continue;
-//                if(jarEntry.toString().contains("org/apache/tools"))continue;
-//                if(jarEntry.toString().contains("org/eclipse/"))continue;
-//                if(jarEntry.toString().contains("org/h2"))continue;
-
                 String path = getPath(jarEntry.toString());
                 Class cls = this.cl.loadClass(path);
 
@@ -221,28 +215,21 @@ public class InstanceProcessor {
 
     protected Object getObject(Class cls) {
         Object object = null;
+        Constructor constructor = null;
+        Constructor[] constructors = cls.getDeclaredConstructors();
+        for(Constructor activeConstructor : constructors){
+            if(activeConstructor.getParameterCount() == 0){
+                constructor = activeConstructor;
+                break;
+            }
+        }
+        constructor.setAccessible(true);
         try {
-            object = cls.getConstructor().newInstance();
+            object = constructor.newInstance();
         } catch (InstantiationException e) {
         } catch (IllegalAccessException e) {
         } catch (InvocationTargetException e) {
-        } catch (NoSuchMethodException e) {
         }
-//        Constructor constructor = null;
-//        Constructor[] constructors = cls.getDeclaredConstructors();
-//        for(Constructor activeConstructor : constructors){
-//            if(activeConstructor.getParameterCount() == 0){
-//                activeConstructor;
-//                break;
-//            }
-//        }
-//        constructor.setAccessible(true);
-//        try {
-//            object = constructor.newInstance();
-//        } catch (InstantiationException e) {
-//        } catch (IllegalAccessException e) {
-//        } catch (InvocationTargetException e) {
-//        }
         return object;
     }
 

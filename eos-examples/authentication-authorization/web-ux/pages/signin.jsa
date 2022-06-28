@@ -1,11 +1,12 @@
 <sec:authenticated>
     Hello <auth:user/>!
     You are authenticated.
+    <a href="/signout">Signout</a>
 </sec:authenticated>
 
 <sec:guest>
     <h1>Signin.</h1>
-    <form action="/signin" method="post">
+    <form action="/authenticate" method="post">
         <input type="text" name="user"/>
         <input type="text" name="pass"/>
         <input type="submit" name="Signin!"/>

@@ -34,7 +34,7 @@ public class ElementProcessor {
     public ElementProcessor run() {
         for (Map.Entry<String, ObjectDetails> entry : cache.getObjects().entrySet()) {
             Class cls = entry.getValue().getClazz();
-            if (cls.isAnnotationPresent(Config.class)) {
+            if (cls.isAnnotationPresent(Configuration.class)) {
                 configs.add(cls);
             }
         }
@@ -45,7 +45,9 @@ public class ElementProcessor {
                 buildAddElement(entry);
                 elementCount++;
             }
-            if (cls.isAnnotationPresent(DataStore.class)) {
+            if (cls.isAnnotationPresent(DataStore.class) ||
+                    cls.isAnnotationPresent(Repo.class) ||
+                        cls.isAnnotationPresent(Persistence.class)) {
                 buildAddElement(entry);
                 jdbcCount++;
             }

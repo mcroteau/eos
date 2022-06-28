@@ -1,8 +1,7 @@
 package eos.processor;
 
 import eos.Eos;
-import eos.annotate.Bind;
-import eos.annotate.Property;
+import eos.annotate.*;
 import eos.model.ObjectDetails;
 import eos.util.Support;
 
@@ -49,9 +48,15 @@ public class AnnotationProcessor {
             Field[] fields = objectDetails.getClazz().getDeclaredFields();
 
             for(Field field: fields) {
-                if(field.isAnnotationPresent(Bind.class)) {
+                if(field.isAnnotationPresent(Bind.class) ||
+                        field.isAnnotationPresent(Put.class) ||
+                        field.isAnnotationPresent(Set.class) ||
+                        field.isAnnotationPresent(Inject.class)) {
+
                     String fieldKey = field.getName().toLowerCase();
+
                     if(cache.getElementStorage().getElements().containsKey(fieldKey)){
+
                         Object element = cache.getElementStorage().getElements().get(fieldKey).getElement();
                         field.setAccessible(true);
                         field.set(object, element);

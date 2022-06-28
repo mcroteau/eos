@@ -20,8 +20,8 @@ create table if not exists user_permissions(
 	permission character varying(55)
 );
 
-insert into users(email, phone, password) values ('','croteau.mike+uno@gmail.com','23f41366035282e5bcd3a3129834d51a741a2514a89320');
-insert into users(email, phone, password) values ('','croteau.mike+dos@gmail.com','23f41366035282e5bcd3a3129834d51a741a2514a89320');
+insert into users(email, phone, password) values ('croteau.mike+uno@gmail.com','9079878652','a23fe49136f6d03528e2ae5bbced3a3129c8834dc51a97e41a25914aa8c9c320');
+insert into users(email, phone, password) values ('croteau.mike+dos@gmail.com','9079878652','a23fe49136f6d03528e2ae5bbced3a3129c8834dc51a97e41a25914aa8c9c320');
 insert into roles(name) values ('SUPER');
 insert into roles(name) values ('BASIC');
 insert into user_roles(user_id, role_id) values (1, 1);

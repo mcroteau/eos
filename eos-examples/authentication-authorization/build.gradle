@@ -4,7 +4,7 @@ plugins {
 }
 
 application{
-    mainClass.set("foo.MainKt")
+    mainClass.set("foo.Main")
 }
 
 group 'net.plsar'

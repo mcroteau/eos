@@ -51,6 +51,7 @@ public class EndpointProcessor {
             Class clazz = entry.getValue().getClazz();
             Method[] methods = clazz.getDeclaredMethods();
             for(Method method: methods){
+
                 if(method.isAnnotationPresent(Get.class)){
                     setGetMapping(method, entry.getValue());
                     processed.put(entry.getKey(), entry.getValue());
@@ -176,6 +177,7 @@ public class EndpointProcessor {
         mapping.setUrlBitFeatures(urlBitFeatures);
 
         endpointMappings.add(key, mapping);
+
     }
 
 

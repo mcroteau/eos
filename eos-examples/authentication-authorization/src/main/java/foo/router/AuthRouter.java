@@ -10,21 +10,12 @@ import eos.model.web.HttpResponse;
 @HttpRouter
 class AuthRouter {
 
-    @Get("/secret")
-    public String secret(HttpResponse resp) {
-        if(Security.isAuthenticated()){
-            return "/pages/passed.jsa";
-        }
-        resp.set("message", "authenticate pour favor.");
-        return "[redirect]/";
-    }
-
     @Get("/")
     public String signin() {
         return "/pages/signin.jsa";
     }
 
-    @Post("/signin")
+    @Post("/authenticate")
     public String authenticate(HttpRequest req) {
         String user = req.get("user").value();
         String pass = req.get("pass").value();
@@ -33,6 +24,15 @@ class AuthRouter {
             return "[redirect]/secret";
         }
 
+        return "[redirect]/";
+    }
+
+    @Get("/secret")
+    public String secret(HttpResponse resp) {
+        if(Security.isAuthenticated()){
+            return "/pages/passed.jsa";
+        }
+        resp.set("message", "authenticate pour favor.");
         return "[redirect]/";
     }
 

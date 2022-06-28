@@ -1,13 +1,13 @@
 package foo.assist;
 
-import eos.annotate.Config;
+import eos.annotate.Configuration;
 import eos.annotate.Dependency;
 import eos.annotate.Property;
 import eos.data.BasicDataSource;
 
 import javax.sql.DataSource;
 
-@Config
+@Configuration
 public class DbConfig {
 
     @Property("db.url")
@@ -32,11 +32,11 @@ public class DbConfig {
 //                .password(dbPass)
 //                .make();
         return new BasicDataSource.Builder()
-                .url(dbUrl)
-                .driver(dbDriver)
-                .username(dbUser)
-                .password(dbPass)
-                .build();
+                        .url(dbUrl)
+                        .driver(dbDriver)
+                        .username(dbUser)
+                        .password(dbPass)
+                        .build();
     }
 
 }

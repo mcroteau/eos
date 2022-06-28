@@ -1,13 +1,13 @@
 package foo;
 
-import eos.annotate.Config;
+import eos.annotate.Configuration;
 import eos.annotate.Dependency;
 import eos.annotate.Property;
 import eos.data.BasicDataSource;
 
 import javax.sql.DataSource;
 
-@Config
+@Configuration
 public class DataConfig {
 
     @Property("db.url")

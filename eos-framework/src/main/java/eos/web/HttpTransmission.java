@@ -120,9 +120,9 @@ public class HttpTransmission implements HttpHandler {
             String methodResponse = (String) method.invoke(object, signature);
             if (methodResponse == null)throw new Exception("something went wrong when calling " + method);
 
-
-            if(method.isAnnotationPresent(Text.class) ||
-                    method.isAnnotationPresent(Plain.class)) {
+            if(method.isAnnotationPresent(Basic.class) ||
+                    method.isAnnotationPresent(Text.class) ||
+                        method.isAnnotationPresent(Plain.class)) {
                 Headers headers = httpExchange.getResponseHeaders();
                 headers.add("content-type", "text/html");
                 httpExchange.sendResponseHeaders(200, methodResponse.length());
@@ -523,6 +523,7 @@ public class HttpTransmission implements HttpHandler {
             if(!mapping.getPath().startsWith("/")){
                 mappingUri = "/" + mappingUri;
             }
+
             if(mappingUri.equals(uri)){
                 return mapping;
             }
