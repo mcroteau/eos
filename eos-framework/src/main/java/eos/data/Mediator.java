@@ -51,9 +51,9 @@ public class Mediator {
 
             if (datasource == null) {
                 throw new Exception("\n\n           " +
-                        "You have a8i.env set to create or create,drop in a8i.props.\n           " +
+                        "You have eos.env set to create or create,drop in eos.props.\n           " +
                         "In addition you need to configure a datasource. \n           " +
-                        "Feel free to use a8i.jdbc.datasource.BasicDataSource to " +
+                        "Feel free to use eos.data.BasicDataSource to " +
                         "get started.\n" +
                         "           " +
                         "You can also checkout HikariCP, it is great!" +

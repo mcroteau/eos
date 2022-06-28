@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'io.eos-ecosystem'
-version '1.00'
+version '1.01'
 
 repositories {
     mavenCentral()
@@ -66,7 +66,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId = "io.eos-ecosystem"
             artifactId = "eos-framework"
-            version = "1.00"
+            version = "1.01"
             from(components["java"])
         }
         maven(MavenPublication) {
