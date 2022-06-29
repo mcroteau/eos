@@ -1,7 +1,7 @@
 package eos.processor;
 
 import eos.Eos;
-import eos.annotate.Events;
+import eos.annotate.*;
 import eos.model.ObjectDetails;
 import eos.util.Support;
 
@@ -177,8 +177,16 @@ public class InstanceProcessor {
                     cache.setEvents(getObject(cls));
                 }
 
-                ObjectDetails objectDetails = getObjectDetails(cls);
-                cache.getObjects().put(objectDetails.getName(), objectDetails);
+                if(cls.isAnnotationPresent(Element.class) ||
+                        cls.isAnnotationPresent(Configuration.class) ||
+                        cls.isAnnotationPresent(DataStore.class) ||
+                        cls.isAnnotationPresent(HttpRouter.class) ||
+                        cls.isAnnotationPresent(Repo.class) ||
+                        cls.isAnnotationPresent(Persistence.class) ||
+                        cls.isAnnotationPresent(Service.class)) {
+                    ObjectDetails objectDetails = getObjectDetails(cls);
+                    cache.getObjects().put(objectDetails.getName(), objectDetails);
+                }
 
             }catch (Exception ex){
                 ex.printStackTrace();
@@ -214,22 +222,21 @@ public class InstanceProcessor {
     }
 
     protected Object getObject(Class cls) {
+
         Object object = null;
-        Constructor constructor = null;
-        Constructor[] constructors = cls.getDeclaredConstructors();
-        for(Constructor activeConstructor : constructors){
-            if(activeConstructor.getParameterCount() == 0){
-                constructor = activeConstructor;
-                break;
-            }
-        }
-        constructor.setAccessible(true);
+
         try {
-            object = constructor.newInstance();
+            object = cls.getConstructor().newInstance();
         } catch (InstantiationException e) {
+            e.printStackTrace();
         } catch (IllegalAccessException e) {
+            e.printStackTrace();
         } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
         }
+
         return object;
     }
 

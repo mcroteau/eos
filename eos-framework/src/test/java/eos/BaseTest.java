@@ -18,6 +18,7 @@ abstract class BaseTest {
     Eos eos;
     Eos.Cache cache;
     Support support;
+    ExperienceProcessor exp;
 
     @AfterEach
     public void shutdown() throws Exception {
@@ -26,7 +27,7 @@ abstract class BaseTest {
 
     @BeforeEach
     public void setup() throws Exception {
-        eos = new Eos.Builder().port(8080).ambiance(10).create();
+        eos = new Eos.Builder().port(3001).ambiance(10).create();
         eos.start();
 
         support = new Support();

@@ -7,8 +7,6 @@ import eos.annotate.Text;
 import eos.annotate.verbs.Get;
 import eos.model.web.HttpResponse;
 
-import java.util.List;
-
 @HttpRouter
 public class HelloRouter {
 

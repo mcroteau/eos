@@ -12,7 +12,7 @@ server and deploy .war files. Thats right, no more .WAR.
 Instead you run the application from its root directory with a 
 simple command.
 
-Want to test drive? Run the following command from the 
+Want to foo drive? Run the following command from the 
 root eos/ directory:
 
 ```
@@ -85,6 +85,10 @@ iterable. Here is what they look like:
 28 | iterable.object.object.object | == | '' |
 29 | iterable.object.object.object | != | 'value' |
 30 | iterable.object.object.object | == | 'value' |
+31 | condition |  |  |
+32 | condition | == | true |
+33 | !condition |  |  |
+34 | condition | == | false |
 
 
 

@@ -7,7 +7,7 @@ public class Todo {
     Integer id;
     String title;
     boolean complete;
-    List<TodoPerson> people;
+    List<Person> people;
 
     public Integer getId() {
         return id;
@@ -33,11 +33,11 @@ public class Todo {
         this.complete = complete;
     }
 
-    public List<TodoPerson> getPeople() {
+    public List<Person> getPeople() {
         return people;
     }
 
-    public void setPeople(List<TodoPerson> people) {
+    public void setPeople(List<Person> people) {
         this.people = people;
     }
 }

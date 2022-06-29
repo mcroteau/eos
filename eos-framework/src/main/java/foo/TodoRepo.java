@@ -1,13 +1,13 @@
 package foo;
 
 import eos.Eos;
-import eos.annotate.DataStore;
 import eos.annotate.Bind;
+import eos.annotate.Persistence;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@DataStore
+@Persistence
 public class TodoRepo {
 
     @Bind
@@ -52,17 +52,17 @@ public class TodoRepo {
         repo.delete(sql, new Object[] { id });
     }
 
-    public List<TodoPerson> getPeople(int id){
+    public List<Person> getPeople(int id){
         String sql = "select * from todo_people where todo_id = [+]";
-        List<TodoPerson> todoPeople = (ArrayList) repo.getList(sql, new Object[]{ id }, TodoPerson.class);
+        List<Person> todoPeople = (ArrayList) repo.getList(sql, new Object[]{ id }, Person.class);
         return todoPeople;
     }
 
-    public void savePerson(TodoPerson todoPerson) {
+    public void savePerson(Person person) {
         String sql = "insert into todo_people (todo_id, person) values ([+],'[+]')";
         repo.save(sql, new Object[] {
-                todoPerson.getTodoId(),
-                todoPerson.getPerson()
+                person.getTodoId(),
+                person.getName()
         });
     }
 

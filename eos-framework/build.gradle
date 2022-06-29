@@ -50,6 +50,13 @@ task coverage{
     dependsOn 'jacocoTestReport'
 }
 
+test {
+    useJUnitPlatform()
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
 publishing {
     repositories {
         maven {
