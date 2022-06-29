@@ -19,13 +19,15 @@ import java.util.Map;
 
 public class ExperienceProcessor {
 
-    final String NEWLINE = "\r\n";
+    final String NEWLINE = "\n";
     final String FOREACH = "<eos:each";
 
     public String process(Map<String, Fragment> pointcuts, String view, HttpResponse httpResponse, HttpRequest request, HttpExchange exchange) throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         List<String> entries = Arrays.asList(view.split("\n"));
         evaluatePointcuts(request, exchange, entries, pointcuts);
+
+        System.out.println(entries.size());
 
         for(int a6 = 0; a6 < entries.size(); a6++) {
             String entryBase = entries.get(a6);
@@ -44,9 +46,12 @@ public class ExperienceProcessor {
 
                     for (int a8 = iterable.getStart(); a8 < iterable.getStop(); a8++) {
                         String entry = entries.get(a8);
+
                         if(entry.contains("<eos:if spec=")){
                             ignore = evaluateEachCondition(a8, entry, obj, httpResponse, entries);
                         }
+                        if(entry.indexOf("<eos:if spec") > -1)continue;
+                        if(entry.indexOf("</eos:if") > -1)continue;
                         if(ignore.contains(a8))continue;
                         if(entry.contains(this.FOREACH)){
                             Iterable deepIterable = getIterableObj(a8, entry, obj, entries);
@@ -77,9 +82,11 @@ public class ExperienceProcessor {
                 entries.set(a6, entryBase);
             }
         }
-        List<String> entriesCleaned = cleanup(entries);
+
         StringBuilder output = new StringBuilder();
-        for (String s : entriesCleaned) {
+        for (String s : entries) {
+            if(s.indexOf("<eos:if spec") > -1)continue;
+            if(s.indexOf("</eos:if") > -1)continue;
             output.append(s + this.NEWLINE);
         }
 
@@ -88,19 +95,10 @@ public class ExperienceProcessor {
     }
 
 
-    private List<String> cleanup(List<String> entries){
-        for(int a6 = 0; a6 < entries.size(); a6++){
-            String entry = entries.get(a6);
-            if(entry.contains("<eos:if"))entries.set(a6, "");
-            if(entry.contains("</eos:if>"))entries.set(a6, "");
-        }
-        return entries;
-    }
-
-
     private StringBuilder retrieveFinal(StringBuilder eachOut){
         StringBuilder finalOut = new StringBuilder();
         String[] parts = eachOut.toString().split("\n");
+        System.out.println("z : " + eachOut.toString());
         for(String bit : parts){
             if(!bit.trim().equals(""))finalOut.append(bit + this.NEWLINE);
         }
@@ -136,7 +134,6 @@ public class ExperienceProcessor {
         int startExpression = entry.indexOf("${", startIf);
         int endExpression = entry.indexOf("}", startExpression);
 
-        String expressionNite = entry.substring(startExpression, endExpression +1);
         String expression = entry.substring(startExpression + 2, endExpression);
 
         String condition = getCondition(expression);
@@ -167,7 +164,8 @@ public class ExperienceProcessor {
                     ignore = getIgnoreEntries(a8, stop);
                 }
 
-            }else {
+            }else if(predicatePre.contains(".")){
+                System.out.println(predicatePre);
                 String[] predicateKeys = predicatePre.split("\\.");
                 String key = predicateKeys[0];
                 String field = predicateKeys[1];
@@ -183,6 +181,15 @@ public class ExperienceProcessor {
                 if (!predicate.equals(subject) && condition.equals("==")) {
                     ignore = getIgnoreEntries(a8, stop);
                 }
+            }else if(!predicatePre.contains("'")){
+                if (predicatePre.equals(subject) && condition.equals("!=")) {
+                    ignore = getIgnoreEntries(a8, stop);
+                }
+                if (!predicatePre.equals(subject) && condition.equals("==")) {
+                    ignore = getIgnoreEntries(a8, stop);
+                }
+            }else{
+
             }
 
         }else{
@@ -385,9 +392,12 @@ public class ExperienceProcessor {
 
                 if (httpResponse.data().containsKey(subject)) {
                     if (predicate.contains("'")) predicate = predicate.replace("'", "");
-                    String value = httpResponse.get(subject).toString();
+                    Object obj = httpResponse.get(subject);
+                    if(obj != null){
+                        String value = obj.toString();
+                        checkCondition(a6, stop, value, condition, predicate, entries);
+                    }
 
-                    checkCondition(a6, stop, value, condition, predicate, entries);
                 } else {
                     if (condition == "!=" &&
                             (predicate == "''" || predicate == "null")) {
@@ -583,6 +593,7 @@ public class ExperienceProcessor {
         }else{
             output.append(entry + this.NEWLINE);
         }
+
     }
 
     private void evaluateEntryRemainder(int startExpressionRight, String entry, Object obj, StringBuilder output) throws NoSuchFieldException, IllegalAccessException {
@@ -625,7 +636,7 @@ public class ExperienceProcessor {
         String field = iterableFudge.substring(startField + 1, endField);
 
         int startItem = entry.indexOf("item=", endIterate);
-        int endItem = entry.indexOf("\"", startItem + 8);
+        int endItem = entry.indexOf("\"", startItem + 7);//item="
         String activeField = entry.substring(startItem + 6, endItem);
 
         objs = (ArrayList) getIterableValueRecursive(0, field, obj);
@@ -648,7 +659,7 @@ public class ExperienceProcessor {
         String iterableKey = entry.substring(startIterate + 6, endIterate -1 );//in="${ and }
 
         int startItem = entry.indexOf("item=", endIterate);
-        int endItem = entry.indexOf("\"", startItem + 8);
+        int endItem = entry.indexOf("\"", startItem + 7);//items="
         String activeField = entry.substring(startItem + 6, endItem);
 
         String expression = entry.substring(startIterate + 4, endIterate + 1);
@@ -658,7 +669,6 @@ public class ExperienceProcessor {
         }else if(httpResponse.data().containsKey(iterableKey)){
             objs = (ArrayList) httpResponse.get(iterableKey);
         }
-
 
         Iterable iterable = new Iterable();
         int stop = getStop(a6 + 1, entries);

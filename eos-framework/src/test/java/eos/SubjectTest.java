@@ -17,11 +17,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ExperienceTest extends BaseTest {
+public class SubjectTest extends BaseTest {
 
     ExperienceProcessor exp;
 
-    ExperienceTest(){
+    SubjectTest(){
         exp = new ExperienceProcessor();
     }
 
@@ -47,38 +47,4 @@ public class ExperienceTest extends BaseTest {
         assertEquals("Eos.", result);
     }
 
-    public HttpResponse create() {
-
-        HttpResponse resp = new HttpResponse();
-
-        List<Todo> todos = new ArrayList<>();
-        for(int idx = 0; idx < 3; idx++) {
-            Todo todo = new Todo();
-            todo.setId(idx);
-            todo.setTitle("Assignment #" + idx);
-
-            List<Person> people = new ArrayList<>();
-            for (int idxn = 0; idxn < 3; idxn++) {
-                Person person = new Person();
-                person.setId(idxn);
-                person.setName("Pep " + idx);
-                List<Pet> pets = new ArrayList<>();
-                for (int idxx = 0; idxx < 23; idxx++) {
-                    Pet pet = new Pet();
-                    pet.setId(idxx);
-                    pet.setName("Nginx ");
-                    pets.add(pet);
-                }
-                person.setPets(pets);
-            }
-            todo.setPeople(people);
-            todos.add(todo);
-        }
-
-        resp.set("todos", todos);
-        resp.set("true", true);
-        resp.set("condition", false);
-
-        return resp;
-    }
 }

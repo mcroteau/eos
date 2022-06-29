@@ -6,6 +6,7 @@ public class Person {
     Integer id;
     Integer todoId;
     String name;
+    Pet pet;
     List<Pet> pets;
 
     public Integer getId() {
@@ -30,6 +31,14 @@ public class Person {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Pet getPet() {
+        return pet;
+    }
+
+    public void setPet(Pet pet) {
+        this.pet = pet;
     }
 
     public List<Pet> getPets() {
