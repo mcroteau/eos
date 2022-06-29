@@ -126,7 +126,7 @@ abstract class BaseTest {
 
     public Todo getTodo(){
         Pet pet = new Pet();
-        pet.setId(1);
+        pet.setId(3);
         pet.setName("Apache");
 
         Person person = new Person();
@@ -135,7 +135,7 @@ abstract class BaseTest {
         person.setPet(pet);
 
         Todo todo = new Todo();
-        todo.setId(3);
+        todo.setId(1);
         todo.setTitle("Paint");
         todo.setPerson(person);
 

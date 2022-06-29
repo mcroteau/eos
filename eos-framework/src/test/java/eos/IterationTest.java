@@ -20,6 +20,7 @@ public class IterationTest extends BaseTest {
         exp = new ExperienceProcessor();
     }
 
+    //tdo.id == 3
     //tdo.id == todo.id
     //tdo.id != todo.id
     //tdo.person.pet.name == todo.person.pet.name
@@ -38,6 +39,20 @@ public class IterationTest extends BaseTest {
         sb.append("</eos:each>\n");
         String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
         assertEquals("0123Eos.45678910", result);
+    }
+
+    @Test
+    public void b() throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        HttpResponse resp = this.create();
+        StringBuilder sb = new StringBuilder();
+        sb.append("<eos:each in=\"${todos}\" item=\"tdo\">\n");
+        sb.append("${tdo.id}\n");
+        sb.append("<eos:if spec=\"${tdo.id == todo.id}\">\n");
+        sb.append("Eos.\n");
+        sb.append("</eos:if>\n");
+        sb.append("</eos:each>\n");
+        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
+        assertEquals("01Eos.2345678910", result);
     }
 
 

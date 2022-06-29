@@ -91,7 +91,7 @@ public class MultipleTest extends BaseTest {
     public void j() throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         HttpResponse resp = this.create();
         StringBuilder sb = new StringBuilder();
-        sb.append("<eos:if spec=\"${todo.person.pet.id == 1}\">\n");
+        sb.append("<eos:if spec=\"${todo.person.pet.id == 3}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
         String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
@@ -113,7 +113,7 @@ public class MultipleTest extends BaseTest {
     public void i() throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         HttpResponse resp = this.create();
         StringBuilder sb = new StringBuilder();
-        sb.append("<eos:if spec=\"${todo.id == 3}\">\n");
+        sb.append("<eos:if spec=\"${todo.id == 1}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
         String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
