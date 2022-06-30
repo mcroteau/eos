@@ -66,28 +66,35 @@ abstract class BaseTest {
         HttpResponse resp = new HttpResponse();
 
         List<Todo> todos = new ArrayList<>();
-        for(int idx = 0; idx < 11; idx++) {
+
+        for(int idx = 0; idx < 3; idx++) {
             Todo todo = new Todo();
             todo.setId(idx);
-            todo.setTitle("Todo #" + idx);
+            todo.setTitle("Todo *" + idx);
 
             List<Person> people = new ArrayList<>();
-            for (int idxn = 0; idxn < 11; idxn++) {
+            for (int idxn = 0; idxn < 3; idxn++) {
                 Person person = new Person();
                 person.setId(idxn);
-                person.setName("Pep " + idx);
-                List<Pet> pets = new ArrayList<>();
-                for (int idxx = 0; idxx < 10; idxx++) {
-                    Pet pet = new Pet();
-                    pet.setId(idxx);
-                    pet.setName("Nginx #" + idxx);
-                    pets.add(pet);
-                }
-                person.setPets(pets);
+                person.setName("Pep Love *" + idx);
+                Pet pet = new Pet();
+                pet.setId(idxn);
+                pet.setName("Apache *" + idxn);
+                person.setPet(pet);
+                people.add(person);
             }
+            Person person = new Person();
+            person.setName("Royksopp *" + idx);
+            Pet pet = new Pet();
+            pet.setId(idx);
+            pet.setName("Apache *" + idx);
+            person.setPet(pet);
+            todo.setPerson(person);
             todo.setPeople(people);
             todos.add(todo);
         }
+
+        todos.get(0).getPeople().get(0).getPet().setName("");
 
         //todo.id = 1
         //todo.person.id = 2
@@ -127,11 +134,11 @@ abstract class BaseTest {
     public Todo getTodo(){
         Pet pet = new Pet();
         pet.setId(3);
-        pet.setName("Apache");
+        pet.setName("Apache *6");
 
         Person person = new Person();
         person.setId(2);
-        person.setName("Pep Love");
+        person.setName("Pep Love *3");
         person.setPet(pet);
 
         Todo todo = new Todo();

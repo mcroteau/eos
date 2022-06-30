@@ -13,6 +13,7 @@ public class Iterable {
     String field;
     StringBuilder content;
     List<Object> pojos;
+    List<String> entries;
 
     public int getStart() {
         return start;
@@ -52,5 +53,13 @@ public class Iterable {
 
     public void setPojos(List<Object> pojos) {
         this.pojos = pojos;
+    }
+
+    public List<String> getEntries() {
+        return entries;
+    }
+
+    public void setEntries(List<String> entries) {
+        this.entries = entries;
     }
 }

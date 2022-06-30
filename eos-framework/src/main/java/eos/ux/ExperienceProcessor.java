@@ -2,9 +2,8 @@ package eos.ux;
 
 import com.sun.net.httpserver.HttpExchange;
 import eos.exception.EosException;
+import eos.model.web.*;
 import eos.model.web.Iterable;
-import eos.model.web.HttpRequest;
-import eos.model.web.HttpResponse;
 import eos.web.Fragment;
 
 import java.lang.reflect.Field;
@@ -21,13 +20,112 @@ public class ExperienceProcessor {
 
     final String NEWLINE = "\n";
     final String FOREACH = "<eos:each";
+    final String IFSPEC = "<eos:if spec=";
+    final String ENDIF = "</eos:if";
+    final String DATA = "<eos:set var=";
+
 
     public String process(Map<String, Fragment> pointcuts, String view, HttpResponse httpResponse, HttpRequest request, HttpExchange exchange) throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         List<String> entries = Arrays.asList(view.split("\n"));
-        evaluatePointcuts(request, exchange, entries, pointcuts);
+        List<IterablePartial> iterablePartials = new ArrayList<>();
+        List<DataPartial> dataPartials = new ArrayList<>();
+        List<SpecPartial> specPartials = new ArrayList<>();
 
-        System.out.println(entries.size());
+        for(int line = 0; line < entries.size(); line++){
+            String entry = entries.get(line);
+
+            if(entry.contains(this.DATA)) {
+                DataPartial dataPartial = new DataPartial();
+                dataPartial.setEntry(entry);
+                dataPartial.setIterable(false);
+                if(insideIterable(line, iterablePartials)){
+                    dataPartial.setIterable(true);
+                }
+                dataPartials.add(dataPartial);
+            }else if(entry.contains(this.FOREACH) && !insideIterable(line, iterablePartials)){
+
+                IterablePartial iterablePartial = new IterablePartial();
+                Iterable iterable = getIterable(line, entry, httpResponse, entries);
+                iterablePartial.setEntries(iterable.getEntries());
+                iterablePartial.setIterable(iterable);
+                iterablePartials.add(iterablePartial);
+
+            }else if(entry.contains(this.IFSPEC)){
+
+                SpecPartial specPartial = new SpecPartial();
+                List<String> specEntries = getSpecEntries(line, entries);
+                specPartial.setEntries(specEntries);
+
+                specPartial.setIterable(false);
+                if(insideIterable(line, iterablePartials)){
+                    specPartial.setIterable(true);
+                }
+                specPartials.add(specPartial);
+            }
+        }
+
+
+
+        for(int foo = 0; foo < iterablePartials.size(); foo++){
+            List<String> iterableEntries = new ArrayList<>();
+            //royksopp unity
+            //rewind time, amazing! combination of time past & future + color black + white
+
+
+
+        }
+
+
+
+        return "";
+    }
+
+
+    public List<String> getSpecEntries(int line, List<String> entries){
+        int stop = getSpecStop(line, entries);
+        for(int foo = line; foo < stop; foo++){
+            String entry = entries.get(foo);
+            entries.add(entry);
+        }
+        return entries;
+    }
+
+    public int getSpecStop(int line, List<String> entries){
+        int startCount = 1, endCount = 0;
+        for(int baz = line + 1; baz < entries.size(); baz++){
+            String entry = entries.get(baz);
+            if(entry.contains(this.ENDIF)){
+                endCount++;
+            }
+            if(entry.contains(this.IFSPEC)){
+                startCount++;
+            }
+            if(startCount == endCount &&
+                    entry.contains(this.ENDIF)){
+                return baz;
+            }
+        }
+        return line;
+    }
+
+
+    public Boolean insideIterable(int lineNumber, List<IterablePartial> iterablePartials){
+        for(int waldo = 0; waldo < iterablePartials.size(); waldo++){
+            IterablePartial iterablePartial = iterablePartials.get(waldo);
+            if(lineNumber > iterablePartial.getIterable().getStart() &&
+                    lineNumber < iterablePartial.getIterable().getStop()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public String processDown(Map<String, Fragment> pointcuts, String view, HttpResponse httpResponse, HttpRequest request, HttpExchange exchange) throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+
+        List<String> entries = Arrays.asList(view.split("\n"));
+        evaluatePointcuts(request, exchange, entries, pointcuts);
 
         for(int a6 = 0; a6 < entries.size(); a6++) {
             String entryBase = entries.get(a6);
@@ -38,7 +136,6 @@ public class ExperienceProcessor {
             if(entryBase.contains(this.FOREACH)) {
                 Iterable iterable = getIterable(a6, entryBase, httpResponse, entries);
                 StringBuilder eachOut = new StringBuilder();
-//                System.out.println("z" + iterable.getStop() + ":" +  entries.get(iterable.getStop()));
 
                 for(int a7 = 0; a7 < iterable.getPojos().size(); a7++) {
                     Object obj = iterable.getPojos().get(a7);
@@ -48,13 +145,16 @@ public class ExperienceProcessor {
                         String entry = entries.get(a8);
 
                         if(entry.contains("<eos:if spec=")){
-                            ignore = evaluateEachCondition(a8, entry, obj, httpResponse, entries);
+                            ignore = evaluateEachCondition(a8, entry, obj, iterable, httpResponse, entries);
                         }
                         if(entry.indexOf("<eos:if spec") > -1)continue;
                         if(entry.indexOf("</eos:if") > -1)continue;
                         if(ignore.contains(a8))continue;
                         if(entry.contains(this.FOREACH)){
                             Iterable deepIterable = getIterableObj(a8, entry, obj, entries);
+                            for(int x= 0; x < deepIterable.getPojos().size(); x++){
+                                System.out.println(deepIterable.getPojos().get(x));
+                            }
                             StringBuilder deepEachOut = new StringBuilder();
                             iterateEvaluate(a8, deepEachOut, deepIterable, httpResponse, entries);
                             eachOut.append(deepEachOut.toString());
@@ -83,14 +183,18 @@ public class ExperienceProcessor {
             }
         }
 
+        System.out.println("length " + entries.size());
+
         StringBuilder output = new StringBuilder();
         for (String s : entries) {
             if(s.indexOf("<eos:if spec") > -1)continue;
             if(s.indexOf("</eos:if") > -1)continue;
+            System.out.println(s + this.NEWLINE);
             output.append(s + this.NEWLINE);
         }
 
         StringBuilder finalOut = retrieveFinal(output);
+        System.out.println("zq : " + finalOut.toString());
         return finalOut.toString();
     }
 
@@ -98,21 +202,20 @@ public class ExperienceProcessor {
     private StringBuilder retrieveFinal(StringBuilder eachOut){
         StringBuilder finalOut = new StringBuilder();
         String[] parts = eachOut.toString().split("\n");
-        System.out.println("z : " + eachOut.toString());
         for(String bit : parts){
             if(!bit.trim().equals(""))finalOut.append(bit + this.NEWLINE);
         }
         return finalOut;
     }
 
-    private void iterateEvaluate(int a8, StringBuilder eachOut, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException, EosException, NoSuchMethodException, InvocationTargetException {
+    private void iterateEvaluate(int a8, StringBuilder deepEachOut, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException, EosException, NoSuchMethodException, InvocationTargetException {
         for(int a7 = 0; a7 < iterable.getPojos().size(); a7++) {
             Object obj = iterable.getPojos().get(a7);
             List<Integer> ignore = new ArrayList<>();
             for (int a6 = iterable.getStart(); a6 < iterable.getStop(); a6++) {
                 String entry = entries.get(a6);
                 if(entry.contains("<eos:if spec=")){
-                    ignore = evaluateEachCondition(a8, entry, obj, httpResponse, entries);
+                    ignore = evaluateEachCondition(a8, entry, obj, iterable, httpResponse, entries);
                 }
                 if(ignore.contains(a8))continue;
                 if (entry.contains(this.FOREACH)) continue;
@@ -120,12 +223,13 @@ public class ExperienceProcessor {
                 if(entry.contains("<eos:set")){
                     setEachVariable(entry, httpResponse, obj);
                 }
-                evaluateEachEntry(entry, eachOut, obj, iterable.getField());
+                System.out.println(entry);
+                evaluateEachEntry(entry, deepEachOut, obj, iterable.getField());
             }
         }
     }
 
-    private List<Integer> evaluateEachCondition(int a8, String entry, Object obj, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException {
+    private List<Integer> evaluateEachCondition(int a8, String entry, Object obj, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException {
         List<Integer> ignore = new ArrayList<>();
 
         int stop = getEachConditionStop(a8, entries);
@@ -142,61 +246,87 @@ public class ExperienceProcessor {
         String subjectPre = bits[0].trim();
         String predicatePre = bits[1].trim();
 
-
         //<eos:if spec="${town.id == organization.townId}">
-
-        //todo:?2 levels
-        //todo: switch
         if(subjectPre.contains(".")) {
 
             int startSubject = subjectPre.indexOf(".");
             String subjectKey = subjectPre.substring(startSubject + 1).trim();
 
-            Object subjectObj = getValueRecursive(0, subjectKey, obj);
-            String subject = String.valueOf(subjectObj);
 
-            if(predicatePre.equals("null")){
+            int firstNotation = subjectPre.indexOf(".");
+            String field = subjectPre.substring(0, firstNotation);
+            if (field.equals(iterable.getField())) {
 
-                if(subjectObj == null && condition.equals("!=")){
-                    ignore = getIgnoreEntries(a8, stop);
-                }
-                if(subjectObj != null && condition.equals("==")){
-                    ignore = getIgnoreEntries(a8, stop);
-                }
+                Object subjectObj = getValueRecursive(0, subjectKey, obj);
+                String subject = String.valueOf(subjectObj);
+                System.out.println("z: " + subject + ":" + subjectKey + ":" + obj);
 
-            }else if(predicatePre.contains(".")){
-                System.out.println(predicatePre);
-                String[] predicateKeys = predicatePre.split("\\.");
-                String key = predicateKeys[0];
-                String field = predicateKeys[1];
+                if (predicatePre.equals("null")) {
 
-                Object keyObj = httpResponse.get(key);
-                Field fieldObj = keyObj.getClass().getDeclaredField(field);
-                fieldObj.setAccessible(true);
-                String predicate = String.valueOf(fieldObj.get(keyObj));
+                    if (subjectObj == null && condition.equals("!=")) {
+                        ignore = getIgnoreEntries(a8, stop);
+                    }
+                    if (subjectObj != null && condition.equals("==")) {
+                        ignore = getIgnoreEntries(a8, stop);
+                    }
 
-                if (predicate.equals(subject) && condition.equals("!=")) {
-                    ignore = getIgnoreEntries(a8, stop);
-                }
-                if (!predicate.equals(subject) && condition.equals("==")) {
-                    ignore = getIgnoreEntries(a8, stop);
-                }
-            }else if(!predicatePre.contains("'")){
-                if (predicatePre.equals(subject) && condition.equals("!=")) {
-                    ignore = getIgnoreEntries(a8, stop);
-                }
-                if (!predicatePre.equals(subject) && condition.equals("==")) {
-                    ignore = getIgnoreEntries(a8, stop);
-                }
-            }else{
+                } else if (predicatePre.contains(".")) {
 
+                    String[] predicateKeys = predicatePre.split("\\.");
+                    String key = predicateKeys[0];
+
+                    int startField = predicatePre.indexOf(".");
+                    String passiton = predicatePre.substring(startField + 1);
+
+                    Object keyObj = httpResponse.get(key);
+                    Object value = getValueRecursive(0, passiton, keyObj);
+
+                    String predicate = String.valueOf(value);
+
+                    if (predicate.equals(subject) && condition.equals("!=")) {
+                        ignore = getIgnoreEntries(a8, stop);
+                    }
+                    if (!predicate.equals(subject) && condition.equals("==")) {
+                        ignore = getIgnoreEntries(a8, stop);
+                    }
+
+                } else if (!predicatePre.contains("'")) {
+                    if (predicatePre.equals(subject) && condition.equals("!=")) {
+                        ignore = getIgnoreEntries(a8, stop);
+                    }
+                    if (!predicatePre.equals(subject) && condition.equals("==")) {
+                        ignore = getIgnoreEntries(a8, stop);
+                    }
+                } else if (predicatePre.contains("'")) {
+                    if (predicatePre.contains("''")) {
+
+                        if (subject.equals("")) {
+                            ignore = getIgnoreEntries(a8, stop);
+                        } else {
+
+                        }
+
+                        subject = "'" + subject + "'";
+                        if(!predicatePre.equals(subject) && condition.equals("==")){
+                            ignore = getIgnoreEntries(a8, stop);
+                        }
+                        if(predicatePre.equals(subject) && condition.equals("!=")){
+                            ignore = getIgnoreEntries(a8, stop);
+                        }
+                    } else {
+                        String predicate = predicatePre.replaceAll("'", "");
+                        if (predicate.equals(subject) && condition.equals("!=")) {
+                            ignore = getIgnoreEntries(a8, stop);
+                        }
+                        if (!predicate.equals(subject) && condition.equals("==")) {
+                            ignore = getIgnoreEntries(a8, stop);
+                        }
+                    }
+                }
             }
 
-        }else{
-            //todo: one key
         }
-        String a = entries.get(a8);
-        String b = entries.get(stop);
+
         return ignore;
     }
 
@@ -550,14 +680,6 @@ public class ExperienceProcessor {
         return "";
     }
 
-
-
-    private void retrofit(int a6, int size, List<String> entries){
-        for(int a10 = a6; a10 < a6 + size + 1; a10++){
-            entries.set(a10, "");
-        }
-    }
-
     private void evaluateEachEntry(String entry, StringBuilder output, Object obj, String activeKey) throws NoSuchFieldException, IllegalAccessException {
         if(entry.contains("<eos:each"))return;
         if(entry.contains("</eos:each>"))return;
@@ -580,7 +702,6 @@ public class ExperienceProcessor {
                 String value = "";
                 if (valueObj != null) value = String.valueOf(valueObj);
 
-
                 entry = entry.replace(expression, value);
 
                 int startRemainder = entry.indexOf("${");
@@ -593,7 +714,7 @@ public class ExperienceProcessor {
         }else{
             output.append(entry + this.NEWLINE);
         }
-
+        System.out.println("zqo" + output);
     }
 
     private void evaluateEntryRemainder(int startExpressionRight, String entry, Object obj, StringBuilder output) throws NoSuchFieldException, IllegalAccessException {
@@ -641,16 +762,29 @@ public class ExperienceProcessor {
 
         objs = (ArrayList) getIterableValueRecursive(0, field, obj);
 
+        int start = a6 +1;
         Iterable iterable = new Iterable();
         int stop = getStopDeep(a6, entries);
-        iterable.setStart(a6 + 1);
+        iterable.setStart(start);
         iterable.setStop(stop);
         iterable.setPojos(objs);
         iterable.setField(activeField);
+        List<String> iterableEntries = getIterableEntries(start, stop, entries);
+        iterable.setEntries(iterableEntries);
         return iterable;
     }
 
+    private List<String> getIterableEntries(int start, int stop, List<String> entries){
+        List<String> iterableEntries = new ArrayList<>();
+        for(int baz = start; baz < stop; baz++){
+            String entry = entries.get(baz);
+            iterableEntries.add(entry);
+        }
+        return iterableEntries;
+    }
+
     private Iterable getIterable(int a6, String entry, HttpResponse httpResponse, List<String> entries) throws EosException, NoSuchFieldException, IllegalAccessException {
+
         List<Object> objs = new ArrayList<>();
         int startEach = entry.indexOf("<eos:each");
 
@@ -669,6 +803,8 @@ public class ExperienceProcessor {
         }else if(httpResponse.data().containsKey(iterableKey)){
             objs = (ArrayList) httpResponse.get(iterableKey);
         }
+
+        List<String>
 
         Iterable iterable = new Iterable();
         int stop = getStop(a6 + 1, entries);
@@ -774,7 +910,6 @@ public class ExperienceProcessor {
             int endExpression = entry.indexOf("}", startExpression);
             String expression = entry.substring(startExpression, endExpression + 1);
             String fieldBase = entry.substring(startExpression + 2, endExpression);
-
 
             if(!fieldBase.equals(activeField)) {
 
