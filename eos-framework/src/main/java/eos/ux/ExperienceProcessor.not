@@ -2,8 +2,8 @@ package eos.ux;
 
 import com.sun.net.httpserver.HttpExchange;
 import eos.exception.EosException;
-import eos.model.web.*;
 import eos.model.web.Iterable;
+import eos.model.web.*;
 import eos.web.Fragment;
 
 import java.lang.reflect.Field;
@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class ExperienceProcessor {
+public class ExperienceProcessorNot {
 
     final String NEWLINE = "\n";
     final String FOREACH = "<eos:each";
@@ -54,8 +54,6 @@ public class ExperienceProcessor {
             }else if(entry.contains(this.IFSPEC)){
 
                 SpecPartial specPartial = new SpecPartial();
-                StopGo stopGo = getSpecStopGo(line, entries);
-                specPartial.setStopGo(stopGo);
                 List<String> specEntries = getSpecEntries(line, entries);
                 specPartial.setEntries(specEntries);
 
@@ -67,72 +65,31 @@ public class ExperienceProcessor {
             }
         }
 
-        List<StopGo> specStopGos = new ArrayList<>();
+        List<StopGo> stopGos = new ArrayList<>();
         for(int foo = 0; foo < specPartials.size(); foo++){
-            SpecPartial specPartial = specPartials.get(foo);
-            List<String> specEntries = specPartial.getEntries();
-            int stop = specPartial.getStopGo().getStop();
-            int go = specPartial.getStopGo().getGo();
-            for(int baz = go; baz < stop; baz++){
-                String entry = entries.get(baz);
-                System.out.println(entry);
-//                StopGo stopGo = evaluate(baz, entry, httpResponse, specEntries);
-//                if(stopGo != null) {
-//                    specStopGos.add(stopGo);
-//                }
-            }
+            StopGo stopGo = new StopGo();
         }
 
-        /**
-         * who ever is saying stop is connected to the richmonds, they have the birds eye view
-         */
+
         for(int foo = 0; foo < iterablePartials.size(); foo++){
-            IterablePartial iterablePartial = iterablePartials.get(foo);
-            if(exercisePartial(iterablePartial, specStopGos)){
-                for(int baz = 0; baz < iterablePartial.getIterable().getEntries().size(); baz++){
-                    System.out.println(iterablePartial.getIterable().getEntries().get(baz));
-                }
-            }
+            List<String> iterableEntries = new ArrayList<>();
+            //royksopp unity
+
         }
+
 
 
         return "";
     }
 
 
-    public boolean exercisePartial(IterablePartial partial, List<StopGo> specStopGos){
-        for(int foo = 0; foo < specStopGos.size(); foo++){
-            StopGo stopGo = specStopGos.get(foo);
-            Iterable iterable = partial.getIterable();
-            int iterableStop = iterable.getStop();
-            int iterableGo = iterable.getGo();
-
-            if(iterableGo >= stopGo.getGo() && iterableStop <= iterable.getStop()){
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-    public StopGo getSpecStopGo(int line, List<String> entries){
-        StopGo stopGo = new StopGo();
-        int stop = getSpecStop(line, entries);
-        stopGo.setStop(stop);
-        stopGo.setGo(line);
-        return stopGo;
-    }
-
-
-
     public List<String> getSpecEntries(int line, List<String> entries){
         int stop = getSpecStop(line, entries);
-        List<String> specEntries = new ArrayList<>();
         for(int foo = line; foo < stop; foo++){
             String entry = entries.get(foo);
-            specEntries.add(entry);
+            entries.add(entry);
         }
-        return specEntries;
+        return entries;
     }
 
     public int getSpecStop(int line, List<String> entries){
@@ -147,7 +104,7 @@ public class ExperienceProcessor {
             }
             if(startCount == endCount &&
                     entry.contains(this.ENDIF)){
-                return baz + 1;
+                return baz;
             }
         }
         return line;
@@ -157,12 +114,89 @@ public class ExperienceProcessor {
     public Boolean insideIterable(int lineNumber, List<IterablePartial> iterablePartials){
         for(int waldo = 0; waldo < iterablePartials.size(); waldo++){
             IterablePartial iterablePartial = iterablePartials.get(waldo);
-            if(lineNumber > iterablePartial.getIterable().getGo() &&
+            if(lineNumber > iterablePartial.getIterable().getStart() &&
                     lineNumber < iterablePartial.getIterable().getStop()){
                 return true;
             }
         }
         return false;
+    }
+
+
+    public String processDown(Map<String, Fragment> pointcuts, String view, HttpResponse httpResponse, HttpRequest request, HttpExchange exchange) throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+
+        List<String> entries = Arrays.asList(view.split("\n"));
+        evaluatePointcuts(request, exchange, entries, pointcuts);
+
+        for(int a6 = 0; a6 < entries.size(); a6++) {
+            String entryBase = entries.get(a6);
+            if(entryBase.contains("<eos:set")){
+                setVariable(entryBase, httpResponse);
+            }
+
+            if(entryBase.contains(this.FOREACH)) {
+                Iterable iterable = getIterable(a6, entryBase, httpResponse, entries);
+                StringBuilder eachOut = new StringBuilder();
+
+                for(int a7 = 0; a7 < iterable.getPojos().size(); a7++) {
+                    Object obj = iterable.getPojos().get(a7);
+                    List<Integer> ignore = new ArrayList<>();
+
+                    for (int a8 = iterable.getStart(); a8 < iterable.getStop(); a8++) {
+                        String entry = entries.get(a8);
+
+                        if(entry.contains("<eos:if spec=")){
+                            ignore = evaluateEachCondition(a8, entry, obj, iterable, httpResponse, entries);
+                        }
+                        if(entry.indexOf("<eos:if spec") > -1)continue;
+                        if(entry.indexOf("</eos:if") > -1)continue;
+                        if(ignore.contains(a8))continue;
+                        if(entry.contains(this.FOREACH)){
+                            Iterable deepIterable = getIterableObj(a8, entry, obj, entries);
+                            for(int x= 0; x < deepIterable.getPojos().size(); x++){
+                                System.out.println(deepIterable.getPojos().get(x));
+                            }
+                            StringBuilder deepEachOut = new StringBuilder();
+                            iterateEvaluate(a8, deepEachOut, deepIterable, httpResponse, entries);
+                            eachOut.append(deepEachOut.toString());
+                        }
+                        entry = evaluateEntry(0, 0, iterable.getField(), entry, httpResponse);
+                        if(entry.contains("<eos:set")){
+                            setEachVariable(entry, httpResponse, obj);
+                        }
+                        evaluateEachEntry(entry, eachOut, obj, iterable.getField());
+                    }
+                }
+
+                entries.set(a6, eachOut.toString());
+                entries.set(iterable.getStop(), "");
+                for(int a7 = a6 + 1; a7 < iterable.getStop(); a7++){
+                    entries.set(a7, "");
+                }
+            }else {
+
+                if(entryBase.contains("<eos:if spec=")){
+                    evaluateCondition(a6, entryBase, httpResponse, entries);
+                }
+
+                entryBase = evaluateEntry(0, 0, "", entryBase, httpResponse);
+                entries.set(a6, entryBase);
+            }
+        }
+
+        System.out.println("length " + entries.size());
+
+        StringBuilder output = new StringBuilder();
+        for (String s : entries) {
+            if(s.indexOf("<eos:if spec") > -1)continue;
+            if(s.indexOf("</eos:if") > -1)continue;
+            System.out.println(s + this.NEWLINE);
+            output.append(s + this.NEWLINE);
+        }
+
+        StringBuilder finalOut = retrieveFinal(output);
+        System.out.println("zq : " + finalOut.toString());
+        return finalOut.toString();
     }
 
 
@@ -179,7 +213,7 @@ public class ExperienceProcessor {
         for(int a7 = 0; a7 < iterable.getPojos().size(); a7++) {
             Object obj = iterable.getPojos().get(a7);
             List<Integer> ignore = new ArrayList<>();
-            for (int a6 = iterable.getGo(); a6 < iterable.getStop(); a6++) {
+            for (int a6 = iterable.getStart(); a6 < iterable.getStop(); a6++) {
                 String entry = entries.get(a6);
                 if(entry.contains("<eos:if spec=")){
                     ignore = evaluateEachCondition(a8, entry, obj, iterable, httpResponse, entries);
@@ -418,17 +452,14 @@ public class ExperienceProcessor {
         return a6;
     }
 
-    private StopGo evaluate(int line, String entry, HttpResponse httpResponse, List<String> entries) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, EosException, NoSuchFieldException {
-        int stop = getConditionStop(line, entries);
-        StopGo stopGo = new StopGo();
-        stopGo.setGo(line);
-        stopGo.setStop(stop);
-
+    private void evaluateCondition(int a6, String entry, HttpResponse httpResponse, List<String> entries) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, EosException, NoSuchFieldException {
+        int stop = getConditionStop(a6, entries);
         int startIf = entry.indexOf("<eos:if spec=");
 
         int startExpression = entry.indexOf("${", startIf);
         int endExpression = entry.indexOf("}", startExpression);
 
+        String expressionNite = entry.substring(startExpression, endExpression +1);
         String expression = entry.substring(startExpression + 2, endExpression);
 
 
@@ -458,10 +489,10 @@ public class ExperienceProcessor {
                         if (predicate != null && predicate != "") {
                             Object obj = httpResponse.get(objName);
                             String value = getValueRecursive(0, query, obj).toString();
-                            checkCondition(line, stop, value, condition, predicate, entries);
+                            checkCondition(a6, stop, value, condition, predicate, entries);
                         }
                     } else {
-                        return stopGo;
+                        clearUxPartial(a6, stop, entries);
                     }
 
                 }else{
@@ -476,10 +507,10 @@ public class ExperienceProcessor {
                         Object subject = String.valueOf(method.invoke(obj));
 
                         if (!isConditionMet(String.valueOf(subject), predicate, condition, type)) {
-                            return stopGo;
+                            clearUxPartial(a6, stop, entries);
                         }
                     }else {
-                        return stopGo;
+                        clearUxPartial(a6, stop, entries);
                     }
                 }
 
@@ -495,13 +526,13 @@ public class ExperienceProcessor {
                     Object obj = httpResponse.get(subject);
                     if(obj != null){
                         String value = obj.toString();
-                        checkCondition(line, stop, value, condition, predicate, entries);
+                        checkCondition(a6, stop, value, condition, predicate, entries);
                     }
 
                 } else {
                     if (condition == "!=" &&
                             (predicate == "''" || predicate == "null")) {
-                        return stopGo;
+                        clearUxPartial(a6, stop, entries);
                     }
                 }
             }
@@ -527,14 +558,14 @@ public class ExperienceProcessor {
 
                     Boolean isTrue = Boolean.valueOf(String.valueOf(valueObj));
                     if (isTrue == true && notTrueExists == true) {
-                        return stopGo;
+                        clearUxPartial(a6, stop, entries);
                     }
                     if (isTrue == false && notTrueExists == false) {
-                        clearUxPartial(line, stop, entries);
+                        clearUxPartial(a6, stop, entries);
                     }
                 } else {
                     if (!notTrueExists) {
-                        return stopGo;
+                        clearUxPartial(a6, stop, entries);
                     }
                 }
 
@@ -544,21 +575,24 @@ public class ExperienceProcessor {
                     Object obj = httpResponse.get(subjectPre);
                     Boolean isTrue = Boolean.valueOf(String.valueOf(obj));
                     if (isTrue == true && notTrueExists == true) {
-                        return stopGo;
+                        clearUxPartial(a6, stop, entries);
                     }
                     if (isTrue == false && notTrueExists == false) {
-                        return stopGo;
+                        clearUxPartial(a6, stop, entries);
                     }
                 } else {
                     if (!notTrueExists) {
-                        return stopGo;
+                        clearUxPartial(a6, stop, entries);
                     }
                 }
             }
 
         }
 
-        return null;
+        entries.set(a6, "");
+        entries.set(stop, "");
+        entry.replace(expressionNite, "condition issue : '" + expression + "'");
+
     }
 
     void checkCondition(int a6, int stop, String value, String condition, String predicate, List<String> entries){
@@ -732,7 +766,7 @@ public class ExperienceProcessor {
         int start = a6 +1;
         Iterable iterable = new Iterable();
         int stop = getStopDeep(a6, entries);
-        iterable.setGo(start);
+        iterable.setStart(start);
         iterable.setStop(stop);
         iterable.setPojos(objs);
         iterable.setField(activeField);
@@ -771,10 +805,11 @@ public class ExperienceProcessor {
             objs = (ArrayList) httpResponse.get(iterableKey);
         }
 
+        List<String>
+
         Iterable iterable = new Iterable();
-        int go = a6 + 1;
-        int stop = getStop(go, entries);
-        iterable.setGo(go);
+        int stop = getStop(a6 + 1, entries);
+        iterable.setStart(a6 + 1);
         iterable.setStop(stop);
         iterable.setPojos(objs);
         iterable.setField(activeField);

@@ -8,20 +8,13 @@ public class Iterable {
         this.field = "";
     }
 
-    int start;
     int stop;
+    int go;
     String field;
     StringBuilder content;
     List<Object> pojos;
     List<String> entries;
 
-    public int getStart() {
-        return start;
-    }
-
-    public void setStart(int start) {
-        this.start = start;
-    }
 
     public int getStop() {
         return stop;
@@ -29,6 +22,14 @@ public class Iterable {
 
     public void setStop(int stop) {
         this.stop = stop;
+    }
+
+    public int getGo() {
+        return go;
+    }
+
+    public void setGo(int go) {
+        this.go = go;
     }
 
     public String getField() {
