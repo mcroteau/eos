@@ -101,9 +101,9 @@ public class DoubleIterationTest extends BaseTest {
     public void f() throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         HttpResponse resp = this.create();
         StringBuilder sb = new StringBuilder();
-        sb.append("<eos:each in=\"${todos}\" item=\"tdo\">\n");
+        sb.append("<eos:each items=\"${todos}\" var=\"tdo\">\n");
         sb.append("${tdo.id}\n");
-        sb.append(" <eos:each in=\"${tdo.people}\" item=\"person\">\n");
+        sb.append(" <eos:each items=\"${tdo.people}\" var=\"person\">\n");
         sb.append("     ${person.name}\n");
         sb.append("     <eos:if spec=\"${person.pet.name == ''}\">\n");
         sb.append("Eos.\n");
