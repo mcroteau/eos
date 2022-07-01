@@ -19,40 +19,30 @@ import java.util.Map;
 public class ExperienceProcessor {
 
     final String NEWLINE = "\n";
+    final String DATA    = "<eos:set var=";
     final String FOREACH = "<eos:each";
-    final String IFSPEC = "<eos:if spec=";
-    final String ENDIF = "</eos:if";
-    final String DATA = "<eos:set var=";
-
+    final String ENDEACH = "</eos:each>";
+    final String IFSPEC  = "<eos:if spec=";
+    final String ENDIF   = "</eos:if";
 
     public String process(Map<String, Fragment> fragments, String view, HttpResponse resp, HttpRequest req, HttpExchange exchange) throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         List<String> entries = Arrays.asList(view.split("\n"));
         List<IterablePartial> iterablePartials = new ArrayList<>();
-        List<DataPartial> dataPartials = new ArrayList<>();
         List<SpecPartial> specPartials = new ArrayList<>();
 
         for(int line = 0; line < entries.size(); line++){
             String entry = entries.get(line);
 
             if(entry.contains(this.DATA)) {
-                DataPartial dataPartial = new DataPartial();
-                dataPartial.setEntry(entry);
-                dataPartial.setIterable(false);
-                if(insideIterable(line, iterablePartials)){
-                    dataPartial.setIterable(true);
-                }
-                dataPartials.add(dataPartial);
+                setVariable(entry, resp);
             }else if(entry.contains(this.FOREACH) && !insideIterable(line, iterablePartials)){
-
                 IterablePartial iterablePartial = new IterablePartial();
                 Iterable iterable = getIterable(line, entry, resp, entries);
                 iterablePartial.setEntries(iterable.getEntries());
                 iterablePartial.setIterable(iterable);
                 iterablePartials.add(iterablePartial);
-
             }else if(entry.contains(this.IFSPEC)){
-
                 SpecPartial specPartial = new SpecPartial();
                 StopGo stopGo = getSpecStopGo(line, entries);
                 specPartial.setStopGo(stopGo);
@@ -67,11 +57,14 @@ public class ExperienceProcessor {
         /**
          * who ever is saying stop is connected to the richmonds, they have the birds eye view
          */
-        StringBuilder z = new StringBuilder();
+
+        StringBuilder output = new StringBuilder();
         List<String> combined = evaluateForEach(resp, specStopGos, iterablePartials);
-
-
-        return z.toString();
+        for(String entry : combined){
+            output.append(entry + this.NEWLINE);
+        }
+        System.out.println("nbined : " + output.toString());
+        return output.toString();
     }
 
     public List<StopGo> evaluateSpecs(HttpResponse resp, List<SpecPartial> specPartials) throws NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException, InvocationTargetException {
@@ -89,11 +82,27 @@ public class ExperienceProcessor {
         return specStopGos;
     }
 
+    public List<StopGo> evaluateSpecsDeep(Object mojo, Iterable iterable, HttpResponse resp, List<SpecPartial> specPartials) throws NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException, InvocationTargetException {
+        List<StopGo> specStopGos = new ArrayList<>();
+        for(int foo = 0; foo < specPartials.size(); foo++){
+            SpecPartial specPartial = specPartials.get(foo);
+            List<String> specEntries = specPartial.getEntries();
+            int go = specPartial.getStopGo().getGo();
+            String specEntry = specEntries.get(go);
+            StopGo stopGo = evaluateEachSpec(go, specEntry, mojo, iterable, resp, specEntries);
+            if(stopGo != null) {
+                specStopGos.add(stopGo);
+            }
+        }
+        return specStopGos;
+    }
+
 
     public List<String> evaluateForEach(HttpResponse resp, List<StopGo> specStopGos, List<IterablePartial> iterablePartials) throws InvocationTargetException, NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException {
         List<String> combined = new ArrayList();
         for(int foo = 0; foo < iterablePartials.size(); foo++){
             IterablePartial iterablePartial = iterablePartials.get(foo);
+            Iterable iterable = iterablePartial.getIterable();
             for(int baz = iterablePartial.getIterable().getGo(); baz < iterablePartial.getIterable().getStop(); baz++){
                 System.out.println(iterablePartial.getIterable().getEntries().get(baz));
             }
@@ -101,16 +110,19 @@ public class ExperienceProcessor {
 
                 List<SpecPartial> deepSpecPartials = new ArrayList<>();
                 List<IterablePartial> deepIterablePartials = new ArrayList<>();
-                List<StopGo> deepSpecStopGos = new ArrayList<>();
 
                 List<Object> objects = iterablePartial.getIterable().getPojos();
                 for(int bar = 0; bar < objects.size(); bar++) {
-
+                    Object mojo = objects.get(bar);
                     int stop = iterablePartial.getIterable().getStop();
                     int go = iterablePartial.getIterable().getGo();
                     List<String> iterableEntries = iterablePartial.getEntries();
                     for (int baz = go; baz < stop; baz++) {
                         String entry = iterableEntries.get(baz);
+
+                        if(entry.contains(this.DATA)){
+                            setEachVariable(entry, resp, mojo);
+                        }
 
                         if(entry.contains(this.IFSPEC)){
                             SpecPartial specPartial = new SpecPartial();
@@ -121,7 +133,22 @@ public class ExperienceProcessor {
                             deepSpecPartials.add(specPartial);
                         }
 
+                        if(entry.contains(this.FOREACH)){
+                            IterablePartial deepIterablePartial = new IterablePartial();
+                            Iterable deepIterable = getIterableDeep(baz, entry, mojo, iterableEntries);
+                            iterablePartial.setEntries(deepIterable.getEntries());
+                            iterablePartial.setIterable(deepIterable);
+                            deepIterablePartials.add(deepIterablePartial);
+                        }
+
+                        String field = iterable.getField();
+                        String injectedEntry = evaluateEachEntry(entry, field, mojo, new StringBuilder());
+                        combined.add(injectedEntry);
                     }
+
+                    List<StopGo> deepSpecStopGos = evaluateSpecsDeep(mojo, iterable, resp, deepSpecPartials);
+                    List<String> deepEntries = evaluateForEach(resp, deepSpecStopGos, deepIterablePartials);
+                    combined.addAll(deepEntries);
                 }
             }
         }
@@ -202,31 +229,14 @@ public class ExperienceProcessor {
         return finalOut;
     }
 
-    private void iterateEvaluate(int a8, StringBuilder deepEachOut, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException, EosException, NoSuchMethodException, InvocationTargetException {
-        for(int a7 = 0; a7 < iterable.getPojos().size(); a7++) {
-            Object obj = iterable.getPojos().get(a7);
-            List<Integer> ignore = new ArrayList<>();
-            for (int a6 = iterable.getGo(); a6 < iterable.getStop(); a6++) {
-                String entry = entries.get(a6);
-                if(entry.contains("<eos:if spec=")){
-                    ignore = evaluateEachCondition(a8, entry, obj, iterable, httpResponse, entries);
-                }
-                if(ignore.contains(a8))continue;
-                if (entry.contains(this.FOREACH)) continue;
-                entry = evaluateEntry(0, 0, iterable.getField(), entry, httpResponse);
-                if(entry.contains("<eos:set")){
-                    setEachVariable(entry, httpResponse, obj);
-                }
-                System.out.println(entry);
-                evaluateEachEntry(entry, deepEachOut, obj, iterable.getField());
-            }
-        }
-    }
 
-    private List<Integer> evaluateEachCondition(int a8, String entry, Object obj, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException {
-        List<Integer> ignore = new ArrayList<>();
+    private StopGo evaluateEachSpec(int line, String entry, Object obj, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException {
 
-        int stop = getEachConditionStop(a8, entries);
+        int stop = getEachConditionStop(line, entries);
+        StopGo stopGo = new StopGo();
+        stopGo.setGo(line);
+        stopGo.setStop(stop);
+
         int startIf = entry.indexOf("<eos:if spec=");
 
         int startExpression = entry.indexOf("${", startIf);
@@ -246,7 +256,6 @@ public class ExperienceProcessor {
             int startSubject = subjectPre.indexOf(".");
             String subjectKey = subjectPre.substring(startSubject + 1).trim();
 
-
             int firstNotation = subjectPre.indexOf(".");
             String field = subjectPre.substring(0, firstNotation);
             if (field.equals(iterable.getField())) {
@@ -258,10 +267,10 @@ public class ExperienceProcessor {
                 if (predicatePre.equals("null")) {
 
                     if (subjectObj == null && condition.equals("!=")) {
-                        ignore = getIgnoreEntries(a8, stop);
+                        return stopGo;
                     }
                     if (subjectObj != null && condition.equals("==")) {
-                        ignore = getIgnoreEntries(a8, stop);
+                        return stopGo;
                     }
 
                 } else if (predicatePre.contains(".")) {
@@ -278,50 +287,43 @@ public class ExperienceProcessor {
                     String predicate = String.valueOf(value);
 
                     if (predicate.equals(subject) && condition.equals("!=")) {
-                        ignore = getIgnoreEntries(a8, stop);
+                        return stopGo;
                     }
                     if (!predicate.equals(subject) && condition.equals("==")) {
-                        ignore = getIgnoreEntries(a8, stop);
+                        return stopGo;
                     }
 
                 } else if (!predicatePre.contains("'")) {
                     if (predicatePre.equals(subject) && condition.equals("!=")) {
-                        ignore = getIgnoreEntries(a8, stop);
+                        return stopGo;
                     }
                     if (!predicatePre.equals(subject) && condition.equals("==")) {
-                        ignore = getIgnoreEntries(a8, stop);
+                        return stopGo;
                     }
                 } else if (predicatePre.contains("'")) {
                     if (predicatePre.contains("''")) {
 
-                        if (subject.equals("")) {
-                            ignore = getIgnoreEntries(a8, stop);
-                        } else {
-
-                        }
-
                         subject = "'" + subject + "'";
                         if(!predicatePre.equals(subject) && condition.equals("==")){
-                            ignore = getIgnoreEntries(a8, stop);
+                            return stopGo;
                         }
                         if(predicatePre.equals(subject) && condition.equals("!=")){
-                            ignore = getIgnoreEntries(a8, stop);
+                            return stopGo;
                         }
                     } else {
                         String predicate = predicatePre.replaceAll("'", "");
                         if (predicate.equals(subject) && condition.equals("!=")) {
-                            ignore = getIgnoreEntries(a8, stop);
+                            return stopGo;
                         }
                         if (!predicate.equals(subject) && condition.equals("==")) {
-                            ignore = getIgnoreEntries(a8, stop);
+                            return stopGo;
                         }
                     }
                 }
             }
-
         }
 
-        return ignore;
+        return null;
     }
 
     private void setVariable(String entry, HttpResponse httpResponse) throws NoSuchFieldException, IllegalAccessException {
@@ -677,10 +679,11 @@ public class ExperienceProcessor {
         return "";
     }
 
-    private void evaluateEachEntry(String entry, StringBuilder output, Object obj, String activeKey) throws NoSuchFieldException, IllegalAccessException {
-        if(entry.contains("<eos:each"))return;
-        if(entry.contains("</eos:each>"))return;
-        if(entry.contains("<eos:if spec"))return;
+    private String evaluateEachEntry(String entry, String activeKey, Object mojo, StringBuilder output) throws NoSuchFieldException, IllegalAccessException {
+        if(entry.contains(this.FOREACH))return "";
+        if(entry.contains(this.ENDEACH))return "";
+        if(entry.contains(this.IFSPEC))return "";
+        if(entry.contains(this.IFSPEC))return "";
 
         if(entry.contains("${")) {
 
@@ -695,7 +698,7 @@ public class ExperienceProcessor {
                 int endField = expression.indexOf("}");
 
                 String field = expression.substring(startField + 1, endField);
-                Object valueObj = getValueRecursive(0, field, obj);
+                Object valueObj = getValueRecursive(0, field, mojo);
                 String value = "";
                 if (valueObj != null) value = String.valueOf(valueObj);
 
@@ -703,7 +706,7 @@ public class ExperienceProcessor {
 
                 int startRemainder = entry.indexOf("${");
                 if (startRemainder != -1) {
-                    evaluateEntryRemainder(startExpression, entry, obj, output);
+                    evaluateEntryRemainder(startExpression, entry, mojo, output);
                 } else {
                     output.append(entry + this.NEWLINE);
                 }
@@ -711,7 +714,7 @@ public class ExperienceProcessor {
         }else{
             output.append(entry + this.NEWLINE);
         }
-        System.out.println("zqo" + output);
+        return output.toString();
     }
 
     private void evaluateEntryRemainder(int startExpressionRight, String entry, Object obj, StringBuilder output) throws NoSuchFieldException, IllegalAccessException {
