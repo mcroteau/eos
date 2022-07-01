@@ -4,17 +4,11 @@ import java.util.List;
 
 public class Iterable {
 
-    public Iterable(){
-        this.field = "";
-    }
-
     int stop;
     int go;
     String field;
-    StringBuilder content;
-    List<Object> pojos;
+    List<Object> mojos;
     List<String> entries;
-
 
     public int getStop() {
         return stop;
@@ -40,20 +34,12 @@ public class Iterable {
         this.field = field;
     }
 
-    public StringBuilder getContent() {
-        return content;
+    public List<Object> getMojos() {
+        return mojos;
     }
 
-    public void setContent(StringBuilder content) {
-        this.content = content;
-    }
-
-    public List<Object> getPojos() {
-        return pojos;
-    }
-
-    public void setPojos(List<Object> pojos) {
-        this.pojos = pojos;
+    public void setMojos(List<Object> mojos) {
+        this.mojos = mojos;
     }
 
     public List<String> getEntries() {

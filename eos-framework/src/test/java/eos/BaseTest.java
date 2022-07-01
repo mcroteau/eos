@@ -126,7 +126,7 @@ abstract class BaseTest {
         resp.set("todoTres", todoTres);
         resp.set("todos", todos);
         resp.set("true", true);
-        resp.set("condition", false);
+        resp.set("false", true);
 
         return resp;
     }
