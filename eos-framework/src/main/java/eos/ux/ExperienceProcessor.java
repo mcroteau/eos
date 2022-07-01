@@ -25,7 +25,7 @@ public class ExperienceProcessor {
     final String DATA = "<eos:set var=";
 
 
-    public String process(Map<String, Fragment> pointcuts, String view, HttpResponse httpResponse, HttpRequest request, HttpExchange exchange) throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public String process(Map<String, Fragment> fragments, String view, HttpResponse resp, HttpRequest req, HttpExchange exchange) throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         List<String> entries = Arrays.asList(view.split("\n"));
         List<IterablePartial> iterablePartials = new ArrayList<>();
@@ -46,7 +46,7 @@ public class ExperienceProcessor {
             }else if(entry.contains(this.FOREACH) && !insideIterable(line, iterablePartials)){
 
                 IterablePartial iterablePartial = new IterablePartial();
-                Iterable iterable = getIterable(line, entry, httpResponse, entries);
+                Iterable iterable = getIterable(line, entry, resp, entries);
                 iterablePartial.setEntries(iterable.getEntries());
                 iterablePartial.setIterable(iterable);
                 iterablePartials.add(iterablePartial);
@@ -56,37 +56,37 @@ public class ExperienceProcessor {
                 SpecPartial specPartial = new SpecPartial();
                 StopGo stopGo = getSpecStopGo(line, entries);
                 specPartial.setStopGo(stopGo);
-                List<String> specEntries = getSpecEntries(line, entries);
+                List<String> specEntries = getSpecEntries(stopGo, entries);
                 specPartial.setEntries(specEntries);
-
-                specPartial.setIterable(false);
-                if(insideIterable(line, iterablePartials)){
-                    specPartial.setIterable(true);
-                }
                 specPartials.add(specPartial);
             }
         }
 
+        List<StopGo> specStopGos = evaluateSpecs(resp, specPartials);
+
+        /**
+         * who ever is saying stop is connected to the richmonds, they have the birds eye view
+         */
+        StringBuilder z = new StringBuilder();
+        List<String> combined = evaluateForEach(resp, specStopGos, iterablePartials);
+
+
+        return z.toString();
+    }
+
+    public List<StopGo> evaluateSpecs(HttpResponse resp, List<SpecPartial> specPartials) throws NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException, InvocationTargetException {
         List<StopGo> specStopGos = new ArrayList<>();
         for(int foo = 0; foo < specPartials.size(); foo++){
             SpecPartial specPartial = specPartials.get(foo);
             List<String> specEntries = specPartial.getEntries();
             int go = specPartial.getStopGo().getGo();
             String specEntry = specEntries.get(go);
-            StopGo stopGo = evaluate(go, specEntry, httpResponse, specEntries);
+            StopGo stopGo = evaluateSpec(go, specEntry, resp, specEntries);
             if(stopGo != null) {
                 specStopGos.add(stopGo);
             }
         }
-
-        /**
-         * who ever is saying stop is connected to the richmonds, they have the birds eye view
-         */
-        StringBuilder z = new StringBuilder();
-
-
-
-        return z.toString();
+        return specStopGos;
     }
 
 
@@ -98,51 +98,35 @@ public class ExperienceProcessor {
                 System.out.println(iterablePartial.getIterable().getEntries().get(baz));
             }
             if(exercisePartial(iterablePartial, specStopGos)){
-                List<String> iterableEntries = iterablePartial.getEntries();
-                int stop = iterablePartial.getIterable().getStop();
-                int go = iterablePartial.getIterable().getGo();
 
+                List<SpecPartial> deepSpecPartials = new ArrayList<>();
                 List<IterablePartial> deepIterablePartials = new ArrayList<>();
                 List<StopGo> deepSpecStopGos = new ArrayList<>();
 
-                for(int baz = go; baz < stop; baz++){
-                    String entry = iterablePartial.getEntries().get(baz);
-                    String activeField = iterablePartial.getIterable().getField();
-                    if(entry.contains(this.DATA))setVariable(entry, resp);
+                List<Object> objects = iterablePartial.getIterable().getPojos();
+                for(int bar = 0; bar < objects.size(); bar++) {
 
-                    if(entry.contains(this.IFSPEC)){
-                        List<SpecPartial> specPartials = getSpecPartials(iterableEntries);
-                        for(int bar = 0; bar < specPartials.size(); bar++){
-                            SpecPartial specPartial = specPartials.get(bar);
-                            List<String> specEntries = specPartial.getEntries();
-                            StopGo stopGo = evaluate(go, entry, resp, specEntries);
-                            if(stopGo != null) {
-                                deepSpecStopGos.add(stopGo);
-                            }
+                    int stop = iterablePartial.getIterable().getStop();
+                    int go = iterablePartial.getIterable().getGo();
+                    List<String> iterableEntries = iterablePartial.getEntries();
+                    for (int baz = go; baz < stop; baz++) {
+                        String entry = iterableEntries.get(baz);
+
+                        if(entry.contains(this.IFSPEC)){
+                            SpecPartial specPartial = new SpecPartial();
+                            StopGo stopGo = getSpecStopGo(baz, iterableEntries);
+                            specPartial.setStopGo(stopGo);
+                            List<String> specEntries = getSpecEntries(stopGo, iterableEntries);
+                            specPartial.setEntries(specEntries);
+                            deepSpecPartials.add(specPartial);
                         }
+
                     }
-
-                    if(entry.contains(this.FOREACH)){
-                        IterablePartial deepIterablePartial = new IterablePartial();
-                        Iterable iterable = getIterableDeep(baz, entry, resp, iterableEntries);
-                        iterablePartial.setEntries(iterable.getEntries());
-                        iterablePartial.setIterable(iterable);
-                        deepIterablePartials.add(deepIterablePartial);
-                        evaluateForEach(resp, deepSpecStopGos, deepIterablePartials);
-                    }
-
-                    String hydratedLine = evaluateEntry(baz, 0, activeField, entry, resp);
-
                 }
-
             }
         }
         return combined;
     }
-
-
-
-
 
     public boolean exercisePartial(IterablePartial partial, List<StopGo> specStopGos){
         for(int foo = 0; foo < specStopGos.size(); foo++){
@@ -169,10 +153,9 @@ public class ExperienceProcessor {
 
 
 
-    public List<String> getSpecEntries(int line, List<String> entries){
-        int stop = getSpecStop(line, entries);
+    public List<String> getSpecEntries(StopGo stopGo, List<String> entries){
         List<String> specEntries = new ArrayList<>();
-        for(int foo = line; foo < stop; foo++){
+        for(int foo = stopGo.getGo(); foo < stopGo.getStop(); foo++){
             String entry = entries.get(foo);
             specEntries.add(entry);
         }
@@ -462,7 +445,7 @@ public class ExperienceProcessor {
         return a6;
     }
 
-    private StopGo evaluate(int line, String entry, HttpResponse httpResponse, List<String> entries) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, EosException, NoSuchFieldException {
+    private StopGo evaluateSpec(int line, String entry, HttpResponse httpResponse, List<String> entries) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, EosException, NoSuchFieldException {
 
         int stop = getConditionStop(line, entries);
         StopGo stopGo = new StopGo();
