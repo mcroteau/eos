@@ -1,10 +1,18 @@
 package eos.model.web;
 
 public class BasicEntry {
+    int idx;
     String entry;
     Object mojo;
     Iterable iterable;
 
+    public int getIdx() {
+        return idx;
+    }
+
+    public void setIdx(int idx) {
+        this.idx = idx;
+    }
 
     public String getEntry() {
         return entry;

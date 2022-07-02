@@ -8,7 +8,7 @@ import foo.Todo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
-import eos.ux.ExperienceProcessor;
+import eos.web.ExperienceProcessor;
 import eos.startup.ContainerStartup;
 import eos.util.Settings;
 

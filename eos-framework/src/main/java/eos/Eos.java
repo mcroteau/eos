@@ -13,7 +13,7 @@ import eos.storage.ObjectStorage;
 import eos.storage.PropertyStorage;
 import eos.util.Settings;
 import eos.util.Support;
-import eos.ux.ExperienceProcessor;
+import eos.web.ExperienceProcessor;
 import eos.web.HttpTransmission;
 import eos.web.Interceptor;
 import eos.web.Fragment;

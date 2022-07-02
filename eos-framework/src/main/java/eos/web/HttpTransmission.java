@@ -10,7 +10,6 @@ import eos.util.MimeGetter;
 import eos.util.ResourceResponse;
 import eos.util.Support;
 import eos.util.UriTranslator;
-import eos.ux.ExperienceProcessor;
 
 import java.io.*;
 import java.lang.reflect.Method;

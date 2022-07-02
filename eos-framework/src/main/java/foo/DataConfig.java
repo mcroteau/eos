@@ -24,7 +24,6 @@ public class DataConfig {
 
     @Dependency
     public DataSource dataSource(){
-        System.out.println("dependency");
         return new BasicDataSource.Builder()
                 .driver(dbDriver)
                 .url(dbUrl)

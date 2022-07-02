@@ -3,7 +3,7 @@ package eos.startup;
 import eos.Eos;
 import eos.util.Settings;
 import eos.util.Support;
-import eos.ux.ExperienceProcessor;
+import eos.web.ExperienceProcessor;
 import eos.web.Interceptor;
 import eos.web.Fragment;
 

@@ -2,17 +2,12 @@ package eos;
 
 import eos.exception.EosException;
 import eos.model.web.HttpResponse;
-import eos.ux.ExperienceProcessor;
-import foo.Person;
-import foo.Pet;
-import foo.Todo;
+import eos.web.ExperienceProcessor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

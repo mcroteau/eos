@@ -2,8 +2,7 @@ package eos;
 
 import eos.exception.EosException;
 import eos.model.web.HttpResponse;
-import eos.ux.ExperienceProcessor;
-import foo.Todo;
+import eos.web.ExperienceProcessor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
