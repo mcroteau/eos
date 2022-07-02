@@ -96,20 +96,23 @@ public class DoubleIterationTest extends BaseTest {
 //        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
 //        assertEquals("0123Eos.45678910", result);
 //    }
+//i love you guys
 
     @Test
     public void f() throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         HttpResponse resp = this.create();
         StringBuilder sb = new StringBuilder();
+        sb.append("${todo.person.name}\n");
         sb.append("<eos:each items=\"${todos}\" var=\"tdo\">\n");
         sb.append("${tdo.id}\n");
         sb.append(" <eos:each items=\"${tdo.people}\" var=\"person\">\n");
-        sb.append("     ${person.name}\n");
+        sb.append("     ${person.pet.name}\n");
         sb.append("     <eos:if spec=\"${person.pet.name == ''}\">\n");
         sb.append("Eos.\n");
         sb.append("     </eos:if>\n");
         sb.append(" </eos:each>\n");
-        sb.append("</eos:each>\n");//birdman had to do with michael keaton or the basketball player. he was rating them out
+        sb.append("</eos:each>\n");
+        //birdman had to do with michael keaton or the basketball player. he was rating them out
         /**
          * title 0
          * name 0

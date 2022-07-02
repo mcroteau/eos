@@ -1,6 +1,7 @@
 package eos.ux;
 
 import com.sun.net.httpserver.HttpExchange;
+import eos.annotate.Basic;
 import eos.exception.EosException;
 import eos.model.web.*;
 import eos.model.web.Iterable;
@@ -11,10 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ExperienceProcessor {
 
@@ -23,173 +21,248 @@ public class ExperienceProcessor {
     final String FOREACH = "<eos:each";
     final String ENDEACH = "</eos:each>";
     final String IFSPEC  = "<eos:if spec=";
-    final String ENDIF   = "</eos:if";
+    final String ENDIF   = "</eos:if>";
+
+    List<BasePartial> partials;
+    List<StopGo> stopGos;
+
+    public ExperienceProcessor(){
+        partials = new ArrayList<>();
+        stopGos = new ArrayList<>();
+    }
 
     public String process(Map<String, Fragment> fragments, String view, HttpResponse resp, HttpRequest req, HttpExchange exchange) throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
-        List<String> entries = Arrays.asList(view.split("\n"));
+        List<String> plainEntries = Arrays.asList(view.split("\n"));
+        List<BasicEntry> entries = new ArrayList<>();
+        for(String entry : plainEntries){
+            BasicEntry basicEntry = new BasicEntry();
+            basicEntry.setEntry(entry);
+            entries.add(basicEntry);
+        }
+
         List<IterablePartial> iterablePartials = new ArrayList<>();
-        List<SpecPartial> specPartials = new ArrayList<>();
+//        List<SpecPartial> specPartials = new ArrayList<>();
+        List<BasicPartial> basicPartials = new ArrayList<>();
 
-        for(int line = 0; line < entries.size(); line++){
-            String entry = entries.get(line);
+        for(int thud = 0; thud < entries.size(); thud++){
+            BasicEntry basicThudEntry = entries.get(thud);
+            String entry = basicThudEntry.getEntry();
 
-            if(entry.contains(this.DATA)) {
-                setVariable(entry, resp);
-            }else if(entry.contains(this.FOREACH) && !insideIterable(line, iterablePartials)){
-                IterablePartial iterablePartial = new IterablePartial();
-                Iterable iterable = getIterable(line, entry, resp, entries);
-                iterablePartial.setEntries(iterable.getEntries());
-                iterablePartial.setIterable(iterable);
-                iterablePartials.add(iterablePartial);
-            }else if(entry.contains(this.IFSPEC)){
-                SpecPartial specPartial = new SpecPartial();
-                StopGo stopGo = getSpecStopGo(line, entries);
-                specPartial.setStopGo(stopGo);
-                List<String> specEntries = getSpecEntries(stopGo, entries);
-                specPartial.setEntries(specEntries);
-                specPartials.add(specPartial);
+            BasicEntry basicEntry = new BasicEntry();
+            basicEntry.setEntry(entry);
+
+            if(!entry.trim().equals("")) {
+                if (entry.contains(this.DATA)) {
+                    setVariable(entry, resp);
+                } else if (entry.contains(this.FOREACH) &&
+                        !withinIterable(thud, iterablePartials)) {
+                    IterablePartial iterablePartial = new IterablePartial();
+                    Iterable iterable = getIterable(thud, entry, resp, entries);
+                    iterablePartial.setGo(thud);
+                    iterablePartial.setEntry(basicEntry);
+                    iterablePartial.setEntries(iterable.getEntries());
+                    iterablePartial.setIterable(iterable);
+                    iterablePartials.add(iterablePartial);
+                    partials.add(iterablePartial);
+                } else if (entry.contains(this.IFSPEC) && !withinIterable(thud, iterablePartials)) {
+                    SpecPartial specPartial = new SpecPartial();
+                    specPartial.setGo(thud);
+                    specPartial.setEntry(basicEntry);
+//                    StopGo stopGo = getSpecStopGo(thud, entries);
+//                    specPartial.setStopGo(stopGo);
+//                    List<String> specEntries = getSpecEntries(stopGo, entries);
+//                    specPartial.setEntries(specEntries);
+//                    specPartials.add(specPartial);
+                    partials.add(specPartial);
+                } else {
+                    BasicPartial basicPartial = new BasicPartial();
+                    //Q loves you
+                    //you found out.
+                    basicPartial.setGo(thud);
+                    basicPartial.setEntry(basicEntry);
+                    basicPartials.add(basicPartial);
+                    partials.add(basicPartial);
+                }
             }
         }
 
-        List<StopGo> specStopGos = evaluateSpecs(resp, specPartials);
+//        List<StopGo> specStopGos = evaluateSpecs(resp, specPartials);
+//        stopGos.addAll(specStopGos);
 
         /**
          * who ever is saying stop is connected to the richmonds, they have the birds eye view
          */
 
-        StringBuilder output = new StringBuilder();
-        List<String> combined = evaluateForEach(resp, specStopGos, iterablePartials);
-        for(String entry : combined){
-            output.append(entry + this.NEWLINE);
-        }
+        evaluateForEach(resp, iterablePartials);
 
-        StringBuilder finalOut = getOutput(output);
-        return finalOut.toString();
-    }
-
-    public List<StopGo> evaluateSpecs(HttpResponse resp, List<SpecPartial> specPartials) throws NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException, InvocationTargetException {
-        List<StopGo> specStopGos = new ArrayList<>();
-        for(int foo = 0; foo < specPartials.size(); foo++){
-            SpecPartial specPartial = specPartials.get(foo);
-            List<String> specEntries = specPartial.getEntries();
-            int go = specPartial.getStopGo().getGo();
-            for(int x = 0; x < specEntries.size(); x++){
-                System.out.println("\n\n************* \nspecStopGoso " + go + " " + specEntries.size() + " " + specEntries.get(x) + "\n*************\n\n");
-            }
-            String specEntry = specEntries.get(0);
-            StopGo stopGo = evaluateSpec(0, specEntry, resp, specEntries);
-            System.out.println("\n\n************* \nstop and go "  + stopGo + "\n*************\n\n");
-            if(stopGo != null) {
-                specStopGos.add(stopGo);
-            }
-        }
-
-        return specStopGos;
-    }
-
-    public List<StopGo> evaluateSpecsDeep(Object mojo, Iterable iterable, HttpResponse resp, List<SpecPartial> specPartials) throws NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException, InvocationTargetException {
-        List<StopGo> specStopGos = new ArrayList<>();
-        for(int foo = 0; foo < specPartials.size(); foo++){
-            SpecPartial specPartial = specPartials.get(foo);
-            List<String> specEntries = specPartial.getEntries();
-            String specEntry = specEntries.get(0);
-            StopGo stopGo = evaluateSpecDeep(0, specEntry, mojo, iterable, resp, specEntries);
-            specStopGos.add(stopGo);
-        }
-        return specStopGos;
-    }
-
-
-    public List<String> evaluateForEach(HttpResponse resp, List<StopGo> specStopGos, List<IterablePartial> iterablePartials) throws InvocationTargetException, NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException {
-        List<String> combined = new ArrayList();
-
-        System.out.println("iterable partials size : " + iterablePartials.size());
-        for(int foo = 0; foo < iterablePartials.size(); foo++){
-            IterablePartial iterablePartial = iterablePartials.get(foo);
-            Iterable iterable = iterablePartial.getIterable();
-            System.out.println("& " + iterablePartial.getIterable().getEntries().size());
-            for(int baz = 0; baz < iterablePartial.getIterable().getEntries().size(); baz++){
-                System.out.println(iterablePartial.getIterable().getEntries().get(baz));
-            }
-
-            System.out.println("stop go size " + specStopGos.size());
-
-            if(exerciseIterablePartial(iterablePartial, specStopGos)){
-
-                System.out.println("exercise partial");//
-
-                List<SpecPartial> deepSpecPartials = new ArrayList<>();
-                List<IterablePartial> deepIterablePartials = new ArrayList<>();
-
-                List<Object> mojos = iterablePartial.getIterable().getMojos();
-
-                System.out.println("mojos size : " + mojos);
-                for(int bar = 0; bar < mojos.size(); bar++) {
-
-                    Object mojo = mojos.get(bar);
-                    List<String> iterableEntries = iterablePartial.getEntries();
-
-                    for (int baz = 1; baz < iterableEntries.size(); baz++) {
-                        String entry = iterableEntries.get(baz);
-
-                        System.out.println("entry < " + entry);
-
-                        if(entry.contains(this.DATA)){
-                            setEachVariable(entry, resp, mojo);
-                        }
-
-                        if(entry.contains(this.IFSPEC)){
-                            SpecPartial specPartial = new SpecPartial();
-                            StopGo stopGo = getSpecStopGo(baz, iterableEntries);
-                            specPartial.setStopGo(stopGo);
-                            List<String> specEntries = getSpecEntries(stopGo, iterableEntries);
-                            specPartial.setEntries(specEntries);
-                            deepSpecPartials.add(specPartial);
-                        }
-
-                        if(entry.contains(this.FOREACH)){
-                            IterablePartial deepIterablePartial = new IterablePartial();
-                            Iterable deepIterable = getIterableDeep(baz, entry, mojo, iterableEntries);
-                            deepIterablePartial.setEntries(deepIterable.getEntries());
-                            deepIterablePartial.setIterable(deepIterable);
-                            deepIterablePartials.add(deepIterablePartial);
-                        }
-
-                        String field = iterable.getField();
-                        String injectedEntry = evaluateEachEntry(entry, field, mojo, new StringBuilder());
-                        combined.add(injectedEntry);
-                    }
-
-                    List<StopGo> deepSpecStopGos = evaluateSpecsDeep(mojo, iterable, resp, deepSpecPartials);
-                    List<String> deepEntries = evaluateForEach(resp, deepSpecStopGos, deepIterablePartials);
-                    combined.addAll(deepEntries);
+        System.out.println("....\n\n");
+        for(BasePartial partial : partials){
+            BasicEntry basicEntry = partial.getEntry();
+            String entry = basicEntry.getEntry();
+            if(entry != null &&
+                    exercisePartial(entry)){
+                if(partial.getType().equals(BasePartial.SPeC) &&
+                        (renderSpec(entry, resp) ||
+                            renderIterableSpec(entry, basicEntry.getMojo(), basicEntry.getIterable(), resp))) {
+                    System.out.println(entry);
+                }else{
+                    System.out.println(entry);
                 }
             }
         }
 
-        System.out.println("mnasd : " + combined.size());
-        return combined;
+        return "";
     }
 
+    boolean exercisePartial(String entry){
+        if(entry.contains(this.FOREACH))return false;
+        if(entry.contains(this.ENDEACH))return false;
+        if(entry.contains(this.IFSPEC))return false;
+        if(entry.contains(this.ENDIF))return false;
+        return true;
+    }
+
+    boolean withinIterable(int thud, List<IterablePartial> iterablePartials){
+        for(int foo = 0; foo < iterablePartials.size(); foo++){
+            IterablePartial iterablePartial = iterablePartials.get(foo);
+            if(thud > iterablePartial.getIterable().getGo() &&
+                    thud < iterablePartial.getIterable().getStop()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+//    List<StopGo> evaluateSpecs(HttpResponse resp, List<SpecPartial> specPartials) throws NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException, InvocationTargetException {
+//        List<StopGo> specStopGos = new ArrayList<>();
+//        for(int foo = 0; foo < specPartials.size(); foo++){
+//            SpecPartial specPartial = specPartials.get(foo);
+//            List<String> specEntries = specPartial.getEntries();
+//            String specEntry = specEntries.get(0);
+//            StopGo stopGo = evaluateSpec(0, specEntry, resp, specEntries);
+//            specStopGos.add(stopGo);
+//        }
+//
+//        return specStopGos;
+//    }
+
+//    public List<StopGo> evaluateSpecsDeep(Iterable iterable, HttpResponse resp) throws NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException, InvocationTargetException {
+//        List<StopGo> specStopGos = new ArrayList<>();
+//        for(int foo = 0; foo < specPartials.size(); foo++){
+//            SpecPartial specPartial = specPartials.get(foo);
+//            List<BasicEntry> specEntries = specPartial.getEntries();
+//            BasicEntry basicSpecEntry = specEntries.get(0);
+//            String specEntry = basicSpecEntry.getEntry();
+//            Object mojo = basicSpecEntry.getMojo();
+//            StopGo stopGo = evaluateSpecDeep(0, specEntry, mojo, iterable, resp, specEntries);
+//            specStopGos.add(stopGo);
+//        }
+//        return specStopGos;
+//    }
+
+
+    int iterables = 0;
+
+    void evaluateForEach(HttpResponse resp, List<IterablePartial> iterablePartials) throws InvocationTargetException, NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException {
+
+        System.out.println("size< iterables * " + iterables + iterablePartials.size());
+
+        for(int foo = 0; foo < iterablePartials.size(); foo++){
+            iterables++;
+            IterablePartial iterablePartial = iterablePartials.get(foo);
+            System.out.println("iterablePartial " + iterablePartial.getIterable().getEntry().getEntry());
+            Iterable iterable = iterablePartial.getIterable();
+            System.out.println("& " + iterablePartial.getIterable().getEntries().size());
+            for(int baz = 0; baz < iterablePartial.getIterable().getEntries().size(); baz++){
+                System.out.println("+" + iterablePartial.getIterable().getEntries().get(baz));
+            }
+
+            List<SpecPartial> deepSpecPartials = new ArrayList<>();
+            List<BasicPartial> deepBasicPartials = new ArrayList<>();
+            List<Object> mojos = iterablePartial.getIterable().getMojos();
+
+            for(int bar = 0; bar < mojos.size(); bar++) {
+
+                Object mojo = mojos.get(bar);
+                List<BasicEntry> iterableEntries = iterablePartial.getEntries();
+
+                for (int baz = 0; baz < iterableEntries.size(); baz++) {
+                    BasicEntry basicEntry = iterableEntries.get(baz);
+                    String entry = basicEntry.getEntry();
+
+                    if(entry.contains("${todo.id}")){
+                        System.out.println("aksjdaokjds aksdj ");
+                    }
+
+                    if(!entry.trim().equals("")) {
+
+                        BasicEntry basicMojoEntry = new BasicEntry();
+                        basicMojoEntry.setEntry(entry);
+                        basicMojoEntry.setMojo(mojo);
+                        basicMojoEntry.setIterable(iterable);
+
+                        if (entry.contains(this.DATA)) {
+                            setEachVariable(entry, resp, mojo);
+                        } else if (entry.contains(this.FOREACH)) {
+                            System.out.println("...." + entry);
+                            IterablePartial deepIterablePartial = new IterablePartial();
+                            deepIterablePartial.setGo(baz);
+                            deepIterablePartial.setEntry(basicMojoEntry);
+                            Iterable deepIterable = getIterableDeep(baz, entry, mojo, iterableEntries);
+                            deepIterablePartial.setEntries(deepIterable.getEntries());
+                            deepIterablePartial.setIterable(deepIterable);
+                            partials.add(deepIterablePartial);
+                        } else if (entry.contains(this.IFSPEC)) {
+                            SpecPartial specPartial = new SpecPartial();
+                            StopGo stopGo = getSpecStopGo(baz, iterableEntries);
+                            specPartial.setStopGo(stopGo);
+                            List<BasicEntry> specEntries = getSpecEntries(stopGo, iterableEntries);
+                            specPartial.setEntries(specEntries);
+                            specPartial.setEntry(basicMojoEntry);
+                            deepSpecPartials.add(specPartial);
+
+//                            List<StopGo> deepSpecStopGos = evaluateSpecsDeep(mojo, iterable, resp, deepSpecPartials);
+//                            deepSpecStopGos.add(stopGo);
+//                            stopGos.addAll(deepSpecStopGos);
+                            partials.add(specPartial);
+
+                        } else {
+                            System.out.println("*** " + entry);
+                            BasicPartial basicPartial = new BasicPartial();
+                            basicPartial.setGo(baz);
+                            basicPartial.setEntry(basicMojoEntry);
+                            deepBasicPartials.add(basicPartial);
+                            partials.add(basicPartial);
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    int count = 0;
     public boolean exerciseIterablePartial(IterablePartial partial, List<StopGo> specStopGos){
         if(specStopGos.size() == 0) return true;
         for(int foo = 0; foo < specStopGos.size(); foo++){
             StopGo stopGo = specStopGos.get(foo);
             if(stopGo != null) {
                 Iterable iterable = partial.getIterable();
-                int iterableStop = iterable.getStop();
-                int iterableGo = iterable.getGo();
-                if (iterableGo > stopGo.getGo() && iterableStop < iterable.getStop()) {
+                int stop = iterable.getStop();
+                int go = iterable.getGo();
+                if (go > stopGo.getGo() && stop < iterable.getStop()) {
                     return false;
                 }
             }
         }
+        count++;
+        System.out.println("\n\n count " + count);
         return true;
     }
 
 
-    public StopGo getSpecStopGo(int line, List<String> entries){
+    public StopGo getSpecStopGo(int line, List<BasicEntry> entries){
         StopGo stopGo = new StopGo();
         int stop = getSpecStop(line, entries);
         stopGo.setStop(stop);
@@ -197,21 +270,20 @@ public class ExperienceProcessor {
         return stopGo;
     }
 
-
-
-    public List<String> getSpecEntries(StopGo stopGo, List<String> entries){
-        List<String> specEntries = new ArrayList<>();
+    public List<BasicEntry> getSpecEntries(StopGo stopGo, List<BasicEntry> entries){
+        List<BasicEntry> specEntries = new ArrayList<>();
         for(int foo = stopGo.getGo(); foo < stopGo.getStop(); foo++){
-            String entry = entries.get(foo);
-            specEntries.add(entry);
+            BasicEntry basicEntry = entries.get(foo);
+            specEntries.add(basicEntry);
         }
         return specEntries;
     }
 
-    public int getSpecStop(int line, List<String> entries){
+    public int getSpecStop(int line, List<BasicEntry> entries){
         int startCount = 1, endCount = 0;
         for(int baz = line + 1; baz < entries.size(); baz++){
-            String entry = entries.get(baz);
+            BasicEntry basicEntry = entries.get(baz);
+            String entry = basicEntry.getEntry();
             if(entry.contains(this.ENDIF)){
                 endCount++;
             }
@@ -239,12 +311,7 @@ public class ExperienceProcessor {
     }
 
 
-    private StopGo evaluateSpecDeep(int line, String entry, Object obj, Iterable iterable, HttpResponse httpResponse, List<String> entries) throws NoSuchFieldException, IllegalAccessException {
-
-        int stop = getIterableSpecStop(line, entries);
-        StopGo stopGo = new StopGo();
-        stopGo.setGo(line);
-        stopGo.setStop(stop);
+    private boolean renderIterableSpec(String entry, Object obj, Iterable iterable, HttpResponse resp) throws NoSuchFieldException, IllegalAccessException {
 
         int startIf = entry.indexOf("<eos:if spec=");
 
@@ -271,15 +338,14 @@ public class ExperienceProcessor {
 
                 Object subjectObj = getValueRecursive(0, subjectKey, obj);
                 String subject = String.valueOf(subjectObj);
-                System.out.println("z: " + subject + ":" + subjectKey + ":" + obj);
 
                 if (predicatePre.equals("null")) {
 
-                    if (subjectObj == null && condition.equals("!=")) {
-                        return stopGo;
+                    if (subjectObj == null && condition.equals("==")) {
+                        return true;
                     }
-                    if (subjectObj != null && condition.equals("==")) {
-                        return stopGo;
+                    if (subjectObj != null && condition.equals("!=")) {
+                        return true;
                     }
 
                 } else if (predicatePre.contains(".")) {
@@ -290,49 +356,49 @@ public class ExperienceProcessor {
                     int startField = predicatePre.indexOf(".");
                     String passiton = predicatePre.substring(startField + 1);
 
-                    Object keyObj = httpResponse.get(key);
+                    Object keyObj = resp.get(key);
                     Object value = getValueRecursive(0, passiton, keyObj);
 
                     String predicate = String.valueOf(value);
 
-                    if (predicate.equals(subject) && condition.equals("!=")) {
-                        return stopGo;
+                    if (predicate.equals(subject) && condition.equals("==")) {
+                        return true;
                     }
-                    if (!predicate.equals(subject) && condition.equals("==")) {
-                        return stopGo;
+                    if (!predicate.equals(subject) && condition.equals("!=")) {
+                        return true;
                     }
 
                 } else if (!predicatePre.contains("'")) {
-                    if (predicatePre.equals(subject) && condition.equals("!=")) {
-                        return stopGo;
+                    if (predicatePre.equals(subject) && condition.equals("==")) {
+                        return true;
                     }
-                    if (!predicatePre.equals(subject) && condition.equals("==")) {
-                        return stopGo;
+                    if (!predicatePre.equals(subject) && condition.equals("!=")) {
+                        return true;
                     }
                 } else if (predicatePre.contains("'")) {
-                    if (predicatePre.contains("''")) {
+                    if (predicatePre.equals("''")) {
+                        if(subject.equals(""))subject = "'" + subject + "'";
 
-                        subject = "'" + subject + "'";
-                        if(!predicatePre.equals(subject) && condition.equals("==")){
-                            return stopGo;
+                        if(!predicatePre.equals(subject) && condition.equals("!=")){
+                            return true;
                         }
-                        if(predicatePre.equals(subject) && condition.equals("!=")){
-                            return stopGo;
+                        if(predicatePre.equals(subject) && condition.equals("==")){
+                            return true;
                         }
                     } else {
                         String predicate = predicatePre.replaceAll("'", "");
-                        if (predicate.equals(subject) && condition.equals("!=")) {
-                            return stopGo;
+                        if (predicate.equals(subject) && condition.equals("==")) {
+                            return true;
                         }
-                        if (!predicate.equals(subject) && condition.equals("==")) {
-                            return stopGo;
+                        if (!predicate.equals(subject) && condition.equals("!=")) {
+                            return true;
                         }
                     }
                 }
             }
         }
 
-        return null;
+        return false;
     }
 
     private void setVariable(String entry, HttpResponse httpResponse) throws NoSuchFieldException, IllegalAccessException {
@@ -456,27 +522,18 @@ public class ExperienceProcessor {
         return a6;
     }
 
-    private StopGo evaluateSpec(int line, String entry, HttpResponse httpResponse, List<String> entries) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, EosException, NoSuchFieldException {
-
-        int stop = getEvaluateStop(line, entries);
-        StopGo stopGo = new StopGo();
-        stopGo.setGo(line);
-        stopGo.setStop(stop);
-
-        System.out.println("evaluate > " + line + " : " + entry);
+    private boolean renderSpec(String entry, HttpResponse httpResponse) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, EosException, NoSuchFieldException {
 
         int startIf = entry.indexOf("<eos:if spec=");
 
         int startExpression = entry.indexOf("${", startIf);
         int endExpression = entry.indexOf("}", startExpression);
-
-
         String expression = entry.substring(startExpression + 2, endExpression);
 
-        String condition = getCondition(expression);
+        String spec = getCondition(expression);
         String[] parts;
-        if(!condition.equals("")) {//check if condition exists
-            parts = expression.split(condition);
+        if(!spec.equals("")) {
+            parts = expression.split(spec);
         }else{
             parts = new String[]{ expression };
         }
@@ -493,21 +550,19 @@ public class ExperienceProcessor {
                 String query = left.substring(queryStart + 1);
 
                 if(!keys[1].contains("(")){
-                    String field = keys[1].trim();
+
                     if (httpResponse.data().containsKey(objName)) {
                         if(predicate.contains("'")) predicate = predicate.replace("'", "");
                         if (predicate != null && predicate != "") {
                             Object obj = httpResponse.get(objName);
                             String value = getValueRecursive(0, query, obj).toString();
-                            if (value.equals(predicate) && condition.equals("!=")) {
-                                return stopGo;
+                            if (value.equals(predicate) && spec.equals("==")) {
+                                return true;
                             }
-                            if (!value.equals(predicate) && condition.equals("==")) {
-                                return stopGo;
+                            if (!value.equals(predicate) && spec.equals("!=")) {
+                                return true;
                             }
                         }
-                    } else {
-                        return stopGo;
                     }
 
                 }else{
@@ -521,18 +576,13 @@ public class ExperienceProcessor {
                         Type type = method.getReturnType();
                         Object subject = String.valueOf(method.invoke(obj));
 
-                        if (!isConditionMet(String.valueOf(subject), predicate, condition, type)) {
-                            return stopGo;
+                        if (isConditionMet(String.valueOf(subject), predicate, spec, type)) {
+                            return true;
                         }
-                    }else {
-                        return stopGo;
                     }
                 }
 
-
             }else{
-                //if single lookup
-
                 String subject = parts[0].trim();
                 String predicate = parts[1].trim();
 
@@ -541,18 +591,18 @@ public class ExperienceProcessor {
                     Object obj = httpResponse.get(subject);
                     if(obj != null){
                         String value = obj.toString();
-                        if (value.equals(predicate) && condition.equals("!=")) {
-                            return stopGo;
+                        if (value.equals(predicate) && spec.equals("==")) {
+                            return true;
                         }
-                        if (!value.equals(predicate) && condition.equals("==")) {
-                            return stopGo;
+                        if (!value.equals(predicate) && spec.equals("!=")) {
+                            return true;
                         }
                     }
 
                 } else {
-                    if (condition == "!=" &&
+                    if (spec == "==" &&
                             (predicate == "''" || predicate == "null")) {
-                        return stopGo;
+                        return true;
                     }
                 }
             }
@@ -563,8 +613,6 @@ public class ExperienceProcessor {
                 notTrueExists = true;
                 subjectPre = subjectPre.replace("!", "");
             }
-
-            //todo : resolve
             if(subjectPre.contains(".")) {
                 String[] keys = subjectPre.split("\\.");
                 String subject = keys[0];
@@ -577,44 +625,31 @@ public class ExperienceProcessor {
                     Object valueObj = fieldObj.get(obj);
 
                     Boolean isTrue = Boolean.valueOf(String.valueOf(valueObj));
-                    if (isTrue == true && notTrueExists == true) {
-                        return stopGo;
+                    if (isTrue == true && notTrueExists == false) {
+                        return true;
                     }
-                    if (isTrue == false && notTrueExists == false) {
-                        return stopGo;
-                    }
-                } else {
-                    if (!notTrueExists) {
-                        return stopGo;
+                    if (isTrue == false && notTrueExists != true) {
+                        return true;
                     }
                 }
-
 
             }else{
                 if (httpResponse.data().containsKey(subjectPre)) {
                     Object obj = httpResponse.get(subjectPre);
                     Boolean isTrue = Boolean.valueOf(String.valueOf(obj));
 
-                    System.out.println(subjectPre + " -> is true " + isTrue + " : " + notTrueExists);
-
-                    if (isTrue == true && notTrueExists == true) {
-                        return null;
-                    }
                     if (isTrue == true && notTrueExists != true) {
-                        return stopGo;
-                    }
-                    if (isTrue == false && notTrueExists == false) {
-                        return null;
+                        return true;
                     }
                     if (isTrue == false && notTrueExists == true) {
-                        return stopGo;
+                        return true;
                     }
                 }
             }
 
         }
 
-        return null;
+        return false;
     }
 
 
@@ -695,15 +730,12 @@ public class ExperienceProcessor {
         return "";
     }
 
-    private String evaluateEachEntry(String entry, String activeKey, Object mojo, StringBuilder output) throws NoSuchFieldException, IllegalAccessException {
+    private String evaluateEachEntry(String entry, Iterable iterable, Object mojo) throws NoSuchFieldException, IllegalAccessException {
 
-        System.out.println("please dont tell me ");
         if(entry.contains(this.FOREACH))return "";
         if(entry.contains(this.ENDEACH))return "";
         if(entry.contains(this.IFSPEC))return "";
         if(entry.contains(this.ENDIF))return "";
-
-        System.out.println("here... " + entry);
 
         if(entry.contains("${")) {
 
@@ -713,7 +745,14 @@ public class ExperienceProcessor {
 
             String[] keys = entry.substring(startExpression + 2, endExpression).split("\\.");
 
-            if(keys[0].equals(activeKey)) {
+            System.out.println("a asdadsasd " + keys[0].equals(iterable.getField()) + ":" + keys[0] + " > " + iterable.getField() + " ' " + entry);
+            for(int t = 0; t < iterable.getEntries().size(); t++){
+                System.out.println(iterable.getEntries().get(t));
+            }
+
+            if(keys[0].equals(iterable.getField())) {
+
+                System.out.println("aksjdfaskjfd");
                 int startField = expression.indexOf(".");
                 int endField = expression.indexOf("}");
 
@@ -726,18 +765,18 @@ public class ExperienceProcessor {
 
                 int startRemainder = entry.indexOf("${");
                 if (startRemainder != -1) {
-                    evaluateEntryRemainder(startExpression, entry, mojo, output);
+                    return evaluateEntryRemainder(startExpression, entry, mojo, new StringBuilder());
                 } else {
-                    output.append(entry + this.NEWLINE);
+                    return entry + this.NEWLINE;
                 }
             }
         }else{
-            output.append(entry + this.NEWLINE);
+            return entry + this.NEWLINE;
         }
-        return output.toString();
+        return "";
     }
 
-    private void evaluateEntryRemainder(int startExpressionRight, String entry, Object obj, StringBuilder output) throws NoSuchFieldException, IllegalAccessException {
+    private String evaluateEntryRemainder(int startExpressionRight, String entry, Object obj, StringBuilder output) throws NoSuchFieldException, IllegalAccessException {
         int startExpression = entry.indexOf("${", startExpressionRight - 1);
         int endExpression = entry.indexOf("}", startExpression);
 
@@ -759,10 +798,11 @@ public class ExperienceProcessor {
         }else{
             output.append(entry + this.NEWLINE);
         }
+        return output.toString();
     }
 
 
-    private Iterable getIterableDeep(int line, String entry, Object obj, List<String> entries) throws EosException, NoSuchFieldException, IllegalAccessException {
+    private Iterable getIterableDeep(int line, String entry, Object obj, List<BasicEntry> entries) throws EosException, NoSuchFieldException, IllegalAccessException {
         int startEach = entry.indexOf("<eos:each");
 
         int startIterate = entry.indexOf("items=", startEach + 1);
@@ -779,32 +819,43 @@ public class ExperienceProcessor {
         int endItem = entry.indexOf("\"", startItem + 6);//var="
         String activeField = entry.substring(startItem + 5, endItem);
 
-        System.out.println("active fieldw " + activeField + " : " + field);
+        System.out.println("*  " + iterableFudge + " * " + activeField + " * " + field);
 
         List<Object> objs = (ArrayList) getIterableValueRecursive(0, field, obj);
 
-        int stop = getStopDeep(line, entries);
-        int go = line +1;
         Iterable iterable = new Iterable();
-        iterable.setGo(go);
+        int stop = getStop(line, entries);
+        List<BasicEntry> iterableEntries = new ArrayList<>();
+        for(int foo = line + 1; foo < stop; foo++){
+            BasicEntry basicIterableEntry = entries.get(foo);
+            String iterableEntry = basicIterableEntry.getEntry();
+            BasicEntry basicEntry = new BasicEntry();
+            basicEntry.setEntry(iterableEntry);
+            iterableEntries.add(basicEntry);
+        }
+
+        BasicEntry basicEntry = new BasicEntry();
+        basicEntry.setEntry(entry);
+
+        iterable.setEntry(basicEntry);
+        iterable.setGo(line);
         iterable.setStop(stop);
         iterable.setMojos(objs);
         iterable.setField(activeField);
-        List<String> iterableEntries = getIterableEntries(go, stop, entries);
         iterable.setEntries(iterableEntries);
         return iterable;
     }
 
-    private List<String> getIterableEntries(int start, int stop, List<String> entries){
+    private List<String> getIterableEntries(int go, int stop, List<String> entries){
         List<String> iterableEntries = new ArrayList<>();
-        for(int baz = start; baz < stop; baz++){
+        for(int baz = go + 1; baz < stop; baz++){
             String entry = entries.get(baz);
             iterableEntries.add(entry);
         }
         return iterableEntries;
     }
 
-    private Iterable getIterable(int go, String entry, HttpResponse httpResponse, List<String> entries) throws EosException, NoSuchFieldException, IllegalAccessException {
+    private Iterable getIterable(int go, String entry, HttpResponse httpResponse, List<BasicEntry> entries) throws EosException, NoSuchFieldException, IllegalAccessException {
 
         List<Object> objs = new ArrayList<>();
         int startEach = entry.indexOf("<eos:each");
@@ -819,28 +870,27 @@ public class ExperienceProcessor {
 
         String expression = entry.substring(startIterate + 7, endIterate);
 
-        System.out.println("ex " + expression);
-
         if(iterableKey.contains(".")){
             objs = getIterableInitial(iterableKey, expression, httpResponse);
         }else if(httpResponse.data().containsKey(iterableKey)){
             objs = (ArrayList) httpResponse.get(iterableKey);
         }
 
-
         Iterable iterable = new Iterable();
         int stop = getStop(go, entries);
 
-        System.out.println("get " + go + ":" + stop);
-
-        List<String> iterableEntries = new ArrayList<>();
-        for(int foo = go; foo < stop; foo++){
-            String iterableEntry = entries.get(foo);
-            iterableEntries.add(iterableEntry);
-            System.out.println(";;;;;" + iterableEntry);
-
+        List<BasicEntry> iterableEntries = new ArrayList<>();
+        for(int foo = go + 1; foo < stop; foo++){
+            BasicEntry iterableEntry = entries.get(foo);
+            BasicEntry basicEntry = new BasicEntry();
+            basicEntry.setEntry(iterableEntry.getEntry());
+            iterableEntries.add(basicEntry);
         }
 
+        BasicEntry basicEntry = new BasicEntry();
+        basicEntry.setEntry(entry);
+
+        iterable.setEntry(basicEntry);
         iterable.setGo(go);
         iterable.setStop(stop);
         iterable.setMojos(objs);
@@ -1086,21 +1136,21 @@ public class ExperienceProcessor {
     }
 
 
-    private int getStop(int thud, List<String> entries){
+    private int getStop(int thud, List<BasicEntry> entries){
         int count = 0;
         boolean startRendered = false;
         for(int foo = thud + 1; foo < entries.size(); foo++) {
-            String entry = entries.get(foo);
-            System.out.println("t ? " + entry);
-            if(entry.contains("<eos:each")){
+            BasicEntry basicEntry = entries.get(foo);
+            String entry = basicEntry.getEntry();
+            if(entry.contains(this.FOREACH)){
                 startRendered = true;
             }
 
-            if(!startRendered && entry.contains("</eos:each>")){
+            if(!startRendered && entry.contains(this.ENDEACH)){
                 return foo + 1;
             }
 
-            if(startRendered && entry.contains("</eos:each>")){
+            if(startRendered && entry.contains(this.ENDEACH)){
                 if(count == 1){
                     return foo + 1;
                 }

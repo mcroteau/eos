@@ -1,11 +1,13 @@
 package eos.model.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SpecPartial extends BasePartial{
 
-    String type = "spec";
-
+    public SpecPartial(){
+        this.type = SPeC;
+    }
     StopGo stopGo;
     boolean iterable;
 

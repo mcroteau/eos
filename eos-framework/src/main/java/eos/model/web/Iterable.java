@@ -8,7 +8,8 @@ public class Iterable {
     int go;
     String field;
     List<Object> mojos;
-    List<String> entries;
+    List<BasicEntry> entries;
+    BasicEntry entry;
 
     public int getStop() {
         return stop;
@@ -42,11 +43,19 @@ public class Iterable {
         this.mojos = mojos;
     }
 
-    public List<String> getEntries() {
+    public List<BasicEntry> getEntries() {
         return entries;
     }
 
-    public void setEntries(List<String> entries) {
+    public void setEntries(List<BasicEntry> entries) {
         this.entries = entries;
+    }
+
+    public BasicEntry getEntry() {
+        return entry;
+    }
+
+    public void setEntry(BasicEntry entry) {
+        this.entry = entry;
     }
 }
