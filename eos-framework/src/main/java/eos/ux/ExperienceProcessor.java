@@ -33,20 +33,20 @@ public class ExperienceProcessor {
 
     public String process(Map<String, Fragment> fragments, String view, HttpResponse resp, HttpRequest req, HttpExchange exchange) throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
-        List<String> plainEntries = Arrays.asList(view.split("\n"));
-        List<BasicEntry> entries = new ArrayList<>();
-        for(String entry : plainEntries){
+        List<String> stringEntries = Arrays.asList(view.split("\n"));
+        List<BasicEntry> basicEntries = new ArrayList<>();
+        for(String entry : stringEntries){
             BasicEntry basicEntry = new BasicEntry();
             basicEntry.setEntry(entry);
-            entries.add(basicEntry);
+            basicEntries.add(basicEntry);
         }
 
         List<IterablePartial> iterablePartials = new ArrayList<>();
 //        List<SpecPartial> specPartials = new ArrayList<>();
         List<BasicPartial> basicPartials = new ArrayList<>();
 
-        for(int thud = 0; thud < entries.size(); thud++){
-            BasicEntry basicThudEntry = entries.get(thud);
+        for(int thud = 0; thud < basicEntries.size(); thud++){
+            BasicEntry basicThudEntry = basicEntries.get(thud);
             String entry = basicThudEntry.getEntry();
 
             BasicEntry basicEntry = new BasicEntry();
@@ -58,13 +58,12 @@ public class ExperienceProcessor {
                 } else if (entry.contains(this.FOREACH) &&
                         !withinIterable(thud, iterablePartials)) {
                     IterablePartial iterablePartial = new IterablePartial();
-                    Iterable iterable = getIterable(thud, entry, resp, entries);
+                    Iterable iterable = getIterable(thud, entry, resp, basicEntries);
                     iterablePartial.setGo(thud);
                     iterablePartial.setEntry(basicEntry);
                     iterablePartial.setEntries(iterable.getEntries());
                     iterablePartial.setIterable(iterable);
                     iterablePartials.add(iterablePartial);
-                    partials.add(iterablePartial);
                 } else if (entry.contains(this.IFSPEC) && !withinIterable(thud, iterablePartials)) {
                     SpecPartial specPartial = new SpecPartial();
                     specPartial.setGo(thud);
@@ -213,6 +212,26 @@ public class ExperienceProcessor {
                             deepIterablePartial.setEntries(deepIterable.getEntries());
                             deepIterablePartial.setIterable(deepIterable);
                             partials.add(deepIterablePartial);
+
+                            for(int bang = 0; bang < deepIterable.getMojos().size(); bang++){
+                                Object bojo = deepIterable.getMojos().get(bang);
+                                for(int blurp = 0; blurp < deepIterable.getMojos().size(); blurp++) {
+                                    BasicEntry deepIterableEntry = deepIterable.getEntries().get(blurp);
+                                    String deepEntry = deepIterableEntry.getEntry();
+                                    System.out.println("!" + deepEntry);
+                                    BasicEntry deepBasicEntry = new BasicEntry();
+                                    deepBasicEntry.setMojo(bojo);
+                                    deepBasicEntry.setEntry(deepEntry);
+                                    BasicPartial basicPartial = new BasicPartial();
+                                    basicPartial.setGo(baz);
+                                    basicPartial.setEntry(deepBasicEntry);
+//                                deepBasicPartials.add(basicPartial);
+                                    partials.add(basicPartial);
+                                }
+                            }
+
+
+
                         } else if (entry.contains(this.IFSPEC)) {
                             SpecPartial specPartial = new SpecPartial();
                             StopGo stopGo = getSpecStopGo(baz, iterableEntries);
@@ -232,7 +251,7 @@ public class ExperienceProcessor {
                             BasicPartial basicPartial = new BasicPartial();
                             basicPartial.setGo(baz);
                             basicPartial.setEntry(basicMojoEntry);
-                            deepBasicPartials.add(basicPartial);
+//                            deepBasicPartials.add(basicPartial);
                             partials.add(basicPartial);
                         }
 
@@ -802,7 +821,7 @@ public class ExperienceProcessor {
     }
 
 
-    private Iterable getIterableDeep(int line, String entry, Object obj, List<BasicEntry> entries) throws EosException, NoSuchFieldException, IllegalAccessException {
+    private Iterable getIterableDeep(int go, String entry, Object obj, List<BasicEntry> entries) throws EosException, NoSuchFieldException, IllegalAccessException {
         int startEach = entry.indexOf("<eos:each");
 
         int startIterate = entry.indexOf("items=", startEach + 1);
@@ -824,11 +843,12 @@ public class ExperienceProcessor {
         List<Object> objs = (ArrayList) getIterableValueRecursive(0, field, obj);
 
         Iterable iterable = new Iterable();
-        int stop = getStop(line, entries);
+        int stop = getStop(go, entries);
         List<BasicEntry> iterableEntries = new ArrayList<>();
-        for(int foo = line + 1; foo < stop; foo++){
+        for(int foo = go; foo < stop; foo++){
             BasicEntry basicIterableEntry = entries.get(foo);
             String iterableEntry = basicIterableEntry.getEntry();
+            System.out.println(">>>>" + iterableEntry);
             BasicEntry basicEntry = new BasicEntry();
             basicEntry.setEntry(iterableEntry);
             iterableEntries.add(basicEntry);
@@ -838,7 +858,7 @@ public class ExperienceProcessor {
         basicEntry.setEntry(entry);
 
         iterable.setEntry(basicEntry);
-        iterable.setGo(line);
+        iterable.setGo(go);
         iterable.setStop(stop);
         iterable.setMojos(objs);
         iterable.setField(activeField);
