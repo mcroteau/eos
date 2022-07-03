@@ -242,7 +242,7 @@ public class HttpTransmission implements HttpHandler {
 
                             ExperienceProcessor experienceProcessor = cache.getUxProcessor();
                             Map<String, Fragment> pointcuts = cache.getPointCuts();
-                            designOutput = experienceProcessor.process(pointcuts, completePage, httpResponse, httpRequest, httpExchange);
+                            designOutput = experienceProcessor.execute(pointcuts, completePage, httpResponse, httpRequest, httpExchange);
 
 
                         }catch(Exception ex){
@@ -270,7 +270,7 @@ public class HttpTransmission implements HttpHandler {
 
                             ExperienceProcessor experienceProcessor = cache.getUxProcessor();
                             Map<String, Fragment> pointcuts = cache.getPointCuts();
-                            pageOutput = experienceProcessor.process(pointcuts, pageContent, httpResponse, httpRequest, httpExchange);
+                            pageOutput = experienceProcessor.execute(pointcuts, pageContent, httpResponse, httpRequest, httpExchange);
 
                             if(!pageOutput.startsWith("<html>")){
                                 pageOutput = "<html>" + pageOutput;
@@ -360,7 +360,7 @@ public class HttpTransmission implements HttpHandler {
 
                             ExperienceProcessor experienceProcessor = cache.getUxProcessor();
                             Map<String, Fragment> pointcuts = cache.getPointCuts();
-                            designOutput = experienceProcessor.process(pointcuts, completePage, httpResponse, httpRequest, httpExchange);
+                            designOutput = experienceProcessor.execute(pointcuts, completePage, httpResponse, httpRequest, httpExchange);
 
 
                         }catch(Exception ex){
@@ -388,7 +388,7 @@ public class HttpTransmission implements HttpHandler {
 
                             ExperienceProcessor experienceProcessor = cache.getUxProcessor();
                             Map<String, Fragment> pointcuts = cache.getPointCuts();
-                            pageOutput = experienceProcessor.process(pointcuts, pageContent, httpResponse, httpRequest, httpExchange);
+                            pageOutput = experienceProcessor.execute(pointcuts, pageContent, httpResponse, httpRequest, httpExchange);
 
                             if(!pageOutput.startsWith("<html>")){
                                 pageOutput = "<html>" + pageOutput;

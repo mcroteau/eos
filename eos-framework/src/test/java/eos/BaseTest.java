@@ -94,6 +94,7 @@ abstract class BaseTest {
             todos.add(todo);
         }
 
+        todos.get(0).getPeople().get(1).setName("");
         todos.get(0).getPeople().get(0).getPet().setName("");
 
         //todo.id = 1

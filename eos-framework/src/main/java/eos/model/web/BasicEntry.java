@@ -1,16 +1,28 @@
 package eos.model.web;
 
+import java.util.UUID;
+
 public class BasicEntry {
-    int idx;
+
+    String guid;
+    Integer idx;//todo:?
     String entry;
     Object mojo;
     Iterable iterable;
 
-    public int getIdx() {
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+
+    public Integer getIdx() {
         return idx;
     }
 
-    public void setIdx(int idx) {
+    public void setIdx(Integer idx) {
         this.idx = idx;
     }
 
@@ -37,4 +49,5 @@ public class BasicEntry {
     public void setIterable(Iterable iterable) {
         this.iterable = iterable;
     }
+
 }

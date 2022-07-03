@@ -36,7 +36,7 @@ public class MultipleTest extends BaseTest {
         sb.append("<eos:if spec=\"${todo.person.pet.name != 'Tex'}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
-        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).trim();
         assertEquals("Eos.", result);
     }
 
@@ -47,7 +47,7 @@ public class MultipleTest extends BaseTest {
         sb.append("<eos:if spec=\"${todoDos.person.pet.name == ''}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
-        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).trim();
         assertEquals("Eos.", result);
     }
 
@@ -58,7 +58,7 @@ public class MultipleTest extends BaseTest {
         sb.append("<eos:if spec=\"${todo.title == 'Paint'}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
-        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).trim();
         assertEquals("Eos.", result);
     }
 
@@ -69,7 +69,7 @@ public class MultipleTest extends BaseTest {
         sb.append("<eos:if spec=\"${todo.person.name == 'Pep Love *3'}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
-        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).trim();
         assertEquals("Eos.", result);
     }
 
@@ -81,7 +81,7 @@ public class MultipleTest extends BaseTest {
         sb.append("<eos:if spec=\"${todo.person.pet.name == 'Apache *6'}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
-        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).trim();
         assertEquals("Eos.", result);
     }
 
@@ -93,7 +93,7 @@ public class MultipleTest extends BaseTest {
         sb.append("<eos:if spec=\"${todo.person.pet.id == 3}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
-        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).trim();
         assertEquals("Eos.", result);
     }
 
@@ -104,7 +104,7 @@ public class MultipleTest extends BaseTest {
         sb.append("<eos:if spec=\"${todo.person.id == 2}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
-        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).trim();
         assertEquals("Eos.", result);
     }
 
@@ -115,7 +115,7 @@ public class MultipleTest extends BaseTest {
         sb.append("<eos:if spec=\"${todo.id == 1}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
-        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).trim();
         assertEquals("Eos.", result);
     }
 

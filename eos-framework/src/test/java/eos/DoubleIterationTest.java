@@ -37,7 +37,7 @@ public class DoubleIterationTest extends BaseTest {
 //        sb.append("Eos.\n");
 //        sb.append("</eos:if>\n");
 //        sb.append("</eos:each>\n");
-//        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
+//        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
 //        assertEquals("0123Eos.45678910", result);
 //    }
 //
@@ -51,7 +51,7 @@ public class DoubleIterationTest extends BaseTest {
 //        sb.append("Eos.\n");
 //        sb.append("</eos:if>\n");
 //        sb.append("</eos:each>\n");
-//        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
+//        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
 //        assertEquals("01Eos.2345678910", result);
 //    }
 //
@@ -65,7 +65,7 @@ public class DoubleIterationTest extends BaseTest {
 //        sb.append("Eos.\n");
 //        sb.append("</eos:if>\n");
 //        sb.append("</eos:each>\n");
-//        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
+//        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
 //        assertEquals("0Eos.12Eos.3Eos.4Eos.5Eos.6Eos.7Eos.8Eos.9Eos.10Eos.", result);
 //    }
 //
@@ -79,7 +79,7 @@ public class DoubleIterationTest extends BaseTest {
 //        sb.append("Eos.\n");
 //        sb.append("</eos:if>\n");
 //        sb.append("</eos:each>\n");
-//        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
+//        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
 //        assertEquals("0123456Eos.78910", result);
 //    }
 //
@@ -93,7 +93,7 @@ public class DoubleIterationTest extends BaseTest {
 //        sb.append("Eos.\n");
 //        sb.append("</eos:if>\n");
 //        sb.append("</eos:each>\n");
-//        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
+//        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
 //        assertEquals("0123Eos.45678910", result);
 //    }
 //i love you guys
@@ -102,27 +102,31 @@ public class DoubleIterationTest extends BaseTest {
     public void f() throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         HttpResponse resp = this.create();
         StringBuilder sb = new StringBuilder();
-        sb.append("${todo.person.name}\n");
         sb.append("<eos:each items=\"${todos}\" var=\"tdo\">\n");
-        sb.append("${tdo.id}\n");
-        sb.append(" <eos:each items=\"${tdo.people}\" var=\"person\">\n");
-        sb.append("     ${person.pet.name}\n");
-        sb.append("     <eos:if spec=\"${person.pet.name == ''}\">\n");
-        sb.append("Eos.\n");
+        sb.append("     ${tdo.id}\n");
+        sb.append("     <eos:if spec=\"${tdo.person.name == ''}\">\n");
+        sb.append("         Eos.\n");
         sb.append("     </eos:if>\n");
-        sb.append(" </eos:each>\n");
         sb.append("</eos:each>\n");
         //birdman had to do with michael keaton or the basketball player. he was rating them out
-        /**
-         * title 0
-         * name 0
-         * Eos.
-         * title 1
-         * name 1
-         *
-         *
-         */
-        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
+        assertEquals("01Eos.2345678910", result);
+    }
+
+    @Test
+    public void e() throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        HttpResponse resp = this.create();
+        StringBuilder sb = new StringBuilder();
+        sb.append("<eos:each items=\"${todos}\" var=\"tdo\">\n");
+        sb.append("     ${tdo.id}\n");
+        sb.append("     <eos:if spec=\"${tdo.person.name == ''}\">\n");
+        sb.append("         <eos:each items=\"${tdo.people}\" var=\"person\">\n");
+        sb.append("             ${person.pet.name}\n");
+        sb.append("         </eos:each>\n");;
+        sb.append("     </eos:if>\n");
+        sb.append("</eos:each>\n");
+        //birdman had to do with michael keaton or the basketball player. he was rating them out
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
         assertEquals("01Eos.2345678910", result);
     }
 }

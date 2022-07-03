@@ -27,7 +27,7 @@ public class SingleTest extends BaseTest {
         sb.append("<eos:if spec=\"${null == null}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
-        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).trim();
         assertEquals("Eos.", result);
     }
 
@@ -38,7 +38,7 @@ public class SingleTest extends BaseTest {
         sb.append("<eos:if spec=\"${blank == ''}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
-        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).trim();
         assertEquals("Eos.", result);
     }
 
@@ -49,7 +49,7 @@ public class SingleTest extends BaseTest {
         sb.append("<eos:if spec=\"${value == 'value'}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
-        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).trim();
         assertEquals("Eos.", result);
     }
 
@@ -60,7 +60,7 @@ public class SingleTest extends BaseTest {
         sb.append("<eos:if spec=\"${notnil != null}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
-        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).trim();
         assertEquals("Eos.", result);
     }
 
@@ -71,7 +71,7 @@ public class SingleTest extends BaseTest {
         sb.append("<eos:if spec=\"${notblank != ''}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
-        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).trim();
         assertEquals("Eos.", result);
     }
 
@@ -82,7 +82,7 @@ public class SingleTest extends BaseTest {
         sb.append("<eos:if spec=\"${notvalue != 'notvalue'}\">\n");
         sb.append("Eos.\n");
         sb.append("</eos:if>\n");
-        String result = exp.process(new HashMap<>(), sb.toString(), resp, null,null).trim();
+        String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).trim();
         assertEquals("Eos.", result);
     }
 

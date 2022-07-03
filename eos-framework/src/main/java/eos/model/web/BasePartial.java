@@ -1,18 +1,27 @@
 package eos.model.web;
 
 import java.util.List;
+import java.util.UUID;
 
 public abstract class BasePartial {
-
-    int go;
+    String guid;
+    int go;//todo:?
     int stop;
     String type;
-    BasicEntry entry;
+    BasicEntry basicEntry;
     List<BasicEntry> entries;
 
-    public static String BASiC = "basic";
-    public static String ITeRABLE = "iterable";
-    public static String SPeC = "spec";
+    public BasePartial(){
+        guid = UUID.randomUUID().toString();
+    }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
 
     public int getGo() {
         return go;
@@ -38,12 +47,12 @@ public abstract class BasePartial {
         this.type = type;
     }
 
-    public BasicEntry getEntry() {
-        return entry;
+    public BasicEntry getBasicEntry() {
+        return basicEntry;
     }
 
-    public void setEntry(BasicEntry entry) {
-        this.entry = entry;
+    public void setBasicEntry(BasicEntry basicEntry) {
+        this.basicEntry = basicEntry;
     }
 
     public List<BasicEntry> getEntries() {
@@ -53,4 +62,8 @@ public abstract class BasePartial {
     public void setEntries(List<BasicEntry> entries) {
         this.entries = entries;
     }
+
+    public static String BASiC = "basic";
+    public static String ITeRABLE = "iterable";
+    public static String SPeC = "spec";
 }

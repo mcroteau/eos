@@ -5,13 +5,9 @@ import java.util.List;
 
 public class IterablePartial extends BasePartial {
 
-    public IterablePartial(){
-        this.type = ITeRABLE;
-        partials = new ArrayList<>();
-    }
+    public IterablePartial(){this.type = ITeRABLE; }
 
     Iterable iterable;
-    List<IterablePartial> partials;
 
     public Iterable getIterable() {
         return iterable;
@@ -21,11 +17,4 @@ public class IterablePartial extends BasePartial {
         this.iterable = iterable;
     }
 
-    public List<IterablePartial> getPartials() {
-        return partials;
-    }
-
-    public void setPartials(List<IterablePartial> partials) {
-        this.partials = partials;
-    }
 }

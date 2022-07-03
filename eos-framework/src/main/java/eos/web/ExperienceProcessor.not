@@ -33,7 +33,7 @@ public class ExperienceProcessor {
 
     public String execute(Map<String, Fragment> fragments, String view, HttpResponse resp, HttpRequest req, HttpExchange exchange) throws EosException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
-        List<BasePartial> partialsFoo = new ArrayList<>();
+        Map<String, BasePartial> partialsFoo = new HashMap<>();
 
         List<String> stringEntries = Arrays.asList(view.split("\n"));
         List<BasicEntry> basicEntries = new ArrayList<>();
@@ -57,18 +57,18 @@ public class ExperienceProcessor {
                 specPartial.setSpec(entry);
                 List<BasicEntry> specEntries = getSpecEntries(basicEntries);
                 specPartial.setEntries(specEntries);
-                partialsFoo.add(specPartial);
+                partialsFoo.put(specPartial.getGuid(), specPartial);
             } else if (entry.contains(this.FOREACH) && !withinIterable(foo, iterablePartials)) {
                 IterablePartial iterablePartial = new IterablePartial();
                 Iterable iterable = getIterable(foo, entry, resp, basicEntries);
                 iterablePartial.setIterable(iterable);
                 iterablePartial.setBasicEntry(basicEntry);
-                partialsFoo.add(iterablePartial);
+                partialsFoo.put(iterablePartial.getGuid(), iterablePartial);
                 iterablePartials.add(iterablePartial);
             }else if(!withinIterable(foo, iterablePartials)){
                 BasicPartial basicPartial = new BasicPartial();
                 basicPartial.setBasicEntry(basicEntry);//heart broken.
-                partialsFoo.add(basicPartial);
+                partialsFoo.put(basicPartial.getGuid(), basicPartial);
             }
 
         }
@@ -119,24 +119,24 @@ public class ExperienceProcessor {
         return false;
     }
 
-    void exercisePartials(HttpResponse resp, List<IterablePartial> iterablePartials, List<BasePartial> partialsFoo) throws InvocationTargetException, NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException {
+    void exercisePartials(HttpResponse resp, List<IterablePartial> iterablePartials, Map<String, BasePartial> partialsFoo) throws InvocationTargetException, NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException {
 
-        List<BasePartial> partialsBar = new ArrayList<>();
+        Map<String, BasePartial> partialsBar = new HashMap<>();
         Map<String, BasePartial> partialsBaz = new HashMap<>();
 
-        for(int foo = 0; foo < partialsFoo.size(); foo++){
-            BasePartial basePartial = partialsFoo.get(foo);
-            System.out.println("a;" + basePartial.getBasicEntry().getEntry());//im sorry.
-
+        for(Map.Entry<String, BasePartial> mapEntry : partialsFoo.entrySet()){
+            BasePartial basePartial = mapEntry.getValue();
             IterablePartial iterablePartial = null;
 
             if(basePartial.getType().equals(BasePartial.ITeRABLE)){
                 iterablePartial = (IterablePartial) basePartial;
-                partialsBar.add(iterablePartial);
+                if(partialsBar.containsKey(iterablePartial.getGuid()))
+                    partialsBar.put(iterablePartial.getGuid(), iterablePartial);
             }
 
             if(iterablePartial == null){
-                partialsBar.add(basePartial);
+                if(partialsBar.containsKey(basePartial.getGuid()))
+                    partialsBar.put(basePartial.getGuid(), basePartial);
             }
 
             if(iterablePartial != null){
@@ -164,7 +164,7 @@ public class ExperienceProcessor {
                                 deepIterablePartial.setBasicEntry(basicEntry);
                                 deepIterablePartial.setIterable(deepIterable);
 //                                    deepIterablePartial.setGo();todo:
-                                partialsBar.add(deepIterablePartial);
+                                partialsBar.put(deepIterablePartial.getGuid(), deepIterablePartial);
 
                             } else if (entry.contains(this.IFSPEC)) {
                                 SpecPartial specPartial = new SpecPartial();
@@ -172,30 +172,19 @@ public class ExperienceProcessor {
                                 BasicEntry goBasicEntry = specEntries.get(0);
                                 specPartial.setBasicEntry(goBasicEntry);
                                 specPartial.setEntries(specEntries);
-                                partialsBar.add(specPartial);
-                                specPartials.add(specPartial);
+                                partialsBar.put(specPartial.getGuid(), specPartial);
                             }
                         }
                     }
                 }
             }
-        }
 
-        List<BasicEntry> basicEntries = new ArrayList();
-        for(BasePartial partial : partialsBar){
-            BasicEntry basicEntry = partial.getBasicEntry();
-            basicEntries.add(basicEntry);
-        }
-
-        Collections.sort(basicEntries, (o1, o2) -> {
-            if(o1.getIdx() == o2.getIdx())
-                return 0;
-            return o1.getIdx() < o2.getIdx() ? -1 : 1;
-        });
-
-        for(BasicEntry basicEntry : basicEntries){
-            String entry = basicEntry.getEntry();
-            System.out.println("spec: " + entry + "   " + basicEntry.getIdx());
+            for(Map.Entry<String, BasePartial> barEntry : partialsBar.entrySet()){
+                BasePartial partial = barEntry.getValue();
+                BasicEntry basicEntry = partial.getBasicEntry();
+                String entry = basicEntry.getEntry();
+                System.out.println("spec: " + entry + "   " + basicEntry.getIdx());
+            }
         }
     }
 
