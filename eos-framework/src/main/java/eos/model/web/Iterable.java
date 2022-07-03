@@ -3,13 +3,17 @@ package eos.model.web;
 import java.util.List;
 
 public class Iterable {
-
     int stop;
     int go;
     String field;
     List<Object> mojos;
     List<BasicEntry> entries;
     BasicEntry entry;
+    Integer count;
+
+    public Iterable(){
+        this.count = 0;
+    }
 
     public int getStop() {
         return stop;
@@ -57,5 +61,13 @@ public class Iterable {
 
     public void setEntry(BasicEntry entry) {
         this.entry = entry;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
     }
 }

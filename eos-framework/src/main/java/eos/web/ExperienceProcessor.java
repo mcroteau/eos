@@ -125,16 +125,14 @@ public class ExperienceProcessor {
             SpecResult specResult = withinSpec(basicEntry);
             if(specResult == null || (specResult != null && specResult.init() && renderSpec(specResult.getSpec(), resp))) {
 
-                if(!basePartial.getType().equals(BasePartial.ITeRABLE) &&
-                        !basePartial.getType().equals(BasePartial.SPeC)
-                            && !withinIterable(foo, iterablePartials))
-                    entriesFoo.add(basicEntry);
-
-
                 IterablePartial iterablePartial = null;
 
                 if(basePartial.getType().equals(BasePartial.ITeRABLE)) {
                     iterablePartial = (IterablePartial) basePartial;
+                }
+
+                if(iterablePartial == null){
+                    entriesFoo.add(basicEntry);
                 }
 
                 if(iterablePartial != null) {
