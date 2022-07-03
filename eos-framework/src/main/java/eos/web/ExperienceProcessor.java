@@ -160,6 +160,7 @@ public class ExperienceProcessor {
                                     Iterable deepIterable = getIterableDeep(baz, entry, mojo, iterableEntries);
                                     List<Object> pojos = deepIterable.getMojos();
 
+                                    Integer mojosCount = 0;
                                     for (int bonk = 0; bonk < pojos.size(); bonk++) {
                                         Object pojo = pojos.get(bonk);
 
@@ -171,8 +172,9 @@ public class ExperienceProcessor {
                                             boolean deepRenderEntry = getRenderEntry(deepBasicEntry, pojo, deepIterable, resp);
                                             if (deepRenderEntry) {
 
-                                                if(!deepEntry.contains(this.FOREACH) && !deepEntry.contains(this.IFSPEC)){
+                                                if(mojosCount < pojos.size() && !deepEntry.contains(this.FOREACH) && !deepEntry.contains(this.IFSPEC)){
                                                     entriesFoo.add(deepBasicEntry);
+                                                    mojosCount++;
                                                 }else if (deepEntry.contains(this.IFSPEC)) {
                                                     SpecPartial specPartial = new SpecPartial();
                                                     List<BasicEntry> specEntries = getSpecEntries(iterableEntries);
@@ -184,6 +186,7 @@ public class ExperienceProcessor {
                                             }
                                         }
                                     }
+                                    mojosCount = 0;
 
                                 } else if (entry.contains(this.IFSPEC)) {
                                     SpecPartial specPartial = new SpecPartial();
