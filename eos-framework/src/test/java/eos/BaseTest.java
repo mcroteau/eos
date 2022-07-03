@@ -85,6 +85,7 @@ abstract class BaseTest {
             }
             Person person = new Person();
             person.setName("Royksopp *" + idx);
+            if(idx == 1)person.setName("");
             Pet pet = new Pet();
             pet.setId(idx);
             pet.setName("Apache *" + idx);
@@ -94,7 +95,7 @@ abstract class BaseTest {
             todos.add(todo);
         }
 
-        todos.get(0).getPeople().get(1).setName("");
+        todos.get(0).getPeople().get(0).setName("");
         todos.get(0).getPeople().get(0).getPet().setName("");
 
         //todo.id = 1
