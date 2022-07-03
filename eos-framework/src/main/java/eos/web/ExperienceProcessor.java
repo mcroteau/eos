@@ -57,7 +57,6 @@ public class ExperienceProcessor {
                 specPartial.setSpec(entry);
                 List<BasicEntry> specEntries = getSpecEntries(basicEntries);
                 specPartial.setEntries(specEntries);
-                partialsFoo.add(specPartial);
             } else if (entry.contains(this.FOREACH) && !withinIterable(foo, iterablePartials)) {
                 IterablePartial iterablePartial = new IterablePartial();
                 Iterable iterable = getIterable(foo, entry, resp, basicEntries);
@@ -70,18 +69,13 @@ public class ExperienceProcessor {
                 basicPartial.setBasicEntry(basicEntry);//heart broken.
                 partialsFoo.add(basicPartial);
             }
+        }
 
+        for(BasePartial basicPartial : partialsFoo){
+            System.out.println("y:" + basicPartial.getBasicEntry().getEntry());
         }
 
         exercisePartials(resp, iterablePartials, partialsFoo);
-
-        for(BasicEntry basicEntry : basicEntries){
-            String entry = basicEntry.getEntry();
-            if(exercisePartial(entry)) {
-                System.out.println("f: " + entry + "   " + basicEntry.getIdx());
-            }
-        }
-
 
         return "";
     }
@@ -100,7 +94,7 @@ public class ExperienceProcessor {
         return basicEntry;
     }
 
-    boolean exercisePartial(String entry){
+    boolean renderEntry(String entry){
         if(entry.contains(this.FOREACH))return false;
         if(entry.contains(this.ENDEACH))return false;
         if(entry.contains(this.IFSPEC))return false;
@@ -129,64 +123,66 @@ public class ExperienceProcessor {
             System.out.println("a;" + basePartial.getBasicEntry().getEntry());
 
             SpecResult specResult = withinSpec(basicEntry);
-            if(specResult != null && specResult.init() && renderSpec(specResult.getSpec(), resp))
-                entriesFoo.add(basicEntry);
+            if(specResult == null || (specResult != null && specResult.init() && renderSpec(specResult.getSpec(), resp))) {
 
-            if(specResult == null)
-                entriesFoo.add(basicEntry);
+                if(!basePartial.getType().equals(BasePartial.ITeRABLE) &&
+                        !basePartial.getType().equals(BasePartial.SPeC)
+                            && !withinIterable(foo, iterablePartials))
+                    entriesFoo.add(basicEntry);
 
 
-            IterablePartial iterablePartial = null;
+                IterablePartial iterablePartial = null;
 
-            if(basePartial.getType().equals(BasePartial.ITeRABLE)){
-                iterablePartial = (IterablePartial) basePartial;
-             }
+                if(basePartial.getType().equals(BasePartial.ITeRABLE)) {
+                    iterablePartial = (IterablePartial) basePartial;
+                }
 
-            if(iterablePartial != null){
+                if(iterablePartial != null) {
 
-                List<Object> mojos = iterablePartial.getIterable().getMojos();
+                    List<Object> mojos = iterablePartial.getIterable().getMojos();
 
-                for(int bar = 0; bar < mojos.size(); bar++) {
+                    for (int bar = 0; bar < mojos.size(); bar++) {
 
-                    Object mojo = mojos.get(bar);
-                    List<BasicEntry> iterableEntries = iterablePartial.getIterable().getEntries();
+                        Object mojo = mojos.get(bar);
+                        List<BasicEntry> iterableEntries = iterablePartial.getIterable().getEntries();
 
-                    for (int baz = 0; baz < iterableEntries.size(); baz++) {
-                        BasicEntry iterableEntry = iterableEntries.get(baz);
-                        entriesFoo.add(iterableEntry);
+                        System.out.println(iterablePartial.getIterable().getMojos().size() + " : " + iterableEntries.size());
 
-                        String entry = iterableEntry.getEntry();
+                        for (int baz = 0; baz < iterableEntries.size(); baz++) {
+                            BasicEntry iterableEntry = iterableEntries.get(baz);
+                            String entry = iterableEntry.getEntry();
 
-                        boolean renderEntry = getRenderEntry(iterableEntry, mojo, iterablePartial.getIterable(), resp);
-                        System.out.println("w: " + renderEntry);
-                        if(renderEntry){
+                            boolean renderEntry = getRenderEntry(iterableEntry, mojo, iterablePartial.getIterable(), resp);
+                            if (renderEntry) {
 
-                            if (entry.contains(this.DATA)) {
-                                setEachVariable(entry, resp, mojo);
-                            } else if (entry.contains(this.FOREACH)) {
+                                entriesFoo.add(iterableEntry);
 
-                                Iterable deepIterable = getIterableDeep(baz, entry, mojo, iterableEntries);
-                                for(int bonk = 0; bonk < deepIterable.getMojos().size(); bonk++){
-                                    Object pojo = deepIterable.getMojos().get(bonk);
+                                if (entry.contains(this.DATA)) {
+                                    setEachVariable(entry, resp, mojo);
+                                } else if (entry.contains(this.FOREACH)) {
 
-                                    for(int blurp = 0; blurp < deepIterable.getEntries().size(); blurp++) {
-                                        BasicEntry deepBasicEntry = deepIterable.getEntries().get(blurp);
-//                                        boolean deepRenderEntry = getRenderEntry(deepBasicEntry, pojo, deepIterable, resp);
-//                                        System.out.println("inside: " + deepRenderEntry);
-//                                        if(deepRenderEntry){
-                                            entriesFoo.add(deepBasicEntry);
-//                                        }
+                                    Iterable deepIterable = getIterableDeep(baz, entry, mojo, iterableEntries);
+                                    for (int bonk = 0; bonk < deepIterable.getMojos().size(); bonk++) {
+                                        Object pojo = deepIterable.getMojos().get(bonk);
+
+                                        for (int blurp = 0; blurp < deepIterable.getEntries().size(); blurp++) {
+                                            BasicEntry deepBasicEntry = deepIterable.getEntries().get(blurp);
+                                            System.out.println("n : " + deepBasicEntry.getEntry());
+                                            boolean deepRenderEntry = getRenderEntry(deepBasicEntry, pojo, deepIterable, resp);
+                                            if (deepRenderEntry) {
+                                                entriesFoo.add(deepBasicEntry);
+                                            }
+                                        }
                                     }
-                                }
 
-                            } else if (entry.contains(this.IFSPEC)) {
-                                SpecPartial specPartial = new SpecPartial();
-                                List<BasicEntry> specEntries = getSpecEntries(iterableEntries);
-                                BasicEntry goBasicEntry = specEntries.get(0);
-                                specPartial.setBasicEntry(goBasicEntry);
-                                specPartial.setEntries(specEntries);
-                                entriesFoo.add(goBasicEntry);
-                                specPartials.add(specPartial);
+                                } else if (entry.contains(this.IFSPEC)) {
+                                    SpecPartial specPartial = new SpecPartial();
+                                    List<BasicEntry> specEntries = getSpecEntries(iterableEntries);
+                                    BasicEntry goBasicEntry = specEntries.get(0);
+                                    specPartial.setBasicEntry(goBasicEntry);
+                                    specPartial.setEntries(specEntries);
+                                    specPartials.add(specPartial);
+                                }
                             }
                         }
                     }
@@ -196,18 +192,18 @@ public class ExperienceProcessor {
 
         for(BasicEntry basicEntry : entriesFoo){
             String entry = basicEntry.getEntry();
-            System.out.println("spec: " + entry + "   " + basicEntry.getIdx());
+            if(renderEntry(entry))
+                System.out.println("spec: " + entry + "   " + basicEntry.getIdx() + " > " + basicEntry.getGuid());
         }
     }
 
     boolean getRenderEntry(BasicEntry basicEntry, Object mojo, Iterable iterable, HttpResponse resp) throws NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException, InvocationTargetException {
         SpecResult specResult = withinSpec(basicEntry);
         if(specResult != null) {
-            System.out.println(specResult.getSpec() + ":" + mojo + ":" + basicEntry.getEntry());
             boolean renderSpec = renderSpec(specResult.getSpec(), resp);
             boolean renderIterableSpec = renderIterableSpec(specResult.getSpec(), mojo, iterable, resp);
 
-            System.out.println("h: " + specResult.init() + " renderSpec:" + renderSpec + " renderIterableSpec:" + renderIterableSpec);
+            System.out.println("init: " + specResult.init() + " renderSpec:" + renderSpec + " renderIterableSpec:" + renderIterableSpec + " mojo:" + mojo + " entry:" + specResult.getSpec());
             if(specResult.init() && (renderSpec || renderIterableSpec)){
                 return true;
             }
@@ -825,7 +821,6 @@ public class ExperienceProcessor {
         }
         return output.toString();
     }
-
 
     private Iterable getIterableDeep(int go, String entry, Object mojo, List<BasicEntry> entries) throws EosException, NoSuchFieldException, IllegalAccessException {
         int startEach = entry.indexOf("<eos:each");

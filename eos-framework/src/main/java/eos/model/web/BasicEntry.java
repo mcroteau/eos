@@ -10,6 +10,10 @@ public class BasicEntry {
     Object mojo;
     Iterable iterable;
 
+    public BasicEntry(){
+        this.guid = UUID.randomUUID().toString();
+    }
+
     public String getGuid() {
         return guid;
     }
