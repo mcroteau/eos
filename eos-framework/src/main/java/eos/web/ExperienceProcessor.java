@@ -123,6 +123,7 @@ public class ExperienceProcessor {
         Integer nombre = 0;
         Boolean initialIteration = true;
         Boolean innerIterableDiscovered = false;
+        Map<String, Boolean> specs = new HashMap<>();
         for(int foo = 0; foo < partialsFoo.size(); foo++){
             BasePartial basePartial = partialsFoo.get(foo);
             BasicEntry basicEntry = basePartial.getBasicEntry();
@@ -167,32 +168,27 @@ public class ExperienceProcessor {
                                     deepBasicEntry.setNumber(nombre);nombre++;
                                     String deepEntry = deepBasicEntry.getEntry();
 
-                                    if (deepEntry.contains(this.IFSPEC)) {
-                                        SpecPartial specPartial = new SpecPartial();
-//                                        List<BasicEntry> specEntries = getSpecEntries(iterableEntries);
-//                                        BasicEntry goBasicEntry = specEntries.get(0);
-                                        specPartial.setBasicEntry(deepBasicEntry);
-//                                        specPartial.setEntries(specEntries);
-//                                        specPartials.add(specPartial);
-                                        partialsFoo.add(specPartial);
-                                    }else if(deepEntry.contains(this.ENDIF)){
-                                        SpecPartial specPartial = new SpecPartial();;
-                                        specPartial.setBasicEntry(deepBasicEntry);
-                                        partialsFoo.add(specPartial);
-                                    }else{
+                                    if (deepEntry.contains(this.IFSPEC) && !specs.containsKey(deepBasicEntry.getGuid())) {
+                                        entriesFoo.add(deepBasicEntry);
+                                        specs.put(deepBasicEntry.getGuid(), true);
+                                    }else if(!specs.containsKey(deepBasicEntry.getGuid())){
                                         entriesFoo.add(deepBasicEntry);
                                     }
 
                                 }
+
                             }
+                            specs.clear();
 
                         } else if (entry.contains(this.IFSPEC)) {
                             SpecPartial specPartial = new SpecPartial();
                             specPartial.setBasicEntry(iterableEntry);
 //                            specPartials.add(specPartial);//todo:remove spec partial
-                            entriesFoo.add(specBasicEntry);
-                        }else if(entry.contains(this.ENDIF) || initialIteration || !innerIterableDiscovered){
+//                            entriesFoo.add(specBasicEntry);
                             entriesFoo.add(iterableEntry);
+                        }else if((entry.contains(this.ENDIF) || initialIteration) || !innerIterableDiscovered && !specs.containsKey(iterableEntry.getGuid())){
+                            entriesFoo.add(iterableEntry);
+                            specs.put(iterableEntry.getGuid(), true);
                         }
                     }
                     initialIteration = true;
@@ -204,7 +200,7 @@ public class ExperienceProcessor {
         for(BasicEntry basicEntry : entriesFoo){
             basicEntry.setNumber(number);number++;
             String entry = basicEntry.getEntry();
-            if(renderEntry(entry) || entry.contains(this.IFSPEC))
+//            if(renderEntry(entry) || entry.contains(this.IFSPEC))
                 System.out.println("spec: " + entry + "   " + basicEntry.getIdx() + " > " + basicEntry.getGuid() + " > " + basicEntry.getNumber());
         }
     }
