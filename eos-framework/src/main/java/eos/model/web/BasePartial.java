@@ -12,7 +12,8 @@ public abstract class BasePartial {
     Object mojo;
     String type;
     BasicEntry basicEntry;
-    List<BasicEntry> entries;
+    List<BasePartial> partials;
+    Iterable iterable;
 
     public BasePartial(){
         guid = UUID.randomUUID().toString();
@@ -82,12 +83,20 @@ public abstract class BasePartial {
         this.basicEntry = basicEntry;
     }
 
-    public List<BasicEntry> getEntries() {
-        return entries;
+    public List<BasePartial> getPartials() {
+        return partials;
     }
 
-    public void setEntries(List<BasicEntry> entries) {
-        this.entries = entries;
+    public void setPartials(List<BasePartial> partials) {
+        this.partials = partials;
+    }
+
+    public Iterable getIterable() {
+        return iterable;
+    }
+
+    public void setIterable(Iterable iterable) {
+        this.iterable = iterable;
     }
 
     public static String BASiC = "basic";

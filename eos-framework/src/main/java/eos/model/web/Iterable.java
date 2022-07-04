@@ -6,8 +6,9 @@ public class Iterable {
     int stop;
     int go;//todo:?
     String field;
+    Integer mojosCount;
     List<Object> mojos;
-    List<BasicEntry> entries;
+    List<BasePartial> entries;
     BasicEntry basicEntry;
 
     public int getStop() {
@@ -38,15 +39,23 @@ public class Iterable {
         return mojos;
     }
 
+    public Integer getMojosCount() {
+        return mojosCount;
+    }
+
+    public void setMojosCount(Integer mojosCount) {
+        this.mojosCount = mojosCount;
+    }
+
     public void setMojos(List<Object> mojos) {
         this.mojos = mojos;
     }
 
-    public List<BasicEntry> getEntries() {
+    public List<BasePartial> getEntries() {
         return entries;
     }
 
-    public void setEntries(List<BasicEntry> entries) {
+    public void setEntries(List<BasePartial> entries) {
         this.entries = entries;
     }
 

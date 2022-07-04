@@ -10,6 +10,7 @@ public class BasicEntry {
     String entry;
     Object mojo;
     Iterable iterable;
+    Integer endSpecNumber;
 
     public BasicEntry(){
         this.guid = UUID.randomUUID().toString();
@@ -63,4 +64,11 @@ public class BasicEntry {
         this.iterable = iterable;
     }
 
+    public Integer getEndSpecNumber() {
+        return endSpecNumber;
+    }
+
+    public void setEndSpecNumber(Integer endSpecNumber) {
+        this.endSpecNumber = endSpecNumber;
+    }
 }
