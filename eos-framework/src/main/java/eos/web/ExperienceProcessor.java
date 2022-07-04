@@ -101,8 +101,8 @@ public class ExperienceProcessor {
     boolean renderEntry(String entry){
         if(entry.contains(this.FOREACH))return false;
         if(entry.contains(this.ENDEACH))return false;
-        if(entry.contains(this.IFSPEC))return false;
-        if(entry.contains(this.ENDIF))return false;
+//        if(entry.contains(this.IFSPEC))return false;
+//        if(entry.contains(this.ENDIF))return false;
         return true;
     }
 
@@ -141,11 +141,11 @@ public class ExperienceProcessor {
 
             if(iterablePartial != null) {
 
-                List<Object> mojos = iterablePartial.getIterable().getMojos();
+//                List<Object> mojos = iterablePartial.getIterable().getMojos();
 
-                for (int bar = 0; bar < mojos.size(); bar++) {
+//                for (int bar = 0; bar < mojos.size(); bar++) {
 
-                    Object mojo = mojos.get(bar);
+//                    Object mojo = mojos.get(bar);
                     List<BasicEntry> iterableEntries = iterablePartial.getIterable().getEntries();
 
                     for (int baz = 0; baz < iterableEntries.size(); baz++) {
@@ -154,31 +154,22 @@ public class ExperienceProcessor {
                         String entry = iterableEntry.getEntry();
 
                         if (entry.contains(this.DATA)) {
-                            setEachVariable(entry, resp, mojo);
+                            setEachVariable(entry, resp, iterableEntry.getMojo());
                         } else if (entry.contains(this.FOREACH)) {
 
                             innerIterableDiscovered = true; initialIteration = false;
-                            Iterable deepIterable = getIterableDeep(baz, entry, mojo, iterableEntries);
-                            List<Object> pojos = deepIterable.getMojos();
+                            Iterable deepIterable = getIterableDeep(baz, entry, iterableEntry.getMojo(), iterableEntries);
+//                            List<Object> pojos = deepIterable.getMojos();
 
-                            for (int bonk = 0; bonk < pojos.size(); bonk++) {
+//                            for (int bonk = 0; bonk < pojos.size(); bonk++) {
 
                                 for (int blurp = 0; blurp < deepIterable.getEntries().size(); blurp++) {
                                     BasicEntry deepBasicEntry = deepIterable.getEntries().get(blurp);
                                     deepBasicEntry.setNumber(nombre);nombre++;
-                                    String deepEntry = deepBasicEntry.getEntry();
-
-                                    if (deepEntry.contains(this.IFSPEC) && !specs.containsKey(deepBasicEntry.getGuid())) {
-                                        entriesFoo.add(deepBasicEntry);
-                                        specs.put(deepBasicEntry.getGuid(), true);
-                                    }else if(!specs.containsKey(deepBasicEntry.getGuid())){
-                                        entriesFoo.add(deepBasicEntry);
-                                    }
-
+                                    entriesFoo.add(deepBasicEntry);
                                 }
 
-                            }
-                            specs.clear();
+//                            }
 
                         } else if (entry.contains(this.IFSPEC)) {
                             SpecPartial specPartial = new SpecPartial();
@@ -192,7 +183,7 @@ public class ExperienceProcessor {
                         }
                     }
                     initialIteration = true;
-                }
+//                }
             }
         }
 
@@ -200,7 +191,7 @@ public class ExperienceProcessor {
         for(BasicEntry basicEntry : entriesFoo){
             basicEntry.setNumber(number);number++;
             String entry = basicEntry.getEntry();
-//            if(renderEntry(entry) || entry.contains(this.IFSPEC))
+            if(renderEntry(entry))
                 System.out.println("spec: " + entry + "   " + basicEntry.getIdx() + " > " + basicEntry.getGuid() + " > " + basicEntry.getNumber());
         }
     }
@@ -874,7 +865,7 @@ public class ExperienceProcessor {
         int endItem = entry.indexOf("\"", startItem + 5);//var="
         String activeField = entry.substring(startItem + 5, endItem);
 
-        List<Object> objs = (ArrayList) getIterableValueRecursive(0, field, mojo);
+        List<Object> mojos = (ArrayList) getIterableValueRecursive(0, field, mojo);
 
         Iterable iterable = new Iterable();
         int stop = getStop(go, entries);
@@ -884,15 +875,25 @@ public class ExperienceProcessor {
             iterableEntries.add(basicIterableEntry);
         }
 
+        List<BasicEntry> basicEntries = new ArrayList<>();
+        for(Object koko : mojos){
+            for(BasicEntry basicEntry : iterableEntries){
+                basicEntry.setMojo(koko);
+                basicEntry.setIterable(iterable);
+                basicEntries.add(basicEntry);
+            }
+        }
+
+
         BasicEntry basicEntry = new BasicEntry();
         basicEntry.setEntry(entry);
 
         iterable.setBasicEntry(basicEntry);
         iterable.setGo(go + 1);
         iterable.setStop(stop);
-        iterable.setMojos(objs);
+        iterable.setMojos(mojos);
         iterable.setField(activeField);
-        iterable.setEntries(iterableEntries);
+        iterable.setEntries(basicEntries);
         return iterable;
     }
 
@@ -907,7 +908,6 @@ public class ExperienceProcessor {
 
     private Iterable getIterable(int go, String entry, HttpResponse httpResponse, List<BasicEntry> entries) throws EosException, NoSuchFieldException, IllegalAccessException {
 
-        List<Object> objs = new ArrayList<>();
         int startEach = entry.indexOf("<eos:each");
 
         int startIterate = entry.indexOf("items=", startEach);
@@ -920,10 +920,11 @@ public class ExperienceProcessor {
 
         String expression = entry.substring(startIterate + 7, endIterate);
 
+        List<Object> mojos = new ArrayList<>();
         if(iterableKey.contains(".")){
-            objs = getIterableInitial(iterableKey, expression, httpResponse);
+            mojos = getIterableInitial(iterableKey, expression, httpResponse);
         }else if(httpResponse.data().containsKey(iterableKey)){
-            objs = (ArrayList) httpResponse.get(iterableKey);
+            mojos = (ArrayList) httpResponse.get(iterableKey);
         }
 
         Iterable iterable = new Iterable();
@@ -936,15 +937,24 @@ public class ExperienceProcessor {
             iterableEntries.add(basicIterableEntry);
         }
 
+        List<BasicEntry> basicEntries = new ArrayList<>();
+        for(Object koko : mojos){
+            for(BasicEntry basicEntry : iterableEntries){
+                basicEntry.setMojo(koko);
+                basicEntry.setIterable(iterable);
+                basicEntries.add(basicEntry);
+            }
+        }
+
         BasicEntry basicEntry = new BasicEntry();
         basicEntry.setEntry(entry);
 
         iterable.setBasicEntry(basicEntry);
         iterable.setGo(go + 1);
         iterable.setStop(stop);
-        iterable.setMojos(objs);
+        iterable.setMojos(mojos);
         iterable.setField(activeField);
-        iterable.setEntries(iterableEntries);
+        iterable.setEntries(basicEntries);
         return iterable;
     }
 
