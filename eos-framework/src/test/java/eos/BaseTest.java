@@ -80,6 +80,7 @@ abstract class BaseTest {
                 Pet pet = new Pet();
                 pet.setId(idxn);
                 pet.setName("Apache *" + idxn);
+                if(idx == 0)pet.setName("");
                 person.setPet(pet);
                 people.add(person);
             }

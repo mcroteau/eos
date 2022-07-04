@@ -7,6 +7,9 @@ public abstract class BasePartial {
     String guid;
     int go;//todo:?
     int stop;
+    Integer idx;//todo:?
+    String entry;
+    Object mojo;
     String type;
     BasicEntry basicEntry;
     List<BasicEntry> entries;
@@ -21,6 +24,30 @@ public abstract class BasePartial {
 
     public void setGuid(String guid) {
         this.guid = guid;
+    }
+
+    public Integer getIdx() {
+        return idx;
+    }
+
+    public void setIdx(Integer idx) {
+        this.idx = idx;
+    }
+
+    public String getEntry() {
+        return entry;
+    }
+
+    public void setEntry(String entry) {
+        this.entry = entry;
+    }
+
+    public Object getMojo() {
+        return mojo;
+    }
+
+    public void setMojo(Object mojo) {
+        this.mojo = mojo;
     }
 
     public int getGo() {

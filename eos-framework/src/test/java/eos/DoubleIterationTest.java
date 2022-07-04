@@ -120,13 +120,13 @@ public class DoubleIterationTest extends BaseTest {
         sb.append("${todo.person.name}\n");
         sb.append("<eos:each items=\"${todos}\" var=\"tdo\">\n");
         sb.append("     ${tdo.id}\n");
-//        sb.append("     <eos:if spec=\"${tdo.person.name == ''}\">\n");
+        sb.append("     <eos:if spec=\"${tdo.person.name == ''}\">\n");
         sb.append("         <eos:each items=\"${tdo.people}\" var=\"person\">\n");
-//        sb.append("             <eos:if spec=\"${person.pet.name != ''}\">\n");
+        sb.append("             <eos:if spec=\"${person.pet.name == ''}\">\n");
         sb.append("                 ${person.pet.name}\n");
-//        sb.append("             </eos:if>\n");
+        sb.append("             </eos:if>\n");
         sb.append("         </eos:each>\n");;
-//        sb.append("     </eos:if>\n");
+        sb.append("     </eos:if>\n");
         sb.append("</eos:each>\n");
         //birdman had to do with michael keaton or the basketball player. he was rating them out
         String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");

@@ -4,16 +4,11 @@ import java.util.List;
 
 public class Iterable {
     int stop;
-    int go;
+    int go;//todo:?
     String field;
     List<Object> mojos;
     List<BasicEntry> entries;
-    BasicEntry entry;
-    Integer count;
-
-    public Iterable(){
-        this.count = 0;
-    }
+    BasicEntry basicEntry;
 
     public int getStop() {
         return stop;
@@ -55,19 +50,11 @@ public class Iterable {
         this.entries = entries;
     }
 
-    public BasicEntry getEntry() {
-        return entry;
+    public BasicEntry getBasicEntry() {
+        return basicEntry;
     }
 
-    public void setEntry(BasicEntry entry) {
-        this.entry = entry;
-    }
-
-    public Integer getCount() {
-        return count;
-    }
-
-    public void setCount(Integer count) {
-        this.count = count;
+    public void setBasicEntry(BasicEntry basicEntry) {
+        this.basicEntry = basicEntry;
     }
 }

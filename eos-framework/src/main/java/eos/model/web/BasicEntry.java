@@ -6,6 +6,7 @@ public class BasicEntry {
 
     String guid;
     Integer idx;//todo:?
+    Integer number;
     String entry;
     Object mojo;
     Iterable iterable;
@@ -28,6 +29,14 @@ public class BasicEntry {
 
     public void setIdx(Integer idx) {
         this.idx = idx;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 
     public String getEntry() {

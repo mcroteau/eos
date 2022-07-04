@@ -150,8 +150,8 @@ public class ExperienceProcessor {
                             BasicEntry iterableEntry = iterableEntries.get(baz);
                             String entry = iterableEntry.getEntry();
 
-                            boolean renderEntry = getRenderEntry(iterableEntry, mojo, iterablePartial.getIterable(), resp);
-                            if (renderEntry) {
+//                            boolean renderEntry = getRenderEntry(iterableEntry, mojo, iterablePartial.getIterable(), resp);
+//                            if (renderEntry) {
 
                                 if (entry.contains(this.DATA)) {
                                     setEachVariable(entry, resp, mojo);
@@ -169,12 +169,15 @@ public class ExperienceProcessor {
 
                                             String deepEntry = deepBasicEntry.getEntry();
                                             System.out.println("n : " + deepBasicEntry.getEntry());
-                                            boolean deepRenderEntry = getRenderEntry(deepBasicEntry, pojo, deepIterable, resp);
-                                            if (deepRenderEntry) {
 
-                                                if(mojosCount < pojos.size() && !deepEntry.contains(this.FOREACH) && !deepEntry.contains(this.IFSPEC)){
-                                                    entriesFoo.add(deepBasicEntry);
-                                                    mojosCount++;
+//                                            boolean deepRenderEntry = getRenderEntry(iterableEntry, mojo, iterablePartial.getIterable(), resp);
+//                                            if (deepRenderEntry) {
+
+                                                if(!deepEntry.contains(this.IFSPEC)){
+
+                                                        entriesFoo.add(deepBasicEntry);
+                                                        mojosCount++;
+
                                                 }else if (deepEntry.contains(this.IFSPEC)) {
                                                     SpecPartial specPartial = new SpecPartial();
                                                     List<BasicEntry> specEntries = getSpecEntries(iterableEntries);
@@ -182,8 +185,9 @@ public class ExperienceProcessor {
                                                     specPartial.setBasicEntry(goBasicEntry);
                                                     specPartial.setEntries(specEntries);
                                                     specPartials.add(specPartial);
+                                                    partialsFoo.add(specPartial);
                                                 }
-                                            }
+//                                            }
                                         }
                                     }
                                     mojosCount = 0;
@@ -199,16 +203,18 @@ public class ExperienceProcessor {
                                     entriesFoo.add(iterableEntry);
                                 }
                             }
-                        }
+//                        }
                     }
                 }
             }
         }
 
+        Integer number = 0;
         for(BasicEntry basicEntry : entriesFoo){
+            basicEntry.setNumber(number);number++;
             String entry = basicEntry.getEntry();
             if(renderEntry(entry))
-                System.out.println("spec: " + entry + "   " + basicEntry.getIdx() + " > " + basicEntry.getGuid());
+                System.out.println("spec: " + entry + "   " + basicEntry.getIdx() + " > " + basicEntry.getGuid() + " > " + basicEntry.getNumber());
         }
     }
 
@@ -867,7 +873,7 @@ public class ExperienceProcessor {
         BasicEntry basicEntry = new BasicEntry();
         basicEntry.setEntry(entry);
 
-        iterable.setEntry(basicEntry);
+        iterable.setBasicEntry(basicEntry);
         iterable.setGo(go + 1);
         iterable.setStop(stop);
         iterable.setMojos(objs);
@@ -919,7 +925,7 @@ public class ExperienceProcessor {
         BasicEntry basicEntry = new BasicEntry();
         basicEntry.setEntry(entry);
 
-        iterable.setEntry(basicEntry);
+        iterable.setBasicEntry(basicEntry);
         iterable.setGo(go + 1);
         iterable.setStop(stop);
         iterable.setMojos(objs);
