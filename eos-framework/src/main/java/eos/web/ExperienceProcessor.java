@@ -78,7 +78,7 @@ public class ExperienceProcessor {
             System.out.println("y:" + basicPartial.getBasicEntry().getEntry());
         }
 
-        exercisePartials(resp, iterablePartials, partialsFoo);
+        exercisePartials(resp, partialsFoo);
 
         return "";
     }
@@ -116,7 +116,7 @@ public class ExperienceProcessor {
         return false;
     }
 
-    void exercisePartials(HttpResponse resp, List<IterablePartial> iterablePartials, List<BasePartial> partialsFoo) throws InvocationTargetException, NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException {
+    void exercisePartials(HttpResponse resp, List<BasePartial> partialsFoo) throws InvocationTargetException, NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException {
 
         List<BasicEntry> entriesFoo = new ArrayList<>();
 
