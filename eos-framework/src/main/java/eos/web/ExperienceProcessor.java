@@ -155,7 +155,6 @@ public class ExperienceProcessor {
 
                         for (int blurp = 0; blurp < deepIterable.getEntries().size(); blurp++) {
                             BasePartial deepBasePartial = deepIterable.getEntries().get(blurp);
-                            System.out.println("dx : " + deepBasePartial.getEntry());
                             deepBasePartial.setIdx(getIdxn());
                             partialsFoo.add(deepBasePartial);
                         }
@@ -167,7 +166,7 @@ public class ExperienceProcessor {
 //                            specPartials.add(specPartial);//todo:remove spec partial
 //                            entriesFoo.add(specBasicEntry);
                         partialsFoo.add(specPartial);
-                    }else if((iterableEntry.contains(this.ENDIF) || initialIteration) || !innerIterableDiscovered && !specs.containsKey(iterablePartial.getGuid())){
+                    }else{
                         BasicPartial basicPartial = new BasicPartial();
                         basicPartial.setEntry(iterableEntry);
                         basicPartial.setIdx(getIdxn());
