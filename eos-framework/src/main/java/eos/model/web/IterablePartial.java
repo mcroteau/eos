@@ -4,17 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IterablePartial extends BasePartial {
-
     public IterablePartial(){this.type = ITeRABLE; }
 
-    Iterable iterable;
+    String field;
+    MojosResult mojosResult;
 
-    public Iterable getIterable() {
-        return iterable;
+    public String getField() {
+        return field;
     }
 
-    public void setIterable(Iterable iterable) {
-        this.iterable = iterable;
+    public void setField(String field) {
+        this.field = field;
     }
 
+    public MojosResult getMojosResult() {
+        return mojosResult;
+    }
+
+    public void setMojosResult(MojosResult mojosResult) {
+        this.mojosResult = mojosResult;
+    }
 }
