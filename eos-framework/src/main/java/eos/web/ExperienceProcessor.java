@@ -254,7 +254,7 @@ public class ExperienceProcessor {
                                         List<BasePartial> specPartialsDeep = getSpecPartials(baz, false, resp, basePartials);
                                         specPartial.setPartials(specPartialsDeep);
                                         setPartial(specPartial); // you guys are great! african americans i hurt.
-                                    } else{
+                                    } else if(!withinIterable(bap, iterablePartials)){
                                         BasePartial basePartialSex = new BasicPartial();
                                         basePartialSex.setIdx(getIdx());
                                         System.out.println(">>>>>>>>>" + iterableEntrySex);
@@ -265,9 +265,7 @@ public class ExperienceProcessor {
                                 }
                             }
 
-                            withinIterableNested = false;
-
-                        }else{
+                        }else if(!withinIterable(bap, basePartials)){
                             BasePartial basePartialSex = new BasicPartial();
                             System.out.println(">>>>>>>>>" + basicEntryDos);
                             basePartialSex.setIdx(getIdx());
@@ -276,8 +274,6 @@ public class ExperienceProcessor {
                             partialsUnix.add(basePartialSex);
                         }
                     }
-
-                    withinIterable = false;
 
                 }
 
