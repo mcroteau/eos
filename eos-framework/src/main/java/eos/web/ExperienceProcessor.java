@@ -245,9 +245,7 @@ public class ExperienceProcessor {
 
                             }
 
-                        }else if(!withinIterable && !withinIterableNested &&
-                                !basePartialDos.getEntry().contains(this.ENDEACH) &&
-                                !basePartialDos.getEntry().contains(this.FOREACH)){
+                        }else{
 //                            BasePartial partial = new BasicPartial();
 //                            partial.setIdx(getIdxn());
                             iterablePartial.setEntry(basicEntryDos);
@@ -263,7 +261,7 @@ public class ExperienceProcessor {
 //                    partialsUnix.add(iterablePartial);
                 }
 
-            }else if(!withinIterable && !withinIterableNested){
+            }else if(!withinIterable(tqxro, basePartials)){
 
                 if(basicEntry.contains("${todo.id}")){
                     System.out.println("todo.id");
@@ -357,12 +355,13 @@ public class ExperienceProcessor {
         return true;
     }
 
-    boolean withinIterable(BasicEntry basicEntry, List<BasicEntry> basicEntries){
+    boolean withinIterable(int line, List<BasePartial> basePartials){
         boolean inside = false;
-        for(BasicEntry it : basicEntries){
-            System.out.println(":::"  + it.getIdx() + "<" + basicEntry.getIdx() + ":" + it.getEntry());
+        int idx = 0;
+        for(BasePartial it : basePartials){
             if(it.getEntry().contains(this.FOREACH))inside=true;
-            if(inside && it.getIdx() < basicEntry.getIdx())return true;
+            if(inside && line > idx)return true;
+            idx++;
         }
         return false;
     }
