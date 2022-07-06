@@ -9,6 +9,7 @@ public abstract class BasePartial {
     String entry;
     Object mojo;
     String type;
+    String activeField;
 
     public BasePartial(){
         guid = UUID.randomUUID().toString();
@@ -54,7 +55,16 @@ public abstract class BasePartial {
         this.type = type;
     }
 
+    public void setActiveField(String activeField) {
+        this.activeField = activeField;
+    }
+
+    public String getActiveField() {
+        return activeField;
+    }
+
     public static String BASiC = "basic";
     public static String ITeRABLE = "iterable";
     public static String SPeC = "spec";
+
 }
