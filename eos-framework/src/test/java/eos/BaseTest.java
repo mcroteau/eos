@@ -67,7 +67,7 @@ abstract class BaseTest {
 
         List<Todo> todos = new ArrayList<>();
 
-        for(int idx = 0; idx < 3; idx++) {
+        for(int idx = 0; idx < 6; idx++) {
             Todo todo = new Todo();
             todo.setId(idx);
             todo.setTitle("Todo *" + idx);
