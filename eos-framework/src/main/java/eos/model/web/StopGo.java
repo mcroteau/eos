@@ -1,22 +1,22 @@
 package eos.model.web;
 
 public class StopGo {
-    int stop;
-    int go;
+    Integer stop;
+    Integer go;
 
-    public int getStop() {
+    public Integer getStop() {
         return stop;
     }
 
-    public void setStop(int stop) {
+    public void setStop(Integer stop) {
         this.stop = stop;
     }
 
-    public int getGo() {
+    public Integer getGo() {
         return go;
     }
 
-    public void setGo(int go) {
+    public void setGo(Integer go) {
         this.go = go;
     }
 }

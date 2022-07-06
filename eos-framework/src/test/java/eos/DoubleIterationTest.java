@@ -120,6 +120,10 @@ public class DoubleIterationTest extends BaseTest {
         sb.append("${todo.person.name}\n");
         sb.append("<eos:each items=\"${todos}\" var=\"tdo\">\n");
         sb.append("     ${tdo.id}\n");
+        sb.append("     <eos:each items=\"${tdo.people}\" var=\"person\">\n");
+        sb.append("         ${person.id}\n");
+        sb.append("         ${person.name}\n");
+        sb.append("     </eos:each>\n");
         sb.append("</eos:each>\n");
         String result = exp.execute(new HashMap<>(), sb.toString(), resp, null,null).replaceAll("([^\\S\\r\\n])+|(?:\\r?\\n)+", "");
         assertEquals("01Eos.2345678910", result);

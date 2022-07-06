@@ -50,12 +50,12 @@ public class ExperienceProcessor {
             }else if (basicEntry.contains(this.FOREACH)) {
                 IterablePartial iterablePartial = new IterablePartial();
                 iterablePartial.setEntry(basePartial.getEntry());
-                iterablePartial.setIdx(getIdxn());
+                iterablePartial.setIdx(getIdx());
                 partialsFoo.add(iterablePartial);
             }else{
                 BasicPartial basicPartial = new BasicPartial();
                 basicPartial.setEntry(basicEntry);//heart broken.
-                basicPartial.setIdx(getIdxn());
+                basicPartial.setIdx(getIdx());
                 partialsFoo.add(basicPartial);
             }
         }
@@ -69,6 +69,9 @@ public class ExperienceProcessor {
 
         setBasePartials(resp, partialsFoo);
 //
+
+        partialsUnix.sort(Comparator.comparing(BasePartial::getIdx));
+
         for(BasePartial basePartial : partialsUnix){
             outputSpecs(basePartial);
         }
@@ -78,7 +81,7 @@ public class ExperienceProcessor {
 
     void outputSpecs(BasePartial basePartial){
         if(basePartial.getType().equals(BasePartial.BASiC)){
-            if(basePartial != null)
+            if(basePartial != null && !basePartial.getEntry().contains(this.FOREACH) && !basePartial.getEntry().contains(this.ENDEACH))
                 System.out.println("tni:" + basePartial.getEntry());
         }
         if(basePartial.getType().equals(BasePartial.SPeC)){
@@ -135,12 +138,31 @@ public class ExperienceProcessor {
             String basicEntry = basePartial.getEntry();
             if(basicEntry.contains(this.ENDEACH))endEach++;
 
-            System.out.println("open:" + openIdx + " openEach:" + openEach +  " endEach:" + endEach + " secondpass:" + secondPass);
+
+            System.out.println("*" + basicEntry);
+//            System.out.println("open:" + openIdx + " openEach:" + openEach +  " endEach:" + endEach + " secondpass:" + secondPass + ":" + basicEntry);
 
             if(openEach > 3)throw new EosException("too many nested <eos:each>.");
             if(basicEntry.contains(this.ENDEACH) && endEach == openEach && endEach != 0){
                 System.out.println(">break : " + openEach + "==" + endEach);
-                return qxro;
+                return qxro + 1;
+            }
+        }
+        throw new EosException("missing end </eos:each>");
+    }
+
+    StopGo getStopGoNested(List<BasePartial> iterablePartials) throws EosException {
+        StopGo stopGo = new StopGo();
+        for (int qxro = 0; qxro < iterablePartials.size(); qxro++) {
+            BasePartial basePartial = iterablePartials.get(qxro);
+            String basicEntry = basePartial.getEntry();
+            System.out.println("*" + basicEntry);
+            if(basicEntry.contains(this.FOREACH))stopGo.setGo(qxro);
+
+            if(basicEntry.contains(this.ENDEACH) && stopGo.getGo() != null){
+                System.out.println("*return" + basicEntry);
+                stopGo.setStop(qxro);
+                return stopGo;
             }
         }
         throw new EosException("missing end </eos:each>");
@@ -156,6 +178,7 @@ public class ExperienceProcessor {
 
         Boolean withinIterable = false;
         Boolean withinIterableNested = false;
+        Boolean iterableSet = false;
         for(int tqxro = 0; tqxro < basePartials.size(); tqxro++){
 
             BasePartial basePartial = basePartials.get(tqxro);
@@ -165,7 +188,7 @@ public class ExperienceProcessor {
 
             if(basicEntry.contains(this.IFSPEC)){
                 SpecPartial specPartial = new SpecPartial();
-                specPartial.setIdx(getIdxn());
+                specPartial.setIdx(getIdx());
                 specPartial.setSpec(basicEntry);
                 List<BasePartial> specPartialsDeep = getSpecPartials(tqxro, false, resp, basePartials);
                 specPartial.setPartials(specPartialsDeep);
@@ -183,15 +206,13 @@ public class ExperienceProcessor {
                     def
                     def
                  */
-            }else if(basicEntry.contains(this.FOREACH) &&
-                    !indexedPartials.containsKey(getKey(basePartial))){
+            }else if(basicEntry.contains(this.FOREACH) && !iterableSet){
                 withinIterable = true;
-                MojosResult mojosResult = getIterableMojos(tqxro, basicEntry, resp, basePartials);
-                List<BasePartial> iterablePartials = getIterablePartialsNested(tqxro + 1, false, resp, basePartials);
-                System.out.println("iss:" + iterablePartials.size());
+                iterableSet = true;
 
-                BasePartial iterablePartial = new BasicPartial();
-                iterablePartial.setPartials(new ArrayList<>());
+                MojosResult mojosResult = getIterableMojos(tqxro, basicEntry, resp, basePartials);
+                List<BasePartial> iterablePartials = getIterablePartials(tqxro + 1, false, resp, basePartials);
+                System.out.println("iss:" + iterablePartials.size());
 
                 for(int baz = 0; baz < mojosResult.getMojos().size(); baz++){
                     Object pojo = mojosResult.getMojos().get(baz);
@@ -204,71 +225,65 @@ public class ExperienceProcessor {
 
                         if(basicEntryDos.contains(this.IFSPEC)){
                             SpecPartial specPartial = new SpecPartial();
-                            specPartial.setIdx(getIdxn());
+                            specPartial.setIdx(getIdx());
                             specPartial.setSpec(basicEntryDos);
                             specPartial.setMojo(pojo);
                             List<BasePartial> specPartialsDeep = getSpecPartials(tqxro + 1, false, resp, basePartials);
                             specPartial.setPartials(specPartialsDeep);
                         }else if(basicEntryDos.contains(this.FOREACH)){
-
                             withinIterableNested = true;
                             MojosResult mojosResultDos = getIterableMojosDeep(basicEntryDos, pojo, basePartials);
-                            List<BasePartial> iterablePartialsDos = getIterablePartialsNested(baz + 1, true, resp, basePartials);
+                            List<BasePartial> iterablePartialsDos = getIterablePartialsNested(1, true, resp, iterablePartials);
                             System.out.println("isss:" + iterablePartialsDos.size());
+
+                            for(BasePartial p : iterablePartialsDos){
+                                System.out.println("nt: " + p.getEntry());
+                            }
 
                             for (int tike = 0; tike < mojosResultDos.getMojos().size(); tike++) {
                                 Object mojo = mojosResultDos.getMojos().get(tike);
                                 for (int abba = 0; abba < iterablePartialsDos.size(); abba++) {
 
-
                                     BasePartial iterablePartialTres = iterablePartialsDos.get(abba);
-                                    String iterableEntryTres = iterablePartialTres.getEntry();
-                                    if (iterableEntryTres.contains(this.IFSPEC)) {
+                                    String iterableEntrySex = iterablePartialTres.getEntry();
+                                    if (iterableEntrySex.contains(this.IFSPEC)) {
                                         SpecPartial specPartial = new SpecPartial();
-                                        specPartial.setIdx(getIdxn());
-                                        specPartial.setSpec(iterableEntryTres);
+                                        specPartial.setIdx(getIdx());
+                                        specPartial.setSpec(iterableEntrySex);
                                         specPartial.setMojo(mojo);
                                         List<BasePartial> specPartialsDeep = getSpecPartials(baz, false, resp, basePartials);
                                         specPartial.setPartials(specPartialsDeep);
                                         setPartial(specPartial); // you guys are great! african americans i hurt.
-                                    } else if (!withinIterableNested) {
-                                        BasePartial partial = new BasicPartial();
-                                        partial.setIdx(getIdxn());
-//                                        partial.setEntry(iterableEntryTres);
-                                        partial.setEntry("n");
-                                        partial.setMojo(pojo);
-                                        setPartial(partial);
+                                    } else{
+                                        BasePartial basePartialSex = new BasicPartial();
+                                        basePartialSex.setIdx(getIdx());
+                                        System.out.println(">>>>>>>>>" + iterableEntrySex);
+                                        basePartialSex.setMojo(mojo);
+                                        basePartialSex.setEntry(iterableEntrySex);
+                                        partialsUnix.add(basePartialSex);
                                     }
                                 }
-
-//                                iterablePartial.getPartials().add(iterablePartialDos);
-
                             }
 
+                            withinIterableNested = false;
+
                         }else{
-//                            BasePartial partial = new BasicPartial();
-//                            partial.setIdx(getIdxn());
-                            iterablePartial.setEntry(basicEntryDos);
-//                            iterablePartial.getPartials().add(basePartialDos);
-                            partialsUnix.add(iterablePartial);
+                            BasePartial basePartialSex = new BasicPartial();
+                            System.out.println(">>>>>>>>>" + basicEntryDos);
+                            basePartialSex.setIdx(getIdx());
+                            basePartialSex.setMojo(pojo);
+                            basePartialSex.setEntry(basicEntryDos);
+                            partialsUnix.add(basePartialSex);
                         }
                     }
 
                     withinIterable = false;
-                    setPartial(basePartial);
 
-//                    iterablePartial.setPartials(basePartialsIterable);
-//                    partialsUnix.add(iterablePartial);
                 }
 
             }else if(!withinIterable(tqxro, basePartials)){
-
-                if(basicEntry.contains("${todo.id}")){
-                    System.out.println("todo.id");
-                }
-
                 BasePartial partial = new BasicPartial();
-                partial.setIdx(getIdxn());
+                partial.setIdx(getIdx());
                 partial.setEntry(basicEntry);
                 partialsUnix.add(partial);
                 withinIterable = false;
@@ -278,7 +293,7 @@ public class ExperienceProcessor {
 
     }
 
-    List<BasePartial> getIterablePartialsNested(int openIdx, Boolean secondPass, HttpResponse resp, List<BasePartial> basePartials) throws EosException {
+    List<BasePartial> getIterablePartials(int openIdx, Boolean secondPass, HttpResponse resp, List<BasePartial> basePartials) throws EosException {
         List<BasePartial> xversedPartials = new ArrayList<>();
         Integer endIdx = getEndEach(openIdx, secondPass, basePartials);
         for (int baz = openIdx; baz < endIdx; baz++) {
@@ -288,6 +303,15 @@ public class ExperienceProcessor {
         return xversedPartials;
     }
 
+    List<BasePartial> getIterablePartialsNested(int openIdx, Boolean secondPass, HttpResponse resp, List<BasePartial> basePartials) throws EosException {
+        List<BasePartial> xversedPartials = new ArrayList<>();
+        StopGo stopGo = getStopGoNested(basePartials);
+        for (int baz = stopGo.getGo(); baz < stopGo.getStop(); baz++) {
+            BasePartial basePartial = basePartials.get(baz);
+            xversedPartials.add(basePartial);
+        }
+        return xversedPartials;
+    }
 //    List<BasePartial> getIterablePartialsSecondPass(int openIdx, Object pojo, HttpResponse resp, List<BasePartial> basePartials) throws IllegalAccessException, EosException, NoSuchFieldException {
 //        List<BasePartial> xversedPartials = new ArrayList<>();
 //        Integer endIdx = getEndEach(openIdx, true, basePartials);
@@ -329,7 +353,7 @@ public class ExperienceProcessor {
     }
 
 
-    Integer getIdxn() {
+    Integer getIdx() {
         idxn++; return idxn;
     }
 
