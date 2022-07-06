@@ -98,7 +98,7 @@ public class ExperienceProcessor {
             if(basicEntry.contains(this.ENDIF))endSpec++;
 
             if(endSpec == openSpec){
-                return qxro;
+                return qxro + 1;
             }
         }
         return 0;
@@ -146,6 +146,8 @@ public class ExperienceProcessor {
             BasePartial basePartial = basePartials.get(tqxro);
             String basicEntry = basePartial.getEntry();
 
+            System.out.println("**" + basePartial.getIdx() + " : " + basePartial.getEntry());
+
             if(basicEntry.contains(this.IFSPEC)){
                 SpecPartial specPartial = new SpecPartial();
                 specPartial.setSpec(basicEntry);
@@ -153,7 +155,6 @@ public class ExperienceProcessor {
                 partialsUnix.add(specPartial);
                 getSpecPartials(tqxro + 1, resp, basePartials);
             }else if(basicEntry.contains(this.FOREACH) && !iterableSet){
-                iterableSet = true;
 
                 MojosResult mojosResult = getIterableMojos(tqxro, basicEntry, resp, basePartials);
                 List<BasePartial> iterablePartials = getIterablePartials(tqxro + 1, false, resp, basePartials);
@@ -191,7 +192,7 @@ public class ExperienceProcessor {
                                         specPartial.setIdx(getIdx());
                                         partialsUnix.add(specPartial);
                                         getSpecPartials(abba + 1, resp, iterablePartialsDos); // you guys are great! african americans i hurt.
-                                    } else if(!withinIterable(bap, iterablePartials)){
+                                    } else if(!withinIterable(bap, iterablePartials) || iterableEntrySex.contains(this.ENDIF)){
                                         BasePartial basePartialSex = new BasicPartial();
                                         basePartialSex.setIdx(getIdx());
                                         System.out.println(">>>>>>>>>" + iterableEntrySex);
@@ -202,7 +203,7 @@ public class ExperienceProcessor {
                                 }
                             }
 
-                        }else if(!withinIterable(bap, basePartials)){
+                        }else if(!withinIterable(bap, basePartials) || basicEntryDos.contains(this.ENDIF)){
                             BasePartial basePartialSex = new BasicPartial();
                             System.out.println(">>>>>>>>>" + basicEntryDos);
                             basePartialSex.setIdx(getIdx());
@@ -213,7 +214,9 @@ public class ExperienceProcessor {
                     }
                 }
 
-            }else if(!withinIterable(tqxro, basePartials)){
+                iterableSet = true;
+
+            }else if(!withinIterable(tqxro, basePartials) || basicEntry.contains(this.ENDIF)){
                 BasePartial partial = new BasicPartial();
                 partial.setIdx(getIdx());
                 partial.setEntry(basicEntry);
@@ -242,7 +245,6 @@ public class ExperienceProcessor {
                 partialsUnix.add(specPartial);
                 getSpecPartials(tqxro + 1, resp, basePartials);
             }else if(basicEntry.contains(this.FOREACH) && !iterableSet){
-                iterableSet = true;
 
                 MojosResult mojosResult = getIterableMojos(tqxro, basicEntry, resp, basePartials);
                 List<BasePartial> iterablePartials = getIterablePartials(tqxro + 1, false, resp, basePartials);
@@ -278,7 +280,7 @@ public class ExperienceProcessor {
                                         specPartial.setIdx(getIdx());
                                         partialsUnix.add(specPartial);
                                         getSpecPartials(abba + 1, resp, iterablePartialsDos);// you guys are great! african americans i hurt.
-                                    } else if(!withinIterable(bap, iterablePartials)){
+                                    } else if(!withinIterable(bap, iterablePartials) || iterableEntrySex.contains(this.ENDIF)){
                                         BasePartial basePartialSex = new BasicPartial();
                                         basePartialSex.setIdx(getIdx());
                                         System.out.println(">>>>>>>>>" + iterableEntrySex);
@@ -289,7 +291,7 @@ public class ExperienceProcessor {
                                 }
                             }
 
-                        }else if(!withinIterable(bap, basePartials)){
+                        }else if(!withinIterable(bap, basePartials) || basicEntryDos.contains(this.ENDIF)){
                             BasePartial basePartialSex = new BasicPartial();
                             System.out.println(">>>>>>>>>" + basicEntryDos);
                             basePartialSex.setIdx(getIdx());
@@ -301,7 +303,9 @@ public class ExperienceProcessor {
 
                 }
 
-            }else if(!withinIterable(tqxro, basePartials)){
+                iterableSet = true;
+
+            }else if(!withinIterable(tqxro, basePartials) || basicEntry.contains(this.ENDIF)){
                 BasePartial partial = new BasicPartial();
                 partial.setIdx(getIdx());
                 partial.setEntry(basicEntry);
