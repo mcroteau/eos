@@ -5,15 +5,10 @@ import java.util.UUID;
 
 public abstract class BasePartial {
     String guid;
-    int go;//todo:?
-    int stop;
-    Integer idx;//todo:?
+    Integer idx;
     String entry;
     Object mojo;
     String type;
-    BasicEntry basicEntry;
-    List<BasePartial> partials;
-    Iterable iterable;
 
     public BasePartial(){
         guid = UUID.randomUUID().toString();
@@ -51,52 +46,12 @@ public abstract class BasePartial {
         this.mojo = mojo;
     }
 
-    public int getGo() {
-        return go;
-    }
-
-    public void setGo(int go) {
-        this.go = go;
-    }
-
-    public int getStop() {
-        return stop;
-    }
-
-    public void setStop(int stop) {
-        this.stop = stop;
-    }
-
     public String getType() {
         return type;
     }
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public BasicEntry getBasicEntry() {
-        return basicEntry;
-    }
-
-    public void setBasicEntry(BasicEntry basicEntry) {
-        this.basicEntry = basicEntry;
-    }
-
-    public List<BasePartial> getPartials() {
-        return partials;
-    }
-
-    public void setPartials(List<BasePartial> partials) {
-        this.partials = partials;
-    }
-
-    public Iterable getIterable() {
-        return iterable;
-    }
-
-    public void setIterable(Iterable iterable) {
-        this.iterable = iterable;
     }
 
     public static String BASiC = "basic";
