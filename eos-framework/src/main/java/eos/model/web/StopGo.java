@@ -3,6 +3,7 @@ package eos.model.web;
 public class StopGo {
     Integer stop;
     Integer go;
+    Boolean evaluatesPositive;
 
     public Integer getStop() {
         return stop;
@@ -18,5 +19,13 @@ public class StopGo {
 
     public void setGo(Integer go) {
         this.go = go;
+    }
+
+    public Boolean getEvaluatesPositive() {
+        return evaluatesPositive;
+    }
+
+    public void setEvaluatesPositive(Boolean evaluatesPositive) {
+        this.evaluatesPositive = evaluatesPositive;
     }
 }

@@ -67,16 +67,19 @@ abstract class BaseTest {
 
         List<Todo> todos = new ArrayList<>();
 
+        Integer personIdx = 4;
         for(int idx = 0; idx < 3; idx++) {
             Todo todo = new Todo();
             todo.setId(idx);
             todo.setTitle("Todo *" + idx);
+//            if(idx == 0)todo.setTitle("");
 
             List<Person> people = new ArrayList<>();
             for (int idxn = 0; idxn < 3; idxn++) {
                 Person person = new Person();
-                person.setId(idxn);
-                person.setName("Pep Love *" + idx);
+                person.setId(personIdx);
+                person.setName("Pep Love *" + personIdx);personIdx++;
+                if(personIdx == 5)person.setName("");
                 Pet pet = new Pet();
                 pet.setId(idxn);
                 pet.setName("Apache *" + idxn);
@@ -86,7 +89,7 @@ abstract class BaseTest {
             }
             Person person = new Person();
             person.setName("Royksopp *" + idx);
-            if(idx == 1)person.setName("");
+//            if(idx == 1)person.setName("");
             Pet pet = new Pet();
             pet.setId(idx);
             pet.setName("Apache *" + idx);
@@ -96,8 +99,6 @@ abstract class BaseTest {
             todos.add(todo);
         }
 
-        todos.get(0).getPeople().get(0).setName("");
-        todos.get(0).getPeople().get(0).getPet().setName("");
 
         //todo.id = 1
         //todo.person.id = 2

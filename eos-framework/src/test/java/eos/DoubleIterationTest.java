@@ -119,11 +119,12 @@ public class DoubleIterationTest extends BaseTest {
         StringBuilder sb = new StringBuilder();
         sb.append("${todo.person.name}\n");
         sb.append("<eos:each items=\"${todos}\" var=\"tdo\">\n");
-        sb.append("     <eos:if spec=\"${tdo.person.name == ''}\">\n");
-        sb.append("         ${tdo.id}\n");
+        sb.append("     <eos:if spec=\"${tdo.title != ''}\">\n");
+        sb.append("         ${tdo.title}\n");
         sb.append("         <eos:each items=\"${tdo.people}\" var=\"person\">\n");
-        sb.append("             ${person.id}\n");
-        sb.append("             ${person.name}\n");
+        sb.append("             <eos:if spec=\"${person.name != ''}\">\n");
+        sb.append("                  ${person.name}\n");
+        sb.append("             </eos:if>\n");
         sb.append("         </eos:each>\n");
         sb.append("     </eos:if>\n");
         sb.append("</eos:each>\n");

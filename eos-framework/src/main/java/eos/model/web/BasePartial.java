@@ -10,6 +10,7 @@ public abstract class BasePartial {
     Object mojo;
     String type;
     String activeField;
+    boolean withinIterable;
 
     public BasePartial(){
         guid = UUID.randomUUID().toString();
@@ -61,6 +62,14 @@ public abstract class BasePartial {
 
     public String getActiveField() {
         return activeField;
+    }
+
+    public boolean isWithinIterable() {
+        return withinIterable;
+    }
+
+    public void setWithinIterable(boolean withinIterable) {
+        this.withinIterable = withinIterable;
     }
 
     public static String BASiC = "basic";
