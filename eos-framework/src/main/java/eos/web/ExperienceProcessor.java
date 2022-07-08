@@ -67,6 +67,19 @@ public class ExperienceProcessor {
             if (basePartial.getType().equals(BasePartial.BASiC)) {
                 if (basePartial != null && !basePartial.getEntry().contains(this.FOREACH) && !basePartial.getEntry().contains(this.ENDEACH)) {
 //                    System.out.println("tni:" + basePartial.getIdx() + ":" + basePartial.getEntry());
+
+                    if(!withinIterable(foo, basePartials)) {
+                        String washedEntry = evaluateEntry(0, basePartial.getActiveField() != null ? basePartial.getActiveField() : "", basePartial.getEntry(), resp);
+                        String washedIterableEntry = evaluateEachEntry(basePartial.getActiveField(), washedEntry, basePartial.getMojo());
+                        BasicPartial washedPartial = new BasicPartial();
+                        washedPartial.setIdx(basePartial.getIdx());
+                        washedPartial.setEntry(washedIterableEntry);
+
+                        if (!rendered.containsKey(getKey(washedPartial))) {
+                            rendered.put(getKey(washedPartial), true);
+                            partialsFin.add(washedPartial);
+                        }
+                    }
                 }
             }
             if (basePartial.getType().equals(BasePartial.SPeC)) {
@@ -77,14 +90,6 @@ public class ExperienceProcessor {
                     System.out.println("not!");
                     List<BasePartial> specPartials = getPartialsToRender(foo, basePartials);
                     if (specPartials.size() > 0) {
-                        Boolean evaluationPositive = (!specPartial.isWithinIterable() && renderSpec(specPartial.getSpec(), resp)) || (specPartial.isWithinIterable() && renderIterableSpec(specPartial.getSpec(), specPartial.getActiveField(), specPartial.getMojo(), resp));
-                        StopGo openEnd = new StopGo();
-                        Integer open = specPartials.get(0).getIdx();
-                        Integer end = specPartials.get(specPartials.size() - this.ENDIDX).getIdx();
-                        openEnd.setGo(open);
-                        openEnd.setStop(end);
-                        openEnd.setEvaluatesPositive(evaluationPositive);
-                        evaluations.add(openEnd);
 
                         for (BasePartial prewashedPartialDos : specPartials) {
 
@@ -105,6 +110,14 @@ public class ExperienceProcessor {
                                     rendered.put(getKey(washedPartial), true);
                                     partialsFin.add(washedPartial);
                                 }
+                            }else{
+                                StopGo openEnd = new StopGo();
+                                Integer open = specPartials.get(0).getIdx();
+                                Integer end = specPartials.get(specPartials.size() - this.ENDIDX).getIdx();
+                                openEnd.setGo(open);
+                                openEnd.setStop(end);
+                                openEnd.setEvaluatesPositive(false);
+                                evaluations.add(openEnd);
                             }
                         }
                     }
@@ -291,6 +304,7 @@ public class ExperienceProcessor {
                                         BasePartial basePartialSex = new BasicPartial();
                                         basePartialSex.setIdx(getIdx());
                                         basePartialSex.setWithinIterable(true);
+                                        basePartialSex.setActiveField(mojosResultDos.getField());
                                         System.out.println(">>>>>>>>>" + iterableEntrySex);
                                         basePartialSex.setMojo(mojo);
                                         basePartialSex.setActiveField(mojosResultDos.getField());
@@ -317,6 +331,7 @@ public class ExperienceProcessor {
                             basePartialSex.setIdx(getIdx());
                             basePartialSex.setMojo(pojo);
                             basePartialSex.setWithinIterable(true);
+                            basePartialSex.setActiveField(mojosResult.getField());
                             basePartialSex.setActiveField(mojosResult.getField());
                             basePartialSex.setEntry(basicEntryDos);
                             partialsUnix.add(basePartialSex);
@@ -535,9 +550,11 @@ public class ExperienceProcessor {
         boolean inside = false;
         int idx = 0;
         for(BasePartial it : basePartials){
-            if(it.getEntry().contains(this.FOREACH))inside=true;
-            if(inside && line > idx)return true;
-            idx++;
+            if(it.getEntry() != null) {
+                if (it.getEntry().contains(this.FOREACH)) inside = true;
+                if (inside && line > idx) return true;
+                idx++;
+            }
         }
         return false;
     }
@@ -1268,19 +1285,23 @@ public class ExperienceProcessor {
         return null;
     }
 
-    private String evaluateEntry(int idx, int start, String activeField, String entry, HttpResponse httpResponse) throws NoSuchFieldException, IllegalAccessException, EosException, NoSuchMethodException, InvocationTargetException {
+    private String evaluateEntry(int idx, String activeField, String entry, HttpResponse httpResponse) throws NoSuchFieldException, IllegalAccessException, EosException, NoSuchMethodException, InvocationTargetException {
 
         if(entry.contains("${") &&
-                !entry.contains("<eos:each") &&
-                !entry.contains("<eos:if")) {
+                !entry.contains(this.FOREACH) &&
+                    !entry.contains(this.ENDEACH)) {
 
-            int startExpression = entry.indexOf("${", start);
+            int startExpression = entry.indexOf("${", idx);
             if(startExpression == -1)return entry;
 
             int endExpression = entry.indexOf("}", startExpression);
             String expression = entry.substring(startExpression, endExpression + 1);
             String fieldBase = entry.substring(startExpression + 2, endExpression);
+            int startBase = fieldBase.indexOf(".");
+            String base = "";
+            if(startBase != -1)base = fieldBase.substring(0, startBase);
 
+            System.out.println("fi:" + startBase + ":" + base + ":" + activeField + ":" + entry);
             if(!fieldBase.equals(activeField)) {
 
                 if (fieldBase.contains(".")) {
@@ -1308,7 +1329,6 @@ public class ExperienceProcessor {
                             if (value != null) {
                                 entry = entry.replace(expression, String.valueOf(value));
                             } else if (activeField.equals("")) {
-                                //make empty!
                                 entry = entry.replace(expression, "");
                             }
                         }
@@ -1329,7 +1349,7 @@ public class ExperienceProcessor {
                 if (entry.contains("${")) {
                     idx++;
                     if(idx >= entry.length())return entry;
-                    entry = evaluateEntry(idx,startExpression + idx, activeField, entry, httpResponse);
+                    entry = evaluateEntry(startExpression + idx, activeField, entry, httpResponse);
                 }
 
             }

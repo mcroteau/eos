@@ -72,7 +72,7 @@ abstract class BaseTest {
             Todo todo = new Todo();
             todo.setId(idx);
             todo.setTitle("Todo *" + idx);
-//            if(idx == 0)todo.setTitle("");
+            if(idx == 0)todo.setTitle("");
 
             List<Person> people = new ArrayList<>();
             for (int idxn = 0; idxn < 3; idxn++) {
