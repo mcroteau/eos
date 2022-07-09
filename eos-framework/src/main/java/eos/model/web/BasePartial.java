@@ -9,7 +9,7 @@ public abstract class BasePartial {
     String entry;
     Object mojo;
     String type;
-    String activeField;
+    String field;
     boolean withinIterable;
 
     public BasePartial(){
@@ -56,12 +56,12 @@ public abstract class BasePartial {
         this.type = type;
     }
 
-    public void setActiveField(String activeField) {
-        this.activeField = activeField;
+    public String getField() {
+        return field;
     }
 
-    public String getActiveField() {
-        return activeField;
+    public void setField(String field) {
+        this.field = field;
     }
 
     public boolean isWithinIterable() {

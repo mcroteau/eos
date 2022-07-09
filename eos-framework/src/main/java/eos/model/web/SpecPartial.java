@@ -9,8 +9,6 @@ public class SpecPartial extends BasePartial{
     }
 
     String spec;
-    Object mojo;
-    BasicEntry basicEntry;
     Map<String, MojosResult> mojosResult;
 
     public String getSpec() {
@@ -19,24 +17,6 @@ public class SpecPartial extends BasePartial{
 
     public void setSpec(String spec) {
         this.spec = spec;
-    }
-
-    @Override
-    public Object getMojo() {
-        return mojo;
-    }
-
-    @Override
-    public void setMojo(Object mojo) {
-        this.mojo = mojo;
-    }
-
-    public BasicEntry getBasicEntry() {
-        return basicEntry;
-    }
-
-    public void setBasicEntry(BasicEntry basicEntry) {
-        this.basicEntry = basicEntry;
     }
 
     public Map<String, MojosResult> getMojosResult() {
