@@ -251,14 +251,14 @@ public class ExperienceProcessor {
 
             if(basicEntry.contains(this.END))break;
 
-            if(basicEntry.contains(this.IFSPEC)){
+            if(basicEntry.contains(this.IFSPEC) && passesSpec(resp, specPartial)){
                 SpecPartial specPartialUno = new SpecPartial();
                 specPartialUno.setSpec(basicEntry);
                 specPartialUno.setIdx(getIdx());
                 specPartialUno.setWithinIterable(false);
                 partialsUnix.add(specPartialUno);
                 getSpecPartials(tqxro + 1, specPartialUno, resp, basePartials);
-            }else if(basicEntry.contains(this.FOREACH) && !iterableSet){
+            }else if(!iterableSet && passesSpec(resp, specPartial) && basicEntry.contains(this.FOREACH)){
 
                 MojosResult mojosResult = getIterableMojos(tqxro, basicEntry, resp, basePartials);
                 List<BasePartial> iterablePartials = getIterablePartials(tqxro + 1, false, resp, basePartials);
@@ -274,7 +274,7 @@ public class ExperienceProcessor {
                         String basicEntryDos = basePartialDos.getEntry();
                         System.out.println("bap: " + bap + ":" + basicEntryDos);
 
-                        if(basicEntryDos.contains(this.IFSPEC)){
+                        if(basicEntryDos.contains(this.IFSPEC) && passesSpec(mojosResult.getField(), pojo, resp, specPartial)){
                             SpecPartial specPartialDos = new SpecPartial();
                             specPartialDos.setSpec(basicEntryDos);
                             specPartialDos.setIdx(getIdx());
@@ -284,7 +284,7 @@ public class ExperienceProcessor {
                             partialsUnix.add(specPartialDos);
                             getSpecPartials(bap + 1, specPartialDos, resp, iterablePartials);
                             specInitializedNested = true;
-                        }else if(basicEntryDos.contains(this.FOREACH)){
+                        }else if(basicEntryDos.contains(this.FOREACH) && passesSpec(mojosResult.getField(), pojo, resp, specPartial)){
 
                             MojosResult mojosResultDos = getIterableMojosDeep(basicEntryDos, pojo, basePartials);
                             List<BasePartial> iterablePartialsDos = getIterablePartialsNested(1, true, resp, iterablePartials);
@@ -297,7 +297,7 @@ public class ExperienceProcessor {
 
                                     BasePartial iterablePartialTres = iterablePartialsDos.get(abba);
                                     String iterableEntrySex = iterablePartialTres.getEntry();
-                                    if (iterableEntrySex.contains(this.IFSPEC)) {
+                                    if (iterableEntrySex.contains(this.IFSPEC) && passesSpec(mojosResult.getField(), pojo, resp, specPartial)) {
                                         SpecPartial specPartialTres = new SpecPartial();
                                         specPartialTres.setSpec(iterableEntrySex);
                                         specPartialTres.setIdx(getIdx());
@@ -307,8 +307,7 @@ public class ExperienceProcessor {
                                         partialsUnix.add(specPartialTres);
                                         getSpecPartials(abba + 1, specPartialTres, resp, iterablePartialsDos); // you guys are great! african americans i hurt.
                                         specInitializedDoubleNested = true;
-                                    } else if(!withinIterable(bap, iterablePartials) && (specPartial == null ||
-                                                    (renderIterableSpec(specPartial.getSpec(), mojosResultDos.getField(), mojo, resp)))){
+                                    } else if(!withinIterable(bap, iterablePartials) && passesSpec(mojosResult.getField(), pojo, resp, specPartial)){
                                         BasePartial basePartialSex = new BasicPartial();
                                         basePartialSex.setIdx(getIdx());
                                         basePartialSex.setWithinIterable(true);
@@ -331,8 +330,7 @@ public class ExperienceProcessor {
                                 specInitializedDoubleNested = false;
                             }
 
-                        }else if(!withinIterable(bap, basePartials) && (specPartial == null ||
-                                (renderIterableSpec(specPartial.getSpec(), mojosResult.getField(), pojo, resp)))){
+                        }else if(!withinIterable(bap, basePartials) && passesSpec(mojosResult.getField(), pojo, resp, specPartial)){
                             BasePartial basePartialSex = new BasicPartial();
                             System.out.println(">>>>>>>>>" + basicEntryDos);
                             basePartialSex.setIdx(getIdx());
@@ -364,6 +362,21 @@ public class ExperienceProcessor {
                 partialsUnix.add(partial);
             }
         }
+    }
+
+    boolean passesSpec(String activeField, Object mojo, HttpResponse resp, SpecPartial specPartial) throws NoSuchFieldException, IllegalAccessException {
+        if(specPartial != null){
+            System.out.println("passespec:" + specPartial.getSpec());
+        }else{
+            System.out.println("doesnt pass piece of shit:");//12 years
+        }
+        return (specPartial == null ||
+                (renderIterableSpec(specPartial.getSpec(), activeField, mojo, resp)));
+    }
+
+    boolean passesSpec(HttpResponse resp, SpecPartial specPartial) throws NoSuchMethodException, EosException, IllegalAccessException, NoSuchFieldException, InvocationTargetException {
+        return (specPartial == null ||
+                (renderSpec(specPartial.getSpec(), resp)));
     }
 
     List<BasePartial> getIterablePartials(int openIdx, Boolean secondPass, HttpResponse resp, List<BasePartial> basePartials) throws EosException {
@@ -792,14 +805,12 @@ public class ExperienceProcessor {
                     }
                 }
             }
-
         }
 
         return false;
     }
 
-
-    void getSpecPartials(int openIdx, SpecPartial specPartial, HttpResponse resp, List<BasePartial> basePartials) throws IllegalAccessException, EosException, NoSuchFieldException {
+    void getSpecPartials(int openIdx, SpecPartial specPartial, HttpResponse resp, List<BasePartial> basePartials) throws IllegalAccessException, EosException, NoSuchFieldException, NoSuchMethodException, InvocationTargetException {
         Integer endIdx = getEndSpec(openIdx, basePartials);
         setBasePartials(openIdx, endIdx, specPartial, resp, basePartials);
     }

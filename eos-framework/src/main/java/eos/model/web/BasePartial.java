@@ -10,6 +10,7 @@ public abstract class BasePartial {
     Object mojo;
     String type;
     String field;
+    String spec;
     boolean withinIterable;
 
     public BasePartial(){
@@ -62,6 +63,14 @@ public abstract class BasePartial {
 
     public void setField(String field) {
         this.field = field;
+    }
+
+    public String getSpec() {
+        return spec;
+    }
+
+    public void setSpec(String spec) {
+        this.spec = spec;
     }
 
     public boolean isWithinIterable() {
