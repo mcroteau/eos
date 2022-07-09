@@ -46,12 +46,19 @@ public class ExperienceProcessor {
         basicPartial.setEntry(this.END);
         basePartials.add(basicPartial);
 
-        for(BasePartial basePartial : basePartials){
-            System.out.println("tio:" + basePartial.getEntry());
-        }
+
 
         Integer endIdx = basePartials.size() -1;
         setBasePartials(this.OPENIDX, endIdx, resp, basePartials);
+
+        List<BasePartial> partialsEco = new ArrayList<>();
+        Integer idxa = 0;
+        for(BasePartial basePartial : basePartials){
+            System.out.println("tio:" + basePartial.getEntry());
+            basePartial.setIdx(idxa);
+            partialsEco.add(basePartial);
+        }
+
         outputSpecs(resp, partialsUnix);
 
         return "";
