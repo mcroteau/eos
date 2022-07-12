@@ -72,14 +72,14 @@ abstract class BaseTest {
             Todo todo = new Todo();
             todo.setId(idx);
             todo.setTitle("Todo *" + idx);
-            if(idx == 0)todo.setTitle("");
+//            if(idx == 0)todo.setTitle("");
 
             List<Person> people = new ArrayList<>();
             for (int idxn = 0; idxn < 3; idxn++) {
                 Person person = new Person();
                 person.setId(personIdx);
                 person.setName("Pep Love *" + personIdx);personIdx++;
-                if(personIdx == 5)person.setName("");
+                if(personIdx == 9)person.setName("");
                 Pet pet = new Pet();
                 pet.setId(idxn);
                 pet.setName("Apache *" + idxn);
