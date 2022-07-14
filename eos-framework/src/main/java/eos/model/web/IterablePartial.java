@@ -7,6 +7,7 @@ public class IterablePartial extends BasePartial {
     public IterablePartial(){this.type = ITeRABLE; }
 
     String field;
+    String iterable;
     MojosResult mojosResult;
 
     public String getField() {
@@ -15,6 +16,14 @@ public class IterablePartial extends BasePartial {
 
     public void setField(String field) {
         this.field = field;
+    }
+
+    public String getIterable() {
+        return iterable;
+    }
+
+    public void setIterable(String iterable) {
+        this.iterable = iterable;
     }
 
     public MojosResult getMojosResult() {

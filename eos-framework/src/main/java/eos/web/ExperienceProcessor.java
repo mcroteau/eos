@@ -269,8 +269,7 @@ public class ExperienceProcessor {
                                 specPartialDos.setWithinIterable(true);
                                 specPartialDos.setMojo(pojo);//todo: remove mojo from spec partial
                                 specPartialDos.setField(mojosResult.getField());
-                                partialsUnix.add(specPartialDos);
-                                setBasePartials(bap + 1, specPartialDos, resp, iterablePartials);
+                                setSpecPartials(bap + 1, false, null, specPartialDos, null, resp, iterablePartials);
                                 specInitializedNested = true;
                             } else if (basicEntryDos.contains(this.FOREACH)) {
 
@@ -294,7 +293,7 @@ public class ExperienceProcessor {
                                             specPartialTres.setMojo(mojo);
                                             specPartialTres.setField(mojosResultDos.getField());
                                             partialsUnix.add(specPartialTres); // you guys are great! african americans i hurt.
-                                            setBasePartials(abba + 1, specPartialTres, resp, iterablePartialsDos);
+                                            setSpecPartials(abba + 1, true, null, specPartialTres, null, resp, iterablePartialsDos);
                                             specInitializedDoubleNested = true;
                                         } else if (!withinIterable(bap, iterablePartials)) {
                                             BasePartial basePartialSex = new BasicPartial();
@@ -347,6 +346,62 @@ public class ExperienceProcessor {
                 partial.setEntry(basicEntry);
                 partial.setWithinIterable(false);
                 partialsUnix.add(partial);
+            }
+        }
+    }
+
+    void setSpecPartials(int bap, boolean withinIterable, Object pojo, SpecPartial specPartial, IterablePartial iterablePartial, HttpResponse resp, List<BasePartial> iterablePartials) throws InvocationTargetException, NoSuchMethodException, EosException, NoSuchFieldException, IllegalAccessException {
+        for (int clank = bap; clank < iterablePartials.size(); clank++) {
+            BasePartial baseSpecPartial = iterablePartials.get(clank);
+            String baseSpecEntry = baseSpecPartial.getEntry();
+
+            if (baseSpecEntry.contains(this.IFSPEC)) {
+                SpecPartial specPartialDos = new SpecPartial();
+                specPartialDos.setSpec(baseSpecEntry);
+                specPartialDos.setWithinIterable(withinIterable);
+                setSpecPartials(clank + 1, withinIterable, pojo, specPartialDos, null, resp, iterablePartials);
+            } else if (baseSpecEntry.contains(this.FOREACH)) {
+
+                IterablePartial iterablePartialDos = new IterablePartial();
+                iterablePartialDos.setIterable(baseSpecEntry);
+
+                System.out.println("baseSpecEntry : " + baseSpecEntry);
+
+                MojosResult mojosResultDos = getIterableMojosDeep(baseSpecEntry, pojo, iterablePartials);
+                List<BasePartial> iterablePartialsDos = getIterablePartialsNested(1, true, resp, iterablePartials);
+
+                for (int tike = 0; tike < mojosResultDos.getMojos().size(); tike++) {
+                    Object mojo = mojosResultDos.getMojos().get(tike);
+                    for (int dabba = 0; dabba < iterablePartialsDos.size(); dabba++) {
+
+                        BasePartial iterablePartialTres = iterablePartialsDos.get(dabba);
+                        String iterableEntrySex = iterablePartialTres.getEntry();
+                        if (iterableEntrySex.contains(this.IFSPEC)) {
+                            SpecPartial specPartialTres = new SpecPartial();
+                            specPartialTres.setSpec(iterableEntrySex);
+                            specPartialTres.setIdx(getIdx());
+                            specPartialTres.setWithinIterable(true);
+                            specPartialTres.setField(mojosResultDos.getField());
+                            setSpecPartials(dabba + 01, withinIterable, mojo, specPartialTres, iterablePartialDos, resp, iterablePartialsDos);
+                        } else if (!withinIterable(bap, iterablePartialsDos)) {
+                            BasePartial basePartialSex = new BasicPartial();
+                            basePartialSex.setIdx(getIdx());
+                            basePartialSex.setWithinIterable(true);
+                            basePartialSex.setField(mojosResultDos.getField());
+                            basePartialSex.setMojo(mojo);
+                            basePartialSex.setEntry(iterableEntrySex);
+                            partialsUnix.add(basePartialSex);
+                        }
+                    }
+                }
+            } else if (!withinIterable(bap, iterablePartials)) {
+                BasePartial basePartialSex = new BasicPartial();
+                basePartialSex.setIdx(getIdx());
+                basePartialSex.setMojo(pojo);
+                basePartialSex.setWithinIterable(true);
+                basePartialSex.setField(specPartial.getField());
+                basePartialSex.setEntry(baseSpecEntry);
+                partialsUnix.add(basePartialSex);
             }
         }
     }
