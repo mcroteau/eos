@@ -971,10 +971,10 @@ public class ExperienceProcessor {
         return false;
     }
 
-//    void getSpecPartials(int openIdx, SpecPartial currentSpecPartial, SpecPartial previousSpecPartial, HttpResponse resp, List<BasePartial> basePartials) throws IllegalAccessException, EosException, NoSuchFieldException, NoSuchMethodException, InvocationTargetException {
-//        Integer endIdx = getEndSpec(openIdx, basePartials);
-//        setBasePartials(openIdx, currentSpecPartial, previousSpecPartial, resp, basePartials);
-//    }
+    void getSpecPartials(int openIdx, SpecPartial specPartial, HttpResponse resp, List<BasePartial> basePartials) throws IllegalAccessException, EosException, NoSuchFieldException, NoSuchMethodException, InvocationTargetException {
+        Integer endIdx = getEndSpec(openIdx, basePartials);
+        setBasePartials(openIdx, endIdx, specPartial, resp, basePartials);
+    }
 
     private Boolean isConditionMet(String subject, String predicate, String condition, Type type) throws EosException {
         if (type.getTypeName().equals("int") || type.getTypeName().equals("java.lang.Integer")) {
