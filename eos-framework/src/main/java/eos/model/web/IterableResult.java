@@ -2,7 +2,7 @@ package eos.model.web;
 
 import java.util.List;
 
-public class MojosResult {
+public class IterableResult {
     String field;
     String key;
     List<Object> mojos;//todo: not mojos, pojos, but mojos sound cooler, thank you maven

@@ -1,14 +1,11 @@
 package eos.model.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class IterablePartial extends BasePartial {
     public IterablePartial(){this.type = ITeRABLE; }
 
     String field;
     String iterable;
-    MojosResult mojosResult;
+    IterableResult iterableResult;
 
     public String getField() {
         return field;
@@ -26,11 +23,11 @@ public class IterablePartial extends BasePartial {
         this.iterable = iterable;
     }
 
-    public MojosResult getMojosResult() {
-        return mojosResult;
+    public IterableResult getMojosResult() {
+        return iterableResult;
     }
 
-    public void setMojosResult(MojosResult mojosResult) {
-        this.mojosResult = mojosResult;
+    public void setMojosResult(IterableResult iterableResult) {
+        this.iterableResult = iterableResult;
     }
 }

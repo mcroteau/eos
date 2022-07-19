@@ -1,6 +1,5 @@
 package eos.model.web;
 
-import java.util.List;
 import java.util.Map;
 
 public class SpecPartial extends BasePartial{
@@ -9,7 +8,7 @@ public class SpecPartial extends BasePartial{
     }
 
     String spec;
-    Map<String, MojosResult> mojosResult;
+    Map<String, IterableResult> mojosResult;
 
     public String getSpec() {
         return spec;
@@ -19,11 +18,11 @@ public class SpecPartial extends BasePartial{
         this.spec = spec;
     }
 
-    public Map<String, MojosResult> getMojosResult() {
+    public Map<String, IterableResult> getMojosResult() {
         return mojosResult;
     }
 
-    public void setMojosResult(Map<String, MojosResult> mojosResult) {
+    public void setMojosResult(Map<String, IterableResult> mojosResult) {
         this.mojosResult = mojosResult;
     }
 }

@@ -69,6 +69,46 @@ public class ExperienceProcessor {
             }
         }
 
+        /*
+            abc
+            def
+            geh
+            xyz
+
+            current dataPartial
+            iterate through
+                locate spec
+                    get data partial children
+                        if spec -> get data partial children
+
+
+
+
+
+            for(xyz){
+                if(foo != 'xyz'){
+                    if(baz != 'abc'){
+                        ${baz}
+                    }
+                }
+            }
+
+            if(foo != 'xyz'){
+                ${foo}
+                if(baz != 'abc'){
+                    ${baz}
+                }
+            }
+
+            for(){
+
+            }
+
+
+         */
+
+
+
         return "";
     }
 
@@ -93,78 +133,6 @@ public class ExperienceProcessor {
     List<StopGo> evaluations = new ArrayList<>();
     List<BasePartial> partialsFin = new ArrayList<>();
     Boolean initial = true;
-//    void outputSpecs(HttpResponse resp, List<BasePartial> basePartials) throws EosException, NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException {
-//        for (int foo = 0; foo < basePartials.size(); foo++) {
-//            BasePartial basePartial = basePartials.get(foo);//youre getting it, the sounds + inspirational quotes from englishmen were planned out
-//            if (basePartial.getType().equals(BasePartial.BASiC)) {
-//                if (basePartial != null && !basePartial.getEntry().contains(this.FOREACH) && !basePartial.getEntry().contains(this.ENDEACH)) {
-////                    System.out.println("tni:" + basePartial.getIdx() + ":" + basePartial.getEntry());
-//
-//                    if(!withinIterable(foo, basePartials)) {
-//                        String washedEntry = evaluateEntry(0, basePartial.getField() != null ? basePartial.getField() : "", basePartial.getEntry(), resp);
-//                        String washedIterableEntry = evaluateEachEntry(basePartial.getField(), washedEntry, basePartial.getMojo());
-//                        BasicPartial washedPartial = new BasicPartial();
-//                        washedPartial.setIdx(basePartial.getIdx());
-//                        washedPartial.setEntry(washedIterableEntry);
-//
-//                        if (!rendered.containsKey(getKey(washedPartial))) {
-//                            rendered.put(getKey(washedPartial), true);
-//                            partialsFin.add(washedPartial);
-//                        }
-//                    }
-//                }
-//            }
-//            if (basePartial.getType().equals(BasePartial.SPeC)) {
-//                SpecPartial specPartial = (SpecPartial) basePartial;
-//                System.out.println("not!!");
-//                if (initial || withinPositiveEval(specPartial)) {
-//
-//                    System.out.println("not!");
-//                    List<BasePartial> specPartials = getPartialsToRender(foo, basePartials);
-//                    if (specPartials.size() > 0) {
-//
-//                        for (BasePartial prewashedPartialDos : specPartials) {
-//
-//                            System.out.println("cxi: " + prewashedPartialDos.getIdx() + ":" + prewashedPartialDos.getEntry());
-//
-//                            String baseEntryDos = prewashedPartialDos.getEntry();
-//                            Object mojoDos = prewashedPartialDos.getMojo();
-//                            String activeFieldDos = prewashedPartialDos.getField();
-//
-//                            if ((specPartial.isWithinIterable() && renderIterableSpec(specPartial.getSpec(), activeFieldDos, mojoDos, resp))) {
-//
-//                                String washedEntry = evaluateEachEntry(activeFieldDos, baseEntryDos, mojoDos);
-//                                BasicPartial washedPartial = new BasicPartial();
-//                                washedPartial.setIdx(prewashedPartialDos.getIdx());
-//                                washedPartial.setEntry(washedEntry);
-//
-//                                if (!rendered.containsKey(getKey(washedPartial))) {
-//                                    rendered.put(getKey(washedPartial), true);
-//                                    partialsFin.add(washedPartial);
-//                                }
-//                            }else{
-//                                StopGo openEnd = new StopGo();
-//                                Integer open = specPartials.get(0).getIdx();
-//                                Integer end = specPartials.get(specPartials.size() - this.ENDIDX).getIdx();
-//                                openEnd.setGo(open);
-//                                openEnd.setStop(end);
-//                                openEnd.setEvaluatesPositive(false);
-//                                evaluations.add(openEnd);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//
-//        partialsFin.sort(Comparator.comparing(BasePartial::getIdx));
-//
-//        for (int foo = 0; foo < partialsFin.size(); foo++) {
-//            BasePartial basePartial = partialsFin.get(foo);
-//            System.out.println("h:" + basePartial.getIdx() + ":" + basePartial.getEntry());
-//        }
-//    }
 
     boolean withinPositiveEval(SpecPartial specPartial) {
         if(evaluations.size() == 0){return true;}
@@ -266,98 +234,117 @@ public class ExperienceProcessor {
         throw new EosException("missing end </eos:each>");
     }
 
-    void setBasePartials(int openIdx, int endIdx, SpecPartial specPartial, HttpResponse resp, List<BasePartial> basePartials) throws IllegalAccessException, EosException, NoSuchFieldException, NoSuchMethodException, InvocationTargetException {
+    void setBasePartials(int openIdx, int endIdx, BasicPartial basicPartialSpect, HttpResponse resp, List<BasePartial> basePartials) throws IllegalAccessException, EosException, NoSuchFieldException, NoSuchMethodException, InvocationTargetException {
 
         Boolean iterableSet = false;
-        for(int tqxro = openIdx; tqxro < basePartials.size(); tqxro++){
+        SpecPartial currentSpec = null;
+        for(int foo = openIdx; foo < basePartials.size(); foo++){
 
-            BasePartial basePartial = basePartials.get(tqxro);
+            BasePartial basePartial = basePartials.get(foo);
             String basicEntry = basePartial.getEntry();
 
             if(basicEntry.contains(this.END))break;
 
-            if(basicEntry.contains(this.IFSPEC) && passesSpec(resp, specPartial)){
+            if(basicEntry.contains(this.IFSPEC)){
                 SpecPartial specPartialUno = new SpecPartial();
                 specPartialUno.setSpec(basicEntry);
                 specPartialUno.setIdx(getIdx());
                 specPartialUno.setWithinIterable(false);
                 partialsFoo.add(specPartialUno);
-            }else if(!iterableSet && basicEntry.contains(this.FOREACH)){
+                currentSpec = specPartialUno;
+            }
 
-                MojosResult mojosResult = getIterableMojos(tqxro, basicEntry, resp, basePartials);
-                List<BasePartial> iterablePartials = getIterablePartials(tqxro + 1, false, resp, basePartials);
+            if(!iterableSet && basicEntry.contains(this.FOREACH)){
+
+                IterableResult iterableResult = getIterableMojos(foo, basicEntry, resp, basePartials);
+                List<BasePartial> iterablePartials = getIterablePartials(foo + 1, false, resp, basePartials);
 
                 Boolean specInitializedNested = false;
 
-                for(int baz = 0; baz < mojosResult.getMojos().size(); baz++){
-                    Object pojo = mojosResult.getMojos().get(baz);
+                for(int baz = 0; baz < iterableResult.getMojos().size(); baz++){
+                    Object pojo = iterableResult.getMojos().get(baz);
 
-                    for(int bap = 0; bap < iterablePartials.size(); bap++){
+                    if(currentSpec == null || (currentSpec != null && passesIterableSpec(currentSpec, pojo, iterableResult, resp))) {
 
-                        BasePartial basePartialDos = iterablePartials.get(bap);
-                        String basicEntryDos = basePartialDos.getEntry();
+                        for (int bap = 0; bap < iterablePartials.size(); bap++) {
 
-                        if(basicEntryDos.contains(this.IFSPEC)){
-                            SpecPartial specPartialDos = new SpecPartial();
-                            specPartialDos.setSpec(basicEntryDos);
-                            specPartialDos.setIdx(getIdx());
-                            specPartialDos.setWithinIterable(true);
-                            specPartialDos.setMojo(pojo);//todo: remove mojo from spec partial
-                            specPartialDos.setField(mojosResult.getField());
-                            partialsFoo.add(specPartialDos);
-                            specInitializedNested = true;
-                        }else if(basicEntryDos.contains(this.FOREACH)){
+                            BasePartial basePartialDos = iterablePartials.get(bap);
+                            String basicEntryDos = basePartialDos.getEntry();
 
-                            MojosResult mojosResultDos = getIterableMojosDeep(basicEntryDos, pojo, basePartials);
-                            List<BasePartial> iterablePartialsDos = getIterablePartialsNested(1, true, resp, iterablePartials);
+                            if (basicEntryDos.contains(this.IFSPEC)) {
+                                SpecPartial specPartialDos = new SpecPartial();
+                                specPartialDos.setSpec(basicEntryDos);
+                                specPartialDos.setIdx(getIdx());
+                                specPartialDos.setWithinIterable(true);
+                                specPartialDos.setMojo(pojo);//todo: remove mojo from spec partial
+                                specPartialDos.setField(iterableResult.getField());
+                                partialsFoo.add(specPartialDos);
+                                specInitializedNested = true;
+                                currentSpec = specPartialDos;
+                            }
 
-                            Boolean specInitializedDoubleNested = true;
+                            if (basicEntryDos.contains(this.FOREACH)) {
 
-                            for (int tike = 0; tike < mojosResultDos.getMojos().size(); tike++) {
-                                Object mojo = mojosResultDos.getMojos().get(tike);
-                                for (int abba = 0; abba < iterablePartialsDos.size(); abba++) {
+                                IterableResult iterableResultDos = getIterableMojosDeep(basicEntryDos, pojo, basePartials);
+                                List<BasePartial> iterablePartialsDos = getIterablePartialsNested(1, true, resp, iterablePartials);
 
-                                    BasePartial iterablePartialTres = iterablePartialsDos.get(abba);
-                                    String iterableEntrySex = iterablePartialTres.getEntry();
-                                    if (iterableEntrySex.contains(this.IFSPEC) && passesSpec(mojosResult.getField(), pojo, resp, specPartial)) {
-                                        SpecPartial specPartialTres = new SpecPartial();
-                                        specPartialTres.setSpec(iterableEntrySex);
-                                        specPartialTres.setIdx(getIdx());
-                                        specPartialTres.setWithinIterable(true);
-                                        specPartialTres.setMojo(mojo);
-                                        specPartialTres.setField(mojosResultDos.getField());
-                                        partialsFoo.add(specPartialTres);
-                                        specInitializedDoubleNested = true;
-                                    } else if(!withinIterable(bap, iterablePartials)){
-                                        BasePartial basePartialSex = new BasicPartial();
-                                        basePartialSex.setIdx(getIdx());
-                                        basePartialSex.setWithinIterable(true);
-                                        basePartialSex.setField(mojosResultDos.getField());
-                                        System.out.println(">>>>>>>>>" + iterableEntrySex);
-                                        basePartialSex.setMojo(mojo);
-                                        basePartialSex.setEntry(iterableEntrySex);
-                                        partialsFoo.add(basePartialSex);
+                                Boolean specInitializedDoubleNested = true;
+
+                                for (int tike = 0; tike < iterableResultDos.getMojos().size(); tike++) {
+                                    Object mojo = iterableResultDos.getMojos().get(tike);
+
+                                    if(currentSpec == null || (currentSpec != null && passesIterableSpec(currentSpec, mojo, iterableResultDos, resp))) {
+
+                                        for (int abba = 0; abba < iterablePartialsDos.size(); abba++) {
+
+                                            BasePartial iterablePartialTres = iterablePartialsDos.get(abba);
+                                            String iterableEntrySex = iterablePartialTres.getEntry();
+                                            if (iterableEntrySex.contains(this.IFSPEC)) {
+                                                SpecPartial specPartialTres = new SpecPartial();
+                                                specPartialTres.setSpec(iterableEntrySex);
+                                                specPartialTres.setIdx(getIdx());
+                                                specPartialTres.setWithinIterable(true);
+                                                specPartialTres.setMojo(mojo);
+                                                specPartialTres.setField(iterableResultDos.getField());
+                                                partialsFoo.add(specPartialTres);
+                                                specInitializedDoubleNested = true;
+                                                currentSpec = specPartialTres;
+                                            }
+
+                                            if (!withinIterable(bap, iterablePartials)) {
+                                                BasePartial basePartialSex = new BasicPartial();
+                                                basePartialSex.setIdx(getIdx());
+                                                basePartialSex.setWithinIterable(true);
+                                                basePartialSex.setField(iterableResultDos.getField());
+                                                System.out.println(">>>>>>>>>" + iterableEntrySex);
+                                                basePartialSex.setMojo(mojo);
+                                                basePartialSex.setEntry(iterableEntrySex);
+                                                partialsFoo.add(basePartialSex);
+                                                currentSpec = null;
+                                            }
+                                        }
                                     }
                                 }
-                            }
 
-                            if(specInitializedDoubleNested){
+                                if (specInitializedDoubleNested) {
+                                    BasePartial basePartialSex = new BasicPartial();
+                                    basePartialSex.setIdx(getIdx());
+                                    basePartialSex.setEntry(this.ENDIF);
+                                    basePartialSex.setWithinIterable(true);
+                                    partialsFoo.add(basePartialSex);
+                                    specInitializedDoubleNested = false;
+                                }
+
+                            } else if (!withinIterable(bap, basePartials)) {
                                 BasePartial basePartialSex = new BasicPartial();
                                 basePartialSex.setIdx(getIdx());
-                                basePartialSex.setEntry(this.ENDIF);
+                                basePartialSex.setMojo(pojo);
                                 basePartialSex.setWithinIterable(true);
+                                basePartialSex.setField(iterableResult.getField());
+                                basePartialSex.setEntry(basicEntryDos);
                                 partialsFoo.add(basePartialSex);
-                                specInitializedDoubleNested = false;
+                                currentSpec = null;
                             }
-
-                        }else if(!withinIterable(bap, basePartials)){
-                            BasePartial basePartialSex = new BasicPartial();
-                            basePartialSex.setIdx(getIdx());
-                            basePartialSex.setMojo(pojo);
-                            basePartialSex.setWithinIterable(true);
-                            basePartialSex.setField(mojosResult.getField());
-                            basePartialSex.setEntry(basicEntryDos);
-                            partialsFoo.add(basePartialSex);
                         }
                     }
                 }
@@ -372,7 +359,7 @@ public class ExperienceProcessor {
                     specInitializedNested = false;
                 }
 
-            }else if(!withinIterable(tqxro, basePartials)){
+            }else if(!withinIterable(foo, basePartials)){
                 BasePartial partial = new BasicPartial();
                 partial.setIdx(getIdx());
                 partial.setEntry(basicEntry);
@@ -380,6 +367,128 @@ public class ExperienceProcessor {
                 partialsFoo.add(partial);
             }
         }
+    }
+
+//    void setBasePartials(int openIdx, int endIdx, BasicPartial basicPartial, HttpResponse resp, List<BasePartial> basePartials) throws IllegalAccessException, EosException, NoSuchFieldException, NoSuchMethodException, InvocationTargetException {
+//
+//        Boolean iterableSet = false;
+//        for(int tqxro = openIdx; tqxro < basePartials.size(); tqxro++){
+//
+//            BasePartial basePartial = basePartials.get(tqxro);
+//            String basicEntry = basePartial.getEntry();
+//
+//            if(basicEntry.contains(this.END))break;
+//
+//            if(basicEntry.contains(this.IFSPEC)){
+//                SpecPartial specPartialUno = new SpecPartial();
+//                specPartialUno.setSpec(basicEntry);
+//                specPartialUno.setIdx(getIdx());
+//                specPartialUno.setWithinIterable(false);
+//                partialsFoo.add(specPartialUno);
+//                getSpecPartials()
+//            }else if(!iterableSet && basicEntry.contains(this.FOREACH)){
+//
+//                IterableResult mojosResult = getIterableMojos(tqxro, basicEntry, resp, basePartials);
+//                List<BasePartial> iterablePartials = getIterablePartials(tqxro + 1, false, resp, basePartials);
+//
+//                Boolean specInitializedNested = false;
+//
+//                for(int baz = 0; baz < mojosResult.getMojos().size(); baz++){
+//                    Object pojo = mojosResult.getMojos().get(baz);
+//
+//                    for(int bap = 0; bap < iterablePartials.size(); bap++){
+//
+//                        BasePartial basePartialDos = iterablePartials.get(bap);
+//                        String basicEntryDos = basePartialDos.getEntry();
+//
+//                        if(basicEntryDos.contains(this.IFSPEC)){
+//                            SpecPartial specPartialDos = new SpecPartial();
+//                            specPartialDos.setSpec(basicEntryDos);
+//                            specPartialDos.setIdx(getIdx());
+//                            specPartialDos.setWithinIterable(true);
+//                            specPartialDos.setMojo(pojo);//todo: remove mojo from spec partial
+//                            specPartialDos.setField(mojosResult.getField());
+//                            partialsFoo.add(specPartialDos);
+//                            specInitializedNested = true;
+//                        }else if(basicEntryDos.contains(this.FOREACH)){
+//
+//                            IterableResult mojosResultDos = getIterableMojosDeep(basicEntryDos, pojo, basePartials);
+//                            List<BasePartial> iterablePartialsDos = getIterablePartialsNested(1, true, resp, iterablePartials);
+//
+//                            Boolean specInitializedDoubleNested = true;
+//
+//                            for (int tike = 0; tike < mojosResultDos.getMojos().size(); tike++) {
+//                                Object mojo = mojosResultDos.getMojos().get(tike);
+//                                for (int abba = 0; abba < iterablePartialsDos.size(); abba++) {
+//
+//                                    BasePartial iterablePartialTres = iterablePartialsDos.get(abba);
+//                                    String iterableEntrySex = iterablePartialTres.getEntry();
+//                                    if (iterableEntrySex.contains(this.IFSPEC) && passesSpec(mojosResult.getField(), pojo, resp, specPartial)) {
+//                                        SpecPartial specPartialTres = new SpecPartial();
+//                                        specPartialTres.setSpec(iterableEntrySex);
+//                                        specPartialTres.setIdx(getIdx());
+//                                        specPartialTres.setWithinIterable(true);
+//                                        specPartialTres.setMojo(mojo);
+//                                        specPartialTres.setField(mojosResultDos.getField());
+//                                        partialsFoo.add(specPartialTres);
+//                                        specInitializedDoubleNested = true;
+//                                    } else if(!withinIterable(bap, iterablePartials)){
+//                                        BasePartial basePartialSex = new BasicPartial();
+//                                        basePartialSex.setIdx(getIdx());
+//                                        basePartialSex.setWithinIterable(true);
+//                                        basePartialSex.setField(mojosResultDos.getField());
+//                                        System.out.println(">>>>>>>>>" + iterableEntrySex);
+//                                        basePartialSex.setMojo(mojo);
+//                                        basePartialSex.setEntry(iterableEntrySex);
+//                                        partialsFoo.add(basePartialSex);
+//                                    }
+//                                }
+//                            }
+//
+//                            if(specInitializedDoubleNested){
+//                                BasePartial basePartialSex = new BasicPartial();
+//                                basePartialSex.setIdx(getIdx());
+//                                basePartialSex.setEntry(this.ENDIF);
+//                                basePartialSex.setWithinIterable(true);
+//                                partialsFoo.add(basePartialSex);
+//                                specInitializedDoubleNested = false;
+//                            }
+//
+//                        }else if(!withinIterable(bap, basePartials)){
+//                            BasePartial basePartialSex = new BasicPartial();
+//                            basePartialSex.setIdx(getIdx());
+//                            basePartialSex.setMojo(pojo);
+//                            basePartialSex.setWithinIterable(true);
+//                            basePartialSex.setField(mojosResult.getField());
+//                            basePartialSex.setEntry(basicEntryDos);
+//                            partialsFoo.add(basePartialSex);
+//                        }
+//                    }
+//                }
+//
+//                iterableSet = true;
+//
+//                if(specInitializedNested){
+//                    BasePartial basePartialSex = new BasicPartial();
+//                    basePartialSex.setIdx(getIdx());
+//                    basePartialSex.setEntry(this.ENDIF);
+//                    partialsFoo.add(basePartialSex);
+//                    specInitializedNested = false;
+//                }
+//
+//            }else if(!withinIterable(tqxro, basePartials)){
+//                BasePartial partial = new BasicPartial();
+//                partial.setIdx(getIdx());
+//                partial.setEntry(basicEntry);
+//                partial.setWithinIterable(false);
+//                partialsFoo.add(partial);
+//            }
+//        }
+//    }
+
+    boolean passesIterableSpec(SpecPartial specPartial,  Object mojo, IterableResult iterableResult, HttpResponse resp) throws NoSuchFieldException, IllegalAccessException {
+        return (specPartial == null ||
+                (renderIterableSpec(specPartial.getSpec(), iterableResult.getField(), mojo, resp)));
     }
 
     boolean passesSpec(String activeField, Object mojo, HttpResponse resp, SpecPartial specPartial) throws NoSuchFieldException, IllegalAccessException {
@@ -828,9 +937,9 @@ public class ExperienceProcessor {
         return false;
     }
 
-    void getSpecPartials(int openIdx, SpecPartial specPartial, HttpResponse resp, List<BasePartial> basePartials) throws IllegalAccessException, EosException, NoSuchFieldException, NoSuchMethodException, InvocationTargetException {
+    void getSpecPartials(int openIdx, BasicPartial basicPartial, HttpResponse resp, List<BasePartial> basePartials) throws IllegalAccessException, EosException, NoSuchFieldException, NoSuchMethodException, InvocationTargetException {
         Integer endIdx = getEndSpec(openIdx, basePartials);
-        setBasePartials(openIdx, endIdx, specPartial, resp, basePartials);
+        setBasePartials(openIdx, endIdx, basicPartial, resp, basePartials);
     }
 
     private Boolean isConditionMet(String subject, String predicate, String condition, Type type) throws EosException {
@@ -861,12 +970,12 @@ public class ExperienceProcessor {
         return false;
     }
 
-    private int getIterableSpecStop(int idx, List<BasicEntry> entries){
-        for(int foo = idx; foo < entries.size(); foo++){
-            if(entries.get(foo).getEntry().contains(this.ENDIF))return entries.get(foo).getIdx();
-        }
-        return idx;
-    }
+//    int getIterableSpecStop(int idx, List<BasicEntry> entries){
+//        for(int foo = idx; foo < entries.size(); foo++){
+//            if(entries.get(foo).getEntry().contains(this.ENDIF))return entries.get(foo).getIdx();
+//        }
+//        return idx;
+//    }
 
 //    private int getEvaluateStop(int a6, List<String> entries) {
 //        int startCount = 1;
@@ -962,7 +1071,7 @@ public class ExperienceProcessor {
         return output.toString();
     }
 
-    private MojosResult getIterableMojosDeep(String entry, Object mojo, List<BasePartial> basePartials) throws EosException, NoSuchFieldException, IllegalAccessException {
+    private IterableResult getIterableMojosDeep(String entry, Object mojo, List<BasePartial> basePartials) throws EosException, NoSuchFieldException, IllegalAccessException {
         int startEach = entry.indexOf("<eos:each");
 
         int startIterate = entry.indexOf("items=", startEach + 1);
@@ -980,64 +1089,22 @@ public class ExperienceProcessor {
         String activeField = entry.substring(startItem + 5, endItem);
 
         List<Object> mojos = (ArrayList) getIterableValueRecursive(0, field, mojo);
-//
-//        Iterable iterable = new Iterable();
-//        int stop = getStop(go, basePartials);
-//        List<BasePartial> iterablePartials = new ArrayList<>();
-//        for(int foo = go + 1; foo < stop; foo++){
-//            BasePartial iterablePartial = basePartials.get(foo);
-//            String iterableEntry = iterablePartial.getEntry();
-//            if(iterableEntry.contains(this.IFSPEC)){
-//                SpecPartial specPartial = new SpecPartial();
-//                specPartial.setEntry(iterableEntry);
-//                List<BasePartial> specPartials = getSpecEntries(basePartials);
-//                specPartial.setPartials(specPartials);
-//                iterablePartials.add(specPartial);
-//            }else {
-//                BasicPartial basicPartial = new BasicPartial();
-//                basicPartial.setEntry(iterableEntry);
-//                iterablePartials.add(basicPartial);
-//            }
-//        }
-//
-//        List<BasePartial> partialsFoo = new ArrayList<>();
-//        for(Object koko : mojos){
-//            for(BasePartial basePartial : iterablePartials){
-//                basePartial.setMojo(koko);
-//                basePartial.setIterable(iterable);
-//                partialsFoo.add(basePartial);
-//            }
-//        }
-//
-//
-//        BasicEntry basicEntry = new BasicEntry();
-//        basicEntry.setEntry(entry);
-//
-//        iterable.setBasicEntry(basicEntry);
-//        iterable.setGo(go + 1);//todo:
-//        iterable.setStop(stop);//todo:
-//        iterable.setMojosCount(mojos.size());
-////        iterable.setMojos(mojos);//todo:? do i need
-//        iterable.setField(activeField);
-//        iterable.setEntries(partialsFoo);//todo: change name to setPartials()
-//        return iterable;
-
-        MojosResult mojosResult = new MojosResult();
-        mojosResult.setField(activeField);
-        mojosResult.setMojos(mojos);
-        return mojosResult;
+        IterableResult iterableResult = new IterableResult();
+        iterableResult.setField(activeField);
+        iterableResult.setMojos(mojos);
+        return iterableResult;
     }
 
-    private List<BasicEntry> getIterableEntries(int go, int stop, List<BasicEntry> entries){
-        List<BasicEntry> iterableEntries = new ArrayList<>();
-        for(int baz = go + 1; baz < stop; baz++){
-            BasicEntry entry = entries.get(baz);
-            iterableEntries.add(entry);
-        }
-        return iterableEntries;
-    }
+//    private List<BasicEntry> getIterableEntries(int go, int stop, List<BasicEntry> entries){
+//        List<BasicEntry> iterableEntries = new ArrayList<>();
+//        for(int baz = go + 1; baz < stop; baz++){
+//            BasicEntry entry = entries.get(baz);
+//            iterableEntries.add(entry);
+//        }
+//        return iterableEntries;
+//    }
 
-    private MojosResult getIterableMojos(int go, String entry, HttpResponse httpResponse, List<BasePartial> basePartials) throws EosException, NoSuchFieldException, IllegalAccessException {
+    private IterableResult getIterableMojos(int go, String entry, HttpResponse httpResponse, List<BasePartial> basePartials) throws EosException, NoSuchFieldException, IllegalAccessException {
 
         int startEach = entry.indexOf("<eos:each");
 
@@ -1099,10 +1166,10 @@ public class ExperienceProcessor {
 //        iterable.setField(activeField);
 //        iterable.setEntries(partialsFoo);
 //        return iterable;
-        MojosResult mojosResult = new MojosResult();
-        mojosResult.setField(activeField);
-        mojosResult.setMojos(mojos);
-        return mojosResult;
+        IterableResult iterableResult = new IterableResult();
+        iterableResult.setField(activeField);
+        iterableResult.setMojos(mojos);
+        return iterableResult;
     }
 
     private List<Object> getIterableInitial(String expression, HttpResponse httpResponse) throws NoSuchFieldException, IllegalAccessException {
